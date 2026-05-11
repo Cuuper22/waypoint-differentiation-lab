@@ -39,43 +39,30 @@ const LessonMapOutputSchema = z.object({
 const LearnerProfileOutputSchema = z.object({
   caseLabel: z.literal("Learner 7A"),
   grade: z.string(),
-  supportIds: z.array(z.string()).optional(),
-  evidence: z.array(z.object({ id: z.string(), source: z.string() }).passthrough()).optional()
+  supportIds: z.array(z.string()).optional()
 }).passthrough();
 const ModificationOutputSchema = z.object({
   id: z.string(),
-  lessonMoment: z.string(),
-  teacherAction: z.string(),
+  teacherAction: z.string().optional(),
   standardPreserved: z.literal("RI.7.2").optional(),
-  evidenceRefs: z.array(z.string()).optional(),
   receiptTool: z.literal("explain_modification").optional()
 }).passthrough();
 const TeacherPacketToolOutputSchema = z.object({
-  title: z.string(),
   caseLabel: z.literal("Learner 7A"),
-  teacherMode: z.literal("Tomorrow Mode"),
   preservedStandard: z.literal("RI.7.2"),
-  useFirst: z.array(z.string()),
   modifications: z.array(ModificationOutputSchema),
-  detail: z.literal("compact").optional(),
-  materialIds: z.array(z.string()).optional(),
   quality: z
     .object({
-      passed: z.boolean(),
-      summary: z.string()
+      passed: z.boolean()
     })
-    .optional(),
-  nextTools: z.array(z.string()).optional(),
-  qualityReport: z.object({ passed: z.boolean(), summary: z.string() }).passthrough().optional()
+    .passthrough()
+    .optional()
 }).passthrough();
 const ModificationExplanationOutputSchema = z.object({
   modification: ModificationOutputSchema,
   evidenceTrace: z.object({
     modificationId: z.string(),
     standardPreserved: z.literal("RI.7.2")
-  }).passthrough(),
-  receipts: z.object({
-    preservedStandard: z.literal("RI.7.2")
   }).passthrough()
 }).passthrough();
 const QualityReportOutputSchema = z.object({
@@ -85,10 +72,9 @@ const QualityReportOutputSchema = z.object({
 }).passthrough();
 const EvidenceAuditOutputSchema = z.object({
   detail: z.enum(["summary", "full"]),
-  markdown: z.string(),
   modificationIds: z.array(z.string()),
   nextTool: z.string().optional()
-});
+}).passthrough();
 
 function textContent(text: string) {
   return [{ type: "text" as const, text }];
@@ -235,7 +221,7 @@ server.registerTool(
   {
     title: "Get learner profile",
     description:
-      "Return the pseudonymized learner profile. Defaults to a compact summary; request full only when writing a complete handout.",
+      "Return Learner 7A planning context. Defaults summary; request full for goals, accommodations, and quotes.",
     inputSchema: {
       detail: z.enum(["summary", "full"]).default("summary")
     },
@@ -281,7 +267,7 @@ server.registerTool(
   {
     title: "Generate Tomorrow Mode packet",
     description:
-      "Generate concrete lesson modifications for Learner 7A. The output is deterministic and evidence-grounded so a teacher or MCP client can inspect the receipts.",
+      "Generate deterministic lesson supports for Learner 7A. Defaults compact; request full for handout and traces.",
     inputSchema: {
       minutesAvailable: z
         .union([z.literal(5), z.literal(15), z.literal(45)])
@@ -320,7 +306,7 @@ server.registerTool(
   {
     title: "Explain a modification",
     description:
-      "Return the Receipts Rail trace for a recommendation: source quote, lesson demand, UDL alignment, preserved standard, and progress check.",
+      "Return the receipt for one recommendation: quote, lesson demand, UDL, preserved standard, progress check.",
     inputSchema: {
       modificationId: z.string().describe("Modification ID, such as mod-annotation-code.")
     },
@@ -348,7 +334,7 @@ server.registerTool(
   {
     title: "Review packet quality",
     description:
-      "Run the No Hand-Wavy Accommodations Detector against a generated packet and flag vague, unsupported, unsafe, or lowered-rigor recommendations.",
+      "Run the No Hand-Wavy detector and flag vague, unsupported, unsafe, or lowered-rigor recommendations.",
     inputSchema: {
       minutesAvailable: z
         .union([z.literal(5), z.literal(15), z.literal(45)])
@@ -399,7 +385,7 @@ server.registerTool(
   "render_evidence_audit",
   {
     title: "Render evidence audit",
-    description: "Render a compact evidence audit by default; request full for quote-level reviewer markdown.",
+    description: "Render compact evidence refs by default; request full for quote-level reviewer markdown.",
     inputSchema: {
       minutesAvailable: z.union([z.literal(5), z.literal(15), z.literal(45)]).default(45),
       emphasis: z.enum(["minimum-viable", "balanced", "full-support"]).default("full-support"),

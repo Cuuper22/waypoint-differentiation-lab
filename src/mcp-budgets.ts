@@ -9,10 +9,10 @@ export const mcpTextBudgets = {
 } as const;
 
 export const mcpManifestBudgets = {
-  toolCatalogMaxChars: 9000,
-  toolManifestMaxChars: 4200,
-  outputSchemaMaxChars: 2600,
-  descriptionMaxChars: 170
+  toolCatalogMaxChars: 7000,
+  toolManifestMaxChars: 2200,
+  outputSchemaMaxChars: 900,
+  descriptionMaxChars: 140
 } as const;
 
 export const mcpResourceBudgets = {
