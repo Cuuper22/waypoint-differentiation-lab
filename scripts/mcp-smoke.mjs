@@ -1,5 +1,6 @@
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js";
+import { mcpTextBudgets } from "../dist/mcp-budgets.js";
 
 const requiredTools = [
   "generate_teacher_packet",
@@ -43,7 +44,7 @@ try {
     name: "generate_teacher_packet",
     arguments: { minutesAvailable: 5, emphasis: "minimum-viable", detail: "compact" }
   });
-  assertTextBudget(packet, "generate_teacher_packet compact", 1200);
+  assertTextBudget(packet, "generate_teacher_packet compact", mcpTextBudgets.generateTeacherPacketCompact);
   assert(packet.structuredContent?.detail === "compact", "generate_teacher_packet did not return compact structured content");
   assert(packet.structuredContent?.quality?.passed === true, "Compact packet quality did not pass");
   assert(
@@ -55,21 +56,21 @@ try {
     name: "get_learner_profile",
     arguments: { detail: "summary" }
   });
-  assertTextBudget(profile, "get_learner_profile summary", 520);
+  assertTextBudget(profile, "get_learner_profile summary", mcpTextBudgets.getLearnerProfileSummary);
   assert(profile.structuredContent?.caseLabel === "Learner 7A", "get_learner_profile lost structured case label");
 
   const lesson = await client.callTool({
     name: "get_lesson_map",
     arguments: { phase: "all", includeEvidence: false }
   });
-  assertTextBudget(lesson, "get_lesson_map summary", 900);
+  assertTextBudget(lesson, "get_lesson_map summary", mcpTextBudgets.getLessonMapSummary);
   assert(lesson.structuredContent?.chunks?.length >= 6, "get_lesson_map lost structured lesson chunks");
 
   const receipt = await client.callTool({
     name: "explain_modification",
     arguments: { modificationId: "mod-short-response-frame" }
   });
-  assertTextBudget(receipt, "explain_modification receipt", 850);
+  assertTextBudget(receipt, "explain_modification receipt", mcpTextBudgets.explainModificationReceipt);
   assert(
     receipt.structuredContent?.receipts?.preservedStandard === "RI.7.2",
     "explain_modification did not return a preserved-standard receipt"
@@ -79,7 +80,7 @@ try {
     name: "review_packet_quality",
     arguments: { minutesAvailable: 5, emphasis: "minimum-viable" }
   });
-  assertTextBudget(quality, "review_packet_quality summary", 480);
+  assertTextBudget(quality, "review_packet_quality summary", mcpTextBudgets.reviewPacketQualitySummary);
   assert(quality.structuredContent?.passed === true, "review_packet_quality did not pass the generated packet");
 
   console.log(

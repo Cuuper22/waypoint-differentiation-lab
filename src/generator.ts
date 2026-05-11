@@ -1,4 +1,5 @@
 import { evidenceById, learnerProfile, lessonChunks, udlEvidence } from "./knowledge.js";
+import { mcpTextBudgetRows } from "./mcp-budgets.js";
 import type {
   CompactTeacherPacket,
   EvidenceRef,
@@ -876,7 +877,8 @@ export function showcaseData(packet: TeacherPacket) {
       compactPercentOfFull: Math.round((compactChars / fullChars) * 100),
       savedPercent: Math.round((1 - compactChars / fullChars) * 100),
       defaultTool: "generate_teacher_packet detail=compact",
-      onDemandTool: "explain_modification"
+      onDemandTool: "explain_modification",
+      textBudgets: mcpTextBudgetRows
     },
     modifications: packet.modifications.map((mod) => ({
       id: mod.id,

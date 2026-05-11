@@ -324,7 +324,19 @@ function renderMcpConsole() {
   flow.className = "mcp-call-flow";
   flow.replaceChildren(...calls.map(mcpCallTemplate));
 
-  mcpConsole.replaceChildren(header, flow);
+  const budgetPanel = document.createElement("div");
+  budgetPanel.className = "mcp-budget-panel";
+
+  const budgetTitle = document.createElement("div");
+  budgetTitle.className = "mcp-budget-title";
+  budgetTitle.append(textSpan("Text-channel budgets"), textSpan("full objects stay structured"));
+
+  const budgetRows = document.createElement("div");
+  budgetRows.className = "mcp-budget-grid";
+  budgetRows.replaceChildren(...(stats.textBudgets ?? []).map(mcpBudgetTemplate));
+
+  budgetPanel.append(budgetTitle, budgetRows);
+  mcpConsole.replaceChildren(header, flow, budgetPanel);
 }
 
 function mcpCallTemplate(call) {
@@ -343,6 +355,21 @@ function mcpCallTemplate(call) {
 
   row.append(badge, command, response);
   return row;
+}
+
+function mcpBudgetTemplate(row) {
+  const item = document.createElement("article");
+  item.className = "mcp-budget";
+
+  const top = document.createElement("div");
+  top.className = "mcp-budget-top";
+  top.append(textSpan(`${row.tool} <= ${row.budget} chars`), textSpan(row.mode));
+
+  const split = document.createElement("p");
+  split.textContent = `${row.textChannel} in content; ${row.structuredContent} in structuredContent.`;
+
+  item.append(top, split);
+  return item;
 }
 
 function payloadRow(label, chars, percent, note) {

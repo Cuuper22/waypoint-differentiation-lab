@@ -257,6 +257,9 @@ function interactionScript() {
       ) {
         failures.push("MCP call console did not render the compact request/response rhythm");
       }
+      if (!consoleText.includes("Text-channel budgets") || !consoleText.includes("get_learner_profile <= 520 chars")) {
+        failures.push("MCP call console did not render tool text-channel budgets");
+      }
 
       const reviewText = document.querySelector("#review-path")?.textContent ?? "";
       if (!reviewText.includes("npm run submission:check") || !reviewText.includes("Five-Minute Reviewer Path")) {

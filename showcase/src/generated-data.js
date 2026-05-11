@@ -33,7 +33,44 @@ export const data = {
     "compactPercentOfFull": 22,
     "savedPercent": 78,
     "defaultTool": "generate_teacher_packet detail=compact",
-    "onDemandTool": "explain_modification"
+    "onDemandTool": "explain_modification",
+    "textBudgets": [
+      {
+        "tool": "generate_teacher_packet",
+        "mode": "compact",
+        "budget": 1200,
+        "textChannel": "brief handoff",
+        "structuredContent": "compact packet"
+      },
+      {
+        "tool": "get_learner_profile",
+        "mode": "summary",
+        "budget": 520,
+        "textChannel": "planning gist",
+        "structuredContent": "profile object"
+      },
+      {
+        "tool": "get_lesson_map",
+        "mode": "summary",
+        "budget": 900,
+        "textChannel": "phase list",
+        "structuredContent": "lesson chunks"
+      },
+      {
+        "tool": "explain_modification",
+        "mode": "receipt",
+        "budget": 850,
+        "textChannel": "short receipt",
+        "structuredContent": "quote trace"
+      },
+      {
+        "tool": "review_packet_quality",
+        "mode": "summary",
+        "budget": 480,
+        "textChannel": "verdict",
+        "structuredContent": "check flags"
+      }
+    ]
   },
   "modifications": [
     {
