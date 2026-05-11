@@ -31,13 +31,20 @@ const LearnerProfileOutputSchema = z.object({ caseLabel: z.string() }).passthrou
 const TeacherPacketToolOutputSchema = z.object({ modifications: z.array(IdObjectSchema) }).passthrough();
 const ModificationExplanationOutputSchema = z.object({ modification: IdObjectSchema }).passthrough();
 const QualityReportOutputSchema = z.object({ passed: z.boolean() }).passthrough();
-const EvidenceLookupOutputSchema = z.object({ id: z.string(), source: z.enum(["IEP", "Lesson", "UDL"]) }).passthrough();
-const EvidenceAuditOutputSchema = z.object({ detail: z.enum(["summary", "full"]) }).passthrough();
+const EvidenceLookupOutputSchema = z.object({ id: z.string(), source: z.string() }).passthrough();
+const EvidenceAuditOutputSchema = z.object({ detail: z.string() }).passthrough();
 const PrepMinutesSchema = z.number().default(45);
 const LessonPhaseSchema = z.string().default("all");
+const SummaryDetailSchema = z.string().default("summary");
+const PacketDetailSchema = z.string().default("compact");
+const BalancedEmphasisSchema = z.string().default("balanced");
+const FullSupportEmphasisSchema = z.string().default("full-support");
 
 type PrepMinutes = 5 | 15 | 45;
 type LessonPhase = "overview" | "before-reading" | "during-reading" | "independent-practice" | "discussion" | "all";
+type PacketEmphasis = "minimum-viable" | "balanced" | "full-support";
+type SummaryDetail = "summary" | "full";
+type PacketDetail = "compact" | "full";
 
 function textContent(text: string) {
   return [{ type: "text" as const, text }];
@@ -67,6 +74,21 @@ function lessonPhase(value: string): LessonPhase {
     return value;
   }
   throw new Error("phase must be overview, before-reading, during-reading, independent-practice, discussion, or all.");
+}
+
+function packetEmphasis(value: string): PacketEmphasis {
+  if (value === "minimum-viable" || value === "balanced" || value === "full-support") return value;
+  throw new Error("emphasis must be minimum-viable, balanced, or full-support.");
+}
+
+function summaryDetail(value: string): SummaryDetail {
+  if (value === "summary" || value === "full") return value;
+  throw new Error("detail must be summary or full.");
+}
+
+function packetDetail(value: string): PacketDetail {
+  if (value === "compact" || value === "full") return value;
+  throw new Error("detail must be compact or full.");
 }
 
 function learnerProfileToolText(profile: ReturnType<typeof learnerProfileSummary> | typeof learnerProfile, detail: "summary" | "full") {
@@ -211,17 +233,22 @@ server.registerTool(
     title: "Get learner profile",
     description: "Learner context; summary default, full adds quotes.",
     inputSchema: {
-      detail: z.enum(["summary", "full"]).default("summary")
+      detail: SummaryDetailSchema
     },
     outputSchema: LearnerProfileOutputSchema,
     annotations: { readOnlyHint: true, idempotentHint: true }
   },
   async ({ detail }) => {
-    const profile = detail === "full" ? learnerProfile : learnerProfileSummary();
-    return {
-      content: textContent(learnerProfileToolText(profile, detail)),
-      structuredContent: profile
-    };
+    try {
+      const selectedDetail = summaryDetail(detail);
+      const profile = selectedDetail === "full" ? learnerProfile : learnerProfileSummary();
+      return {
+        content: textContent(learnerProfileToolText(profile, selectedDetail)),
+        structuredContent: profile
+      };
+    } catch (error) {
+      return toolError(error);
+    }
   }
 );
 
@@ -260,16 +287,20 @@ server.registerTool(
     description: "Generate supports; compact default, full adds handout.",
     inputSchema: {
       minutesAvailable: PrepMinutesSchema,
-      emphasis: z.enum(["minimum-viable", "balanced", "full-support"]).default("balanced"),
-      detail: z.enum(["compact", "full"]).default("compact")
+      emphasis: BalancedEmphasisSchema,
+      detail: PacketDetailSchema
     },
     outputSchema: TeacherPacketToolOutputSchema,
     annotations: { readOnlyHint: true, idempotentHint: true }
   },
   async ({ minutesAvailable, emphasis, detail }) => {
     try {
-      const packet = buildTeacherPacket({ minutesAvailable: prepMinutes(minutesAvailable), emphasis });
-      if (detail === "compact") {
+      const selectedDetail = packetDetail(detail);
+      const packet = buildTeacherPacket({
+        minutesAvailable: prepMinutes(minutesAvailable),
+        emphasis: packetEmphasis(emphasis)
+      });
+      if (selectedDetail === "compact") {
         const compact = compactTeacherPacket(packet);
         return {
           content: [{ type: "text", text: teacherPacketBriefMarkdown(packet) }],
@@ -320,14 +351,17 @@ server.registerTool(
     description: "Detector for vague, unsafe, or lowered-rigor advice.",
     inputSchema: {
       minutesAvailable: PrepMinutesSchema,
-      emphasis: z.enum(["minimum-viable", "balanced", "full-support"]).default("balanced")
+      emphasis: BalancedEmphasisSchema
     },
     outputSchema: QualityReportOutputSchema,
     annotations: { readOnlyHint: true, idempotentHint: true }
   },
   async ({ minutesAvailable, emphasis }) => {
     try {
-      const packet = buildTeacherPacket({ minutesAvailable: prepMinutes(minutesAvailable), emphasis });
+      const packet = buildTeacherPacket({
+        minutesAvailable: prepMinutes(minutesAvailable),
+        emphasis: packetEmphasis(emphasis)
+      });
       const report = reviewPacketQuality(packet);
       return {
         content: textContent(qualityReportText(report)),
@@ -372,23 +406,27 @@ server.registerTool(
     description: "Ref index by default; full adds quote table.",
     inputSchema: {
       minutesAvailable: PrepMinutesSchema,
-      emphasis: z.enum(["minimum-viable", "balanced", "full-support"]).default("full-support"),
-      detail: z.enum(["summary", "full"]).default("summary")
+      emphasis: FullSupportEmphasisSchema,
+      detail: SummaryDetailSchema
     },
     outputSchema: EvidenceAuditOutputSchema,
     annotations: { readOnlyHint: true, idempotentHint: true }
   },
   async ({ minutesAvailable, emphasis, detail }) => {
     try {
-      const packet = buildTeacherPacket({ minutesAvailable: prepMinutes(minutesAvailable), emphasis });
-      const markdown = detail === "full" ? evidenceAuditMarkdown(packet) : evidenceAuditSummaryMarkdown(packet);
+      const selectedDetail = summaryDetail(detail);
+      const packet = buildTeacherPacket({
+        minutesAvailable: prepMinutes(minutesAvailable),
+        emphasis: packetEmphasis(emphasis)
+      });
+      const markdown = selectedDetail === "full" ? evidenceAuditMarkdown(packet) : evidenceAuditSummaryMarkdown(packet);
       return {
         content: textContent(markdown),
         structuredContent: {
-          detail,
+          detail: selectedDetail,
           modificationIds: packet.modifications.map((mod) => mod.id),
           contentChars: markdown.length,
-          nextTool: detail === "summary" ? "render_evidence_audit({ detail: 'full' })" : undefined
+          nextTool: selectedDetail === "summary" ? "render_evidence_audit({ detail: 'full' })" : undefined
         }
       };
     } catch (error) {

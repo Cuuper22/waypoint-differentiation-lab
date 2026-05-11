@@ -152,6 +152,26 @@ try {
     "generate_teacher_packet unsupported prep minutes did not explain the allowed values"
   );
 
+  const invalidEmphasis = await client.callTool({
+    name: "generate_teacher_packet",
+    arguments: { minutesAvailable: 5, emphasis: "shortcut-mode", detail: "compact" }
+  });
+  assert(invalidEmphasis.isError === true, "generate_teacher_packet accepted an unsupported emphasis");
+  assert(
+    invalidEmphasis.content?.some((item) => item.text?.includes("emphasis must be minimum-viable, balanced, or full-support")),
+    "generate_teacher_packet unsupported emphasis did not explain the allowed values"
+  );
+
+  const invalidDetail = await client.callTool({
+    name: "generate_teacher_packet",
+    arguments: { minutesAvailable: 5, emphasis: "minimum-viable", detail: "summary" }
+  });
+  assert(invalidDetail.isError === true, "generate_teacher_packet accepted an unsupported detail");
+  assert(
+    invalidDetail.content?.some((item) => item.text?.includes("detail must be compact or full")),
+    "generate_teacher_packet unsupported detail did not explain the allowed values"
+  );
+
   const fullPacket = await client.callTool({
     name: "generate_teacher_packet",
     arguments: { minutesAvailable: 5, emphasis: "minimum-viable", detail: "full" }
