@@ -195,6 +195,10 @@ function interactionScript() {
       const heroButton = document.querySelector('[data-scroll="#packet"]');
       const receiptButton = document.querySelector('[data-scroll="#receipts"]');
       if (!heroButton || !receiptButton) failures.push("missing hero action buttons");
+      const sourceLink = document.querySelector("[data-source-link]")?.href ?? "";
+      if (!sourceLink.includes("github.com/Cuuper22/waypoint-differentiation-lab")) {
+        failures.push("first screen is missing source and tests link");
+      }
 
       heroButton?.click();
       await wait(700);
