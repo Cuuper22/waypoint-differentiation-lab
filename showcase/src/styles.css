@@ -956,6 +956,96 @@ a {
   line-height: 1.55;
 }
 
+.mcp-console {
+  margin-top: 18px;
+  padding: 18px;
+  border-radius: 8px;
+  color: white;
+  background:
+    linear-gradient(135deg, rgba(8, 21, 37, 0.98), rgba(10, 40, 45, 0.94)),
+    url("/generated/texture-grid.svg");
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  box-shadow: 0 28px 90px rgba(8, 21, 37, 0.24);
+  overflow: hidden;
+}
+
+.mcp-console-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+  color: rgba(255, 255, 255, 0.76);
+  font-size: 0.78rem;
+  font-weight: 950;
+  text-transform: uppercase;
+}
+
+.mcp-console-header span:last-child {
+  color: var(--gold);
+}
+
+.mcp-call-flow {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.mcp-call {
+  min-height: 244px;
+  padding: 16px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+}
+
+.mcp-badge {
+  display: inline-grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  margin-bottom: 14px;
+  border-radius: 50%;
+  color: var(--night);
+  background: var(--gold);
+  font-weight: 950;
+}
+
+.mcp-call pre {
+  min-height: 86px;
+  margin: 0;
+  padding: 12px;
+  border-radius: 8px;
+  color: #b9fff6;
+  background: rgba(0, 0, 0, 0.28);
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+  font-size: 0.82rem;
+  line-height: 1.45;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.mcp-call ul {
+  display: grid;
+  gap: 8px;
+  margin: 14px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.mcp-call li {
+  color: rgba(255, 255, 255, 0.82);
+  font-size: 0.9rem;
+  line-height: 1.45;
+}
+
+.mcp-call li::before {
+  content: ">";
+  margin-right: 8px;
+  color: var(--mint);
+  font-weight: 950;
+}
+
 .arch-node {
   min-height: 240px;
   padding: 24px;
@@ -1090,6 +1180,7 @@ a {
   .quality-grid,
   .hood-layout,
   .architecture,
+  .mcp-call-flow,
   .review-route,
   .review-proof-strip {
     grid-template-columns: 1fr;
@@ -1192,6 +1283,8 @@ a {
   .quality-card,
   .arch-node,
   .payload-meter,
+  .mcp-console,
+  .mcp-call,
   .review-step,
   .detector-demo {
     padding: 20px;

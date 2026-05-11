@@ -249,6 +249,15 @@ function interactionScript() {
         failures.push("payload meter did not render compact MCP stats");
       }
 
+      const consoleText = document.querySelector("[data-mcp-console]")?.textContent ?? "";
+      if (
+        !consoleText.includes("generate_teacher_packet") ||
+        !consoleText.includes("explain_modification") ||
+        !consoleText.includes("review_packet_quality")
+      ) {
+        failures.push("MCP call console did not render the compact request/response rhythm");
+      }
+
       const reviewText = document.querySelector("#review-path")?.textContent ?? "";
       if (!reviewText.includes("npm run submission:check") || !reviewText.includes("Five-Minute Reviewer Path")) {
         failures.push("reviewer path scorecard did not render");

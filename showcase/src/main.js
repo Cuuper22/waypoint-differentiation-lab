@@ -40,6 +40,7 @@ const receiptDetail = document.querySelector("[data-receipt-detail]");
 const qualityGrid = document.querySelector("[data-quality-grid]");
 const architecture = document.querySelector("[data-architecture]");
 const payloadMeter = document.querySelector("[data-payload-meter]");
+const mcpConsole = document.querySelector("[data-mcp-console]");
 const detectorButton = document.querySelector("[data-run-detector]");
 const detectorOutput = document.querySelector("[data-detector-output]");
 const runDemoButton = document.querySelector("[data-run-demo]");
@@ -68,6 +69,7 @@ renderHandout();
 renderRecommendations();
 renderQuality();
 renderPayloadMeter();
+renderMcpConsole();
 renderArchitecture();
 wireDetector();
 wireReviewerDemo();
@@ -283,6 +285,66 @@ function renderPayloadMeter() {
   payloadMeter.replaceChildren(title, rows, note);
 }
 
+function renderMcpConsole() {
+  const stats = data.mcpStats;
+  const receipt =
+    data.modifications.find((modification) => modification.id === "mod-short-response-frame") ?? data.modifications[0];
+  const trace = receipt.evidenceTrace;
+  const calls = [
+    {
+      badge: "01",
+      command: 'generate_teacher_packet({ minutesAvailable: 15, emphasis: "balanced" })',
+      response: [
+        `${stats.compactPercentOfFull}% of full payload`,
+        `${data.packet.useFirst.length} use-first moves`,
+        "next: explain_modification"
+      ]
+    },
+    {
+      badge: "02",
+      command: `explain_modification({ modificationId: "${receipt.id}" })`,
+      response: [trace.supportType, trace.standardPreserved, trace.udlAlignment.map((item) => item.principle).join(" + ")]
+    },
+    {
+      badge: "03",
+      command: 'review_packet_quality({ minutesAvailable: 15, emphasis: "balanced" })',
+      response: [
+        data.packet.qualityReport.passed ? "passed" : "needs review",
+        "vague advice: blocked",
+        "unsafe language: blocked"
+      ]
+    }
+  ];
+
+  const header = document.createElement("div");
+  header.className = "mcp-console-header";
+  header.append(textSpan("MCP call rhythm"), textSpan("compact -> receipt -> gate"));
+
+  const flow = document.createElement("div");
+  flow.className = "mcp-call-flow";
+  flow.replaceChildren(...calls.map(mcpCallTemplate));
+
+  mcpConsole.replaceChildren(header, flow);
+}
+
+function mcpCallTemplate(call) {
+  const row = document.createElement("section");
+  row.className = "mcp-call";
+
+  const badge = document.createElement("span");
+  badge.className = "mcp-badge";
+  badge.textContent = call.badge;
+
+  const command = document.createElement("pre");
+  command.textContent = call.command;
+
+  const response = document.createElement("ul");
+  response.replaceChildren(...call.response.map((item) => listItem(item)));
+
+  row.append(badge, command, response);
+  return row;
+}
+
 function payloadRow(label, chars, percent, note) {
   const row = document.createElement("div");
   row.className = "payload-row";
@@ -443,6 +505,12 @@ function tag(text) {
   element.className = "trace-tag";
   element.textContent = text;
   return element;
+}
+
+function listItem(text) {
+  const item = document.createElement("li");
+  item.textContent = text;
+  return item;
 }
 
 function textSpan(text) {
