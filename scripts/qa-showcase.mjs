@@ -226,6 +226,15 @@ function interactionScript() {
       document.querySelector("[data-play]")?.click();
       const activeScene = document.querySelector(".scene-dot.is-active");
       if (!activeScene) failures.push("cinematic scrub did not activate a scene");
+      const reelCards = Array.from(document.querySelectorAll("[data-reel-card]"));
+      const activeReel = document.querySelector("[data-reel-card].is-active");
+      if (reelCards.length !== 3) failures.push("directed hero reel did not render three cards");
+      const activeSceneIndex = Array.from(document.querySelectorAll(".scene-dot")).findIndex((node) =>
+        node.classList.contains("is-active")
+      );
+      if (!activeReel || activeReel.dataset.reelScene !== String(activeSceneIndex)) {
+        failures.push("directed hero reel did not sync to the cinematic scene");
+      }
 
       document.querySelector("[data-run-demo]")?.click();
       await wait(850);

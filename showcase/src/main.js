@@ -26,6 +26,7 @@ const scenes = [
 ];
 
 const frameEls = [...document.querySelectorAll(".cinema-frame")];
+const reelCards = [...document.querySelectorAll("[data-reel-card]")];
 const sceneCount = document.querySelector("[data-scene-count]");
 const sceneTitle = document.querySelector("[data-scene-title]");
 const sceneCopy = document.querySelector("[data-scene-copy]");
@@ -110,6 +111,7 @@ function selectScene(index) {
   currentScene = index;
   const scene = scenes[index];
   frameEls.forEach((frame, frameIndex) => frame.classList.toggle("is-active", frameIndex === index));
+  reelCards.forEach((card, cardIndex) => card.classList.toggle("is-active", cardIndex === index));
   sceneCount.textContent = scene.count;
   sceneTitle.textContent = scene.title;
   sceneCopy.textContent = scene.copy;
