@@ -173,3 +173,42 @@ export type TeacherPacket = {
     missingGrounding: string[];
   };
 };
+
+export type SubmissionHealth = {
+  product: "Waypoint Differentiation Lab";
+  thesis: string;
+  demo: {
+    liveUrl: string;
+    localCommand: string;
+    previewGif: string;
+    guidedCommand: string;
+    qaCommand: string;
+  };
+  mcp: {
+    defaultPayload: "compact-first";
+    startupBudgetChars: number;
+    compactPacketMaxPercentOfFull: number;
+    onDemandEvidenceTool: "explain_modification";
+    tools: string[];
+    resources: string[];
+  };
+  evidence: {
+    generatedArtifacts: string[];
+    recommendations: number;
+    materials: number;
+    evidenceTraces: number;
+    preservedStandard: "RI.7.2";
+    traceFields: string[];
+  };
+  quality: {
+    detector: "No Hand-Wavy Accommodations Detector";
+    passed: boolean;
+    requiredChecks: string[];
+  };
+  verification: {
+    primaryCommand: string;
+    smokeCommand: string;
+    visualQaCommand: string;
+  };
+  reviewerPath: string[];
+};

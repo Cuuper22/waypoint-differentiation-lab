@@ -73,7 +73,8 @@ export const QualityFlagSchema = z.object({
     "lowered-rigor",
     "unsafe-student-language",
     "missing-progress-check",
-    "missing-material"
+    "missing-material",
+    "orphan-material"
   ]),
   modificationId: z.string(),
   message: z.string()

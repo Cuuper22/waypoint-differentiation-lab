@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   buildTeacherPacket,
+  buildSubmissionHealth,
   chooseModifications,
   compactTeacherPacket,
   evidenceAuditMarkdown,
@@ -216,6 +217,48 @@ describe("teacher packet generation", () => {
     expect(data.mcpStats.onDemandTool).toBe("explain_modification");
     expect(data.mcpStats.catalogBudget.tool).toBe("tool catalog");
     expect(data.mcpStats.catalogBudget.budget).toBe(mcpManifestBudgets.toolCatalogMaxChars);
+  });
+
+  it("renders a reviewer submission health artifact from the same packet", () => {
+    const packet = buildTeacherPacket({ minutesAvailable: 45, emphasis: "full-support" });
+    const health = buildSubmissionHealth(packet);
+
+    expect(health.product).toBe("Waypoint Differentiation Lab");
+    expect(health.demo.liveUrl).toBe("https://cuuper22.github.io/waypoint-differentiation-lab/");
+    expect(health.demo.localCommand).toBe("npm run showcase:dev");
+    expect(health.mcp.defaultPayload).toBe("compact-first");
+    expect(health.mcp.startupBudgetChars).toBe(mcpManifestBudgets.toolCatalogMaxChars);
+    expect(health.mcp.onDemandEvidenceTool).toBe("explain_modification");
+    expect(health.evidence.generatedArtifacts).toEqual(
+      expect.arrayContaining([
+        "examples/teacher-handout.md",
+        "examples/evidence-audit.md",
+        "examples/quality-report.json",
+        "showcase/src/generated-data.js"
+      ])
+    );
+    expect(health.evidence.traceFields).toEqual([
+      "IEP quote",
+      "lesson demand",
+      "UDL alignment",
+      "barrier addressed",
+      "support type",
+      "standard preserved",
+      "progress check"
+    ]);
+    expect(health.quality.detector).toBe("No Hand-Wavy Accommodations Detector");
+    expect(health.quality.requiredChecks).toEqual(
+      expect.arrayContaining(["vague advice", "lowered rigor", "missing evidence", "unsafe student-facing language"])
+    );
+    expect(health.verification.primaryCommand).toBe("npm run submission:check");
+    const forbiddenFraming = [
+      ["AI", "generated"].join(" "),
+      ["AI agent", "workflow"].join(" "),
+      ["comprehensive", "solution"].join(" ")
+    ].join("|");
+
+    expect(health.reviewerPath[0]).toMatch(/visual walkthrough/i);
+    expect(JSON.stringify(health)).not.toMatch(new RegExp(forbiddenFraming, "i"));
   });
 
   it("validates source resources and generated packets against public schemas", () => {

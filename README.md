@@ -14,6 +14,7 @@ What to notice:
 - **Architecture decisions:** compact-first MCP calls keep default payloads small while full evidence stays one tool call away.
 - **Code quality:** `npm run submission:check` builds, tests, smoke-tests stdio, runs visual QA, and prints the compact reviewer workflow.
 - **Domain understanding:** every recommendation preserves `RI.7.2`, maps to UDL, avoids student-facing labels, and has a progress check.
+- **Submission health:** `examples/submission-health.json` gives reviewers the live demo, MCP contract, artifact map, and verification command without making them rummage.
 
 ```bash
 npm ci
@@ -94,6 +95,7 @@ The generated artifacts come from the same TypeScript packet builder:
 - `examples/evidence-audit.md`
 - `examples/reviewer-workflow.md`
 - `examples/quality-report.json`
+- `examples/submission-health.json`
 - `examples/compact-packet.json`
 - `examples/sample-packet.json`
 - `showcase/src/generated-data.js`

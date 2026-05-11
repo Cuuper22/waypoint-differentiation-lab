@@ -1,5 +1,5 @@
 import { evidenceById, learnerProfile, lessonChunks, udlEvidence } from "./knowledge.js";
-import { mcpCatalogBudgetRow, mcpResourceBudgetRows, mcpTextBudgetRows } from "./mcp-budgets.js";
+import { mcpCatalogBudgetRow, mcpManifestBudgets, mcpResourceBudgetRows, mcpTextBudgetRows } from "./mcp-budgets.js";
 import type {
   CompactTeacherPacket,
   EvidenceRef,
@@ -9,6 +9,7 @@ import type {
   Modification,
   QualityFlag,
   QualityReport,
+  SubmissionHealth,
   SupportType,
   TeacherPacket,
   UdlAlignment
@@ -982,6 +983,92 @@ export function showcaseData(packet: TeacherPacket) {
       "Tools: generate packet, explain modification, review quality",
       "Generator: deterministic TypeScript rules with typed evidence traces",
       "Presentation: Claude or any MCP client turns the packet into teacher-ready prose"
+    ]
+  };
+}
+
+export function buildSubmissionHealth(packet: TeacherPacket): SubmissionHealth {
+  return {
+    product: "Waypoint Differentiation Lab",
+    thesis: "One lesson map plus one pseudonymized learner profile becomes tomorrow's evidence-grounded teacher packet.",
+    demo: {
+      liveUrl: "https://cuuper22.github.io/waypoint-differentiation-lab/",
+      localCommand: "npm run showcase:dev",
+      previewGif: "assets/showcase-preview.gif",
+      guidedCommand: "npm run demo:reviewer",
+      qaCommand: "npm run qa:showcase"
+    },
+    mcp: {
+      defaultPayload: "compact-first",
+      startupBudgetChars: mcpManifestBudgets.toolCatalogMaxChars,
+      compactPacketMaxPercentOfFull: 30,
+      onDemandEvidenceTool: "explain_modification",
+      tools: [
+        "generate_teacher_packet",
+        "explain_modification",
+        "review_packet_quality",
+        "get_learner_profile",
+        "get_lesson_map",
+        "explain_evidence",
+        "render_evidence_audit"
+      ],
+      resources: [
+        "waypoint://case/learner-7a/summary",
+        "waypoint://case/learner-7a/profile",
+        "waypoint://lesson/community/summary",
+        "waypoint://lesson/community/map",
+        "waypoint://packet/community/learner-7a",
+        "waypoint://packet/community/learner-7a/handout"
+      ]
+    },
+    evidence: {
+      generatedArtifacts: [
+        "examples/teacher-handout.md",
+        "examples/evidence-audit.md",
+        "examples/reviewer-workflow.md",
+        "examples/quality-report.json",
+        "examples/compact-packet.json",
+        "examples/sample-packet.json",
+        "examples/submission-health.json",
+        "showcase/src/generated-data.js"
+      ],
+      recommendations: packet.modifications.length,
+      materials: packet.miniMaterials.length,
+      evidenceTraces: packet.modifications.filter(
+        (modification) => modification.evidenceTrace.standardPreserved === "RI.7.2"
+      ).length,
+      preservedStandard: packet.preservedStandard,
+      traceFields: [
+        "IEP quote",
+        "lesson demand",
+        "UDL alignment",
+        "barrier addressed",
+        "support type",
+        "standard preserved",
+        "progress check"
+      ]
+    },
+    quality: {
+      detector: packet.qualityCheck,
+      passed: packet.qualityReport.passed,
+      requiredChecks: [
+        "vague advice",
+        "lowered rigor",
+        "missing evidence",
+        "unsafe student-facing language",
+        "matching mini materials"
+      ]
+    },
+    verification: {
+      primaryCommand: "npm run submission:check",
+      smokeCommand: "npm run smoke:mcp",
+      visualQaCommand: "npm run qa:showcase"
+    },
+    reviewerPath: [
+      "Open the visual walkthrough and play the guided reviewer demo.",
+      "Skim examples/submission-health.json for the packet, MCP, evidence, and verification map.",
+      "Run npm run submission:check to rebuild artifacts, test contracts, smoke the MCP, and QA the browser walkthrough.",
+      "Inspect examples/evidence-audit.md or call explain_modification when a recommendation needs receipts."
     ]
   };
 }

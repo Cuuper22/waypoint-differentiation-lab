@@ -20,6 +20,7 @@ const requiredFiles = [
   "README.md",
   "assets/showcase-preview.gif",
   "challenge-data/README.md",
+  "examples/submission-health.json",
   "showcase/index.html",
   "showcase/src/generated-data.js",
   "showcase/public/generated/cinematic-chaos.png",
@@ -66,6 +67,7 @@ const requiredSnippets = [
     snippets: [
       "https://cuuper22.github.io/waypoint-differentiation-lab/",
       "assets/showcase-preview.gif",
+      "examples/submission-health.json",
       "npm run submission:check",
       "npm run preview:showcase",
       "compact-first MCP calls",
