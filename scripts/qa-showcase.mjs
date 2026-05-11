@@ -233,6 +233,17 @@ function interactionScript(expectedCatalogBudget, expectedPromptMessageBudget, e
         failures.push("hero proof pulse did not render four proof links");
       }
 
+      await wait(1600);
+      if (!document.body.classList.contains("cinema-playing")) {
+        failures.push("cinematic reel did not autoplay");
+      }
+      if (document.querySelector("[data-play]")?.getAttribute("aria-label") !== "Pause cinematic sequence") {
+        failures.push("cinematic reel did not expose the pause state while autoplaying");
+      }
+      if (document.querySelector(".scene-dot.is-active strong")?.textContent === "01 / 03") {
+        failures.push("cinematic reel did not advance past the opening frame");
+      }
+
       heroButton?.click();
       await wait(700);
       if (window.scrollY < document.querySelector("#problem").offsetTop - 80) {

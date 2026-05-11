@@ -53,6 +53,7 @@ const stopDemoButton = document.querySelector("[data-stop-demo]");
 const demoDirector = document.querySelector("[data-demo-director]");
 const demoStatus = document.querySelector("[data-demo-status]");
 const demoProgress = document.querySelector("[data-demo-progress]");
+const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
 let currentScene = 0;
 let playTimer = null;
@@ -60,6 +61,7 @@ let demoRunId = 0;
 let currentPayloadMode = 1;
 let currentMcpStep = 0;
 let currentReviewChoice = 0;
+let userControlledCinema = false;
 
 frameEls.forEach((frame) => {
   const framePath = frame.dataset.frame;
@@ -88,6 +90,11 @@ wireScrollButtons();
 wireReveal();
 startAmbientCanvas();
 selectScene(0);
+if (!prefersReducedMotion) {
+  window.setTimeout(() => {
+    if (!userControlledCinema && !playTimer) startPlayback({ advance: true });
+  }, 1200);
+}
 
 function renderSceneStrip() {
   sceneStrip.replaceChildren(
@@ -98,6 +105,7 @@ function renderSceneStrip() {
       button.setAttribute("aria-label", `Show scene ${index + 1}: ${scene.label}`);
       button.innerHTML = `<strong>${scene.count}</strong><span>${scene.label}</span>`;
       button.addEventListener("click", () => {
+        userControlledCinema = true;
         stopPlayback();
         selectScene(index);
       });
@@ -106,15 +114,21 @@ function renderSceneStrip() {
   );
 
   playButton.addEventListener("click", () => {
+    userControlledCinema = true;
     if (playTimer) {
       stopPlayback();
       return;
     }
-    selectScene((currentScene + 1) % scenes.length);
-    playTimer = window.setInterval(() => selectScene((currentScene + 1) % scenes.length), 2200);
-    playButton.setAttribute("aria-label", "Pause cinematic sequence");
-    playButton.classList.add("is-playing");
+    startPlayback({ advance: true });
   });
+}
+
+function startPlayback({ advance }) {
+  if (advance) selectScene((currentScene + 1) % scenes.length);
+  playTimer = window.setInterval(() => selectScene((currentScene + 1) % scenes.length), 2200);
+  playButton.setAttribute("aria-label", "Pause cinematic sequence");
+  playButton.classList.add("is-playing");
+  document.body.classList.add("cinema-playing");
 }
 
 function selectScene(index) {
@@ -136,6 +150,7 @@ function stopPlayback() {
   playTimer = null;
   playButton.setAttribute("aria-label", "Play cinematic sequence");
   playButton.classList.remove("is-playing");
+  document.body.classList.remove("cinema-playing");
 }
 
 function renderHeroProof() {
@@ -947,7 +962,6 @@ function wireReveal() {
 function startAmbientCanvas() {
   const canvas = document.getElementById("ambient");
   const context = canvas.getContext("2d");
-  const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   let width = 0;
   let height = 0;
   let tick = 0;
@@ -987,7 +1001,7 @@ function startAmbientCanvas() {
       context.fill();
     }
 
-    if (!reducedMotion) {
+    if (!prefersReducedMotion) {
       tick += 1;
       requestAnimationFrame(draw);
     }
