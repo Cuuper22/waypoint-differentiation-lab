@@ -9,7 +9,7 @@ Turn a lesson map and a pseudonymized learner profile into tomorrow's classroom 
 The repo front door is the Vite showcase in `showcase/`. It is the fast reviewer path: a three-act cinematic walkthrough, packet preview, Receipts Rail, quality gate, lightweight MCP architecture, and five-minute review scorecard in one browser pass. Click **Play reviewer demo** for the guided version.
 
 ```bash
-npm install
+npm ci
 npm run demo
 npm run showcase:dev
 ```
