@@ -32,11 +32,20 @@ Receipt:
 - Standard preserved: RI.7.2
 - Progress check: Accept a rehearsed oral claim first, then require the written frame with two text details.
 
-## 3. Run The Gate
+## 3. Scan The Rail
+
+`render_evidence_audit({ minutesAvailable: 15, emphasis: "balanced" })`
+
+- Default audit summary: 902 characters
+- Full quote table: 2,479 characters
+- Summary call is 36% of the full audit and keeps every evidence ref visible.
+- Use `render_evidence_audit({ detail: "full" })` only when a reviewer wants the quote table.
+
+## 4. Run The Gate
 
 `review_packet_quality({ minutesAvailable: 15, emphasis: "balanced" })`
 
 Detector: No Hand-Wavy Accommodations Detector
 Result: All recommendations are specific, evidence-grounded, RI.7.2-preserving, and safe to put in front of a student.
 
-That is the intended MCP rhythm: compact packet first, quote-level trace only when a recommendation earns inspection, full handout only when the client is ready to present it.
+That is the intended MCP rhythm: compact packet first, one receipt when a recommendation earns inspection, compact audit when the whole rail needs scanning, full handout only when the client is ready to present it.

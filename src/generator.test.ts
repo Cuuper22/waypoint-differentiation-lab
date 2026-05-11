@@ -4,6 +4,7 @@ import {
   chooseModifications,
   compactTeacherPacket,
   evidenceAuditMarkdown,
+  evidenceAuditSummaryMarkdown,
   evidenceTraceForModification,
   reviewerWorkflowMarkdown,
   teacherPacketBriefMarkdown,
@@ -160,10 +161,24 @@ describe("teacher packet generation", () => {
 
     expect(workflow).toContain("generate_teacher_packet");
     expect(workflow).toContain("explain_modification");
+    expect(workflow).toContain("render_evidence_audit");
     expect(workflow).toContain("review_packet_quality");
+    expect(workflow).toContain("detail: \"full\"");
     expect(workflow).toContain("mod-short-response-frame");
     expect(workflow).toContain("Standard preserved: RI.7.2");
     expect(workflow).not.toContain("Learner 7A's");
+  });
+
+  it("renders compact evidence audits before quote-level tables", () => {
+    const packet = buildTeacherPacket({ minutesAvailable: 15, emphasis: "balanced" });
+    const summary = evidenceAuditSummaryMarkdown(packet);
+    const full = evidenceAuditMarkdown(packet);
+
+    expect(summary).toContain("compact audit");
+    expect(summary).toContain("mod-short-response-frame");
+    expect(summary).toContain("Call render_evidence_audit({ detail: \"full\" })");
+    expect(summary).not.toContain("| Modification | IEP quote | Lesson demand |");
+    expect(summary.length).toBeLessThan(full.length * 0.45);
   });
 
   it("exposes payload stats for the visual showcase", () => {

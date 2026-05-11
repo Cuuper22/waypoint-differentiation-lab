@@ -720,6 +720,8 @@ export function reviewerWorkflowMarkdown(packet: TeacherPacket, modificationId =
   const compact = compactTeacherPacket(packet);
   const compactJson = JSON.stringify(compact);
   const fullJson = JSON.stringify(packet);
+  const auditSummary = evidenceAuditSummaryMarkdown(packet);
+  const fullAudit = evidenceAuditMarkdown(packet);
   const selected = compact.modifications.find((modification) => modification.id === modificationId);
   if (!selected) {
     throw new Error(`Cannot render reviewer workflow for missing modification: ${modificationId}`);
@@ -728,6 +730,7 @@ export function reviewerWorkflowMarkdown(packet: TeacherPacket, modificationId =
   const explanation = explainModification(modificationId);
   const trace = explanation.evidenceTrace;
   const sizePercent = Math.round((compactJson.length / fullJson.length) * 100);
+  const auditPercent = Math.round((auditSummary.length / fullAudit.length) * 100);
 
   return [
     "# Reviewer Workflow: Compact First, Receipts On Demand",
@@ -762,14 +765,37 @@ export function reviewerWorkflowMarkdown(packet: TeacherPacket, modificationId =
     `- Standard preserved: ${trace.standardPreserved}`,
     `- Progress check: ${trace.progressCheck}`,
     "",
-    "## 3. Run The Gate",
+    "## 3. Scan The Rail",
+    "",
+    "`render_evidence_audit({ minutesAvailable: 15, emphasis: \"balanced\" })`",
+    "",
+    `- Default audit summary: ${auditSummary.length.toLocaleString("en-US")} characters`,
+    `- Full quote table: ${fullAudit.length.toLocaleString("en-US")} characters`,
+    `- Summary call is ${auditPercent}% of the full audit and keeps every evidence ref visible.`,
+    "- Use `render_evidence_audit({ detail: \"full\" })` only when a reviewer wants the quote table.",
+    "",
+    "## 4. Run The Gate",
     "",
     "`review_packet_quality({ minutesAvailable: 15, emphasis: \"balanced\" })`",
     "",
     `Detector: ${packet.qualityReport.name}`,
     `Result: ${packet.qualityReport.summary}`,
     "",
-    "That is the intended MCP rhythm: compact packet first, quote-level trace only when a recommendation earns inspection, full handout only when the client is ready to present it."
+    "That is the intended MCP rhythm: compact packet first, one receipt when a recommendation earns inspection, compact audit when the whole rail needs scanning, full handout only when the client is ready to present it."
+  ].join("\n");
+}
+
+export function evidenceAuditSummaryMarkdown(packet: TeacherPacket): string {
+  return [
+    `# ${packet.evidenceSystem}: compact audit`,
+    "",
+    `Quality: ${packet.qualityReport.passed ? "passed" : "needs review"}`,
+    ...packet.modifications.map(
+      (mod) =>
+        `- ${mod.id}: ${[...mod.iepRefs, ...mod.lessonRefs, ...mod.udlRefs].join(", ")}; preserves ${mod.evidenceTrace.standardPreserved}.`
+    ),
+    "",
+    "Call render_evidence_audit({ detail: \"full\" }) for quote-level table output."
   ].join("\n");
 }
 

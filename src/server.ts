@@ -6,6 +6,7 @@ import {
   buildTeacherPacket,
   compactTeacherPacket,
   evidenceAuditMarkdown,
+  evidenceAuditSummaryMarkdown,
   explainModification,
   learnerProfileSummary,
   lessonMapSummary,
@@ -157,20 +158,6 @@ function qualityReportText(report: ReturnType<typeof reviewPacketQuality>) {
     `${report.name}: ${status}.`,
     report.summary,
     `Flags: ${flags}. Structured content includes all check booleans and flag messages.`
-  ].join("\n");
-}
-
-function evidenceAuditSummaryMarkdown(packet: ReturnType<typeof buildTeacherPacket>) {
-  return [
-    `# ${packet.evidenceSystem}: compact audit`,
-    "",
-    `Quality: ${packet.qualityReport.passed ? "passed" : "needs review"}`,
-    ...packet.modifications.map(
-      (mod) =>
-        `- ${mod.id}: ${[...mod.iepRefs, ...mod.lessonRefs, ...mod.udlRefs].join(", ")}; preserves ${mod.evidenceTrace.standardPreserved}.`
-    ),
-    "",
-    "Call render_evidence_audit({ detail: 'full' }) for quote-level table output."
   ].join("\n");
 }
 
