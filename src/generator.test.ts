@@ -9,6 +9,7 @@ import {
   evidenceAuditSummaryMarkdown,
   evidenceTraceForModification,
   explainModification,
+  type McpSmokeReceipt,
   reviewerWorkflowMarkdown,
   teacherPacketBriefMarkdown,
   reviewPacketQuality,
@@ -26,6 +27,52 @@ import {
   TeacherPacketSchema
 } from "./schemas.js";
 import { mcpManifestBudgets, mcpPromptBudgets } from "./mcp-budgets.js";
+
+const measuredSmokeReceipt: McpSmokeReceipt = {
+  result: "passed",
+  startup: {
+    tools: 7,
+    resources: 6,
+    prompts: 1,
+    toolCatalogChars: 4733,
+    toolCatalogBudgetChars: 5000,
+    largestToolManifestChars: 900,
+    largestToolManifestBudgetChars: 1000
+  },
+  prompt: {
+    catalogChars: 240,
+    catalogBudgetChars: 900,
+    messageChars: 421,
+    messageBudgetChars: 850
+  },
+  responses: [
+    {
+      tool: "generate_teacher_packet",
+      mode: "compact",
+      textChars: 604,
+      textBudgetChars: 1200,
+      structuredChars: 2695,
+      structuredBudgetChars: 3200
+    },
+    {
+      tool: "explain_modification",
+      mode: "receipt",
+      textChars: 569,
+      textBudgetChars: 850,
+      structuredChars: 2237,
+      structuredBudgetChars: 2600
+    },
+    {
+      tool: "render_evidence_audit",
+      mode: "summary",
+      textChars: 645,
+      textBudgetChars: 1100,
+      structuredChars: 196,
+      structuredBudgetChars: 260
+    }
+  ],
+  reviewerRule: "The default path spends context on decisions and IDs, then pulls quote-level receipts only when asked."
+};
 
 describe("teacher packet generation", () => {
   it("frames the public case with generic reviewer-safe labels", () => {
@@ -199,7 +246,7 @@ describe("teacher packet generation", () => {
 
   it("renders a reviewer workflow that demonstrates compact-first MCP usage", () => {
     const packet = buildTeacherPacket({ minutesAvailable: 15, emphasis: "balanced" });
-    const workflow = reviewerWorkflowMarkdown(packet);
+    const workflow = reviewerWorkflowMarkdown(packet, undefined, measuredSmokeReceipt);
 
     expect(workflow).toContain("generate_teacher_packet");
     expect(workflow).toContain("explain_modification");
@@ -208,6 +255,10 @@ describe("teacher packet generation", () => {
     expect(workflow).toContain("detail: \"full\"");
     expect(workflow).toContain("mod-short-response-frame");
     expect(workflow).toContain("Standard preserved: RI.7.2");
+    expect(workflow).toContain("## 5. Check The Meter");
+    expect(workflow).toContain("Tool catalog: 4,733 / 5,000 characters.");
+    expect(workflow).toContain("Prompt message: 421 / 850 characters.");
+    expect(workflow).toContain("Compact packet response: 604 / 1,200 text chars; 2,695 / 3,200 structured chars.");
     expect(workflow).not.toContain("Learner 7A's");
   });
 

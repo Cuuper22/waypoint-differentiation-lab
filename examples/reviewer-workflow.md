@@ -48,4 +48,19 @@ Receipt:
 Detector: No Hand-Wavy Accommodations Detector
 Result: All recommendations are specific, evidence-grounded, RI.7.2-preserving, and safe to put in front of a student.
 
+## 5. Check The Meter
+
+`examples/mcp-smoke-report.json` records the real stdio run, not a slide-deck promise.
+
+- Smoke result: passed
+- Startup surface: 7 tools, 6 resources, 1 prompt.
+- Tool catalog: 4,733 / 5,000 characters.
+- Largest tool manifest: 900 / 1,000 characters.
+- Prompt catalog: 240 / 900 characters.
+- Prompt message: 421 / 850 characters.
+- Compact packet response: 604 / 1,200 text chars; 2,695 / 3,200 structured chars.
+- One-receipt response: 569 / 850 text chars; 2,237 / 2,600 structured chars.
+- Audit summary response: 645 / 1,100 text chars; 196 / 260 structured chars.
+- Reviewer rule: The default path spends context on decisions and IDs, then pulls quote-level receipts only when asked.
+
 That is the intended MCP rhythm: compact packet first, one receipt when a recommendation earns inspection, compact audit when the whole rail needs scanning, full handout only when the client is ready to present it.

@@ -41,6 +41,8 @@ For a terminal-sized MCP walkthrough without opening a client:
 npm run demo:reviewer
 ```
 
+It prints the compact-first tool rhythm plus the measured stdio meter from `examples/mcp-smoke-report.json`, so the lightweight MCP claim is visible in one scroll.
+
 For the full local submission check, including MCP smoke, source polish checks, and visual QA that starts the showcase server when needed:
 
 ```bash

@@ -761,7 +761,91 @@ export function teacherPacketBriefMarkdown(packet: TeacherPacket): string {
   ].join("\n");
 }
 
-export function reviewerWorkflowMarkdown(packet: TeacherPacket, modificationId = "mod-short-response-frame"): string {
+export interface McpSmokeReceipt {
+  result: string;
+  startup: {
+    tools: number;
+    resources: number;
+    prompts: number;
+    toolCatalogChars: number;
+    toolCatalogBudgetChars: number;
+    largestToolManifestChars: number;
+    largestToolManifestBudgetChars: number;
+  };
+  prompt: {
+    catalogChars: number;
+    catalogBudgetChars: number;
+    messageChars: number;
+    messageBudgetChars: number;
+  };
+  responses: Array<{
+    tool: string;
+    mode: string;
+    textChars: number;
+    textBudgetChars: number;
+    structuredChars: number;
+    structuredBudgetChars: number | null;
+  }>;
+  reviewerRule?: string;
+}
+
+function formatBudget(actual: number, budget: number | null | undefined): string {
+  if (budget === null || budget === undefined) {
+    return actual.toLocaleString("en-US");
+  }
+
+  return `${actual.toLocaleString("en-US")} / ${budget.toLocaleString("en-US")}`;
+}
+
+function smokeReceiptMarkdownLines(smokeReceipt?: McpSmokeReceipt): string[] {
+  if (!smokeReceipt) {
+    return [
+      "",
+      "## 5. Check The Meter",
+      "",
+      "Run `npm run smoke:mcp` or open `examples/mcp-smoke-report.json` for measured stdio startup, prompt, resource, and response budgets."
+    ];
+  }
+
+  const compactResponse = smokeReceipt.responses.find(
+    (response) => response.tool === "generate_teacher_packet" && response.mode === "compact"
+  );
+  const receiptResponse = smokeReceipt.responses.find((response) => response.tool === "explain_modification");
+  const auditResponse = smokeReceipt.responses.find((response) => response.tool === "render_evidence_audit");
+  const responseLines = [
+    compactResponse
+      ? `- Compact packet response: ${formatBudget(compactResponse.textChars, compactResponse.textBudgetChars)} text chars; ${formatBudget(compactResponse.structuredChars, compactResponse.structuredBudgetChars)} structured chars.`
+      : null,
+    receiptResponse
+      ? `- One-receipt response: ${formatBudget(receiptResponse.textChars, receiptResponse.textBudgetChars)} text chars; ${formatBudget(receiptResponse.structuredChars, receiptResponse.structuredBudgetChars)} structured chars.`
+      : null,
+    auditResponse
+      ? `- Audit summary response: ${formatBudget(auditResponse.textChars, auditResponse.textBudgetChars)} text chars; ${formatBudget(auditResponse.structuredChars, auditResponse.structuredBudgetChars)} structured chars.`
+      : null
+  ].filter((line): line is string => Boolean(line));
+
+  return [
+    "",
+    "## 5. Check The Meter",
+    "",
+    "`examples/mcp-smoke-report.json` records the real stdio run, not a slide-deck promise.",
+    "",
+    `- Smoke result: ${smokeReceipt.result}`,
+    `- Startup surface: ${smokeReceipt.startup.tools} tools, ${smokeReceipt.startup.resources} resources, ${smokeReceipt.startup.prompts} prompt.`,
+    `- Tool catalog: ${formatBudget(smokeReceipt.startup.toolCatalogChars, smokeReceipt.startup.toolCatalogBudgetChars)} characters.`,
+    `- Largest tool manifest: ${formatBudget(smokeReceipt.startup.largestToolManifestChars, smokeReceipt.startup.largestToolManifestBudgetChars)} characters.`,
+    `- Prompt catalog: ${formatBudget(smokeReceipt.prompt.catalogChars, smokeReceipt.prompt.catalogBudgetChars)} characters.`,
+    `- Prompt message: ${formatBudget(smokeReceipt.prompt.messageChars, smokeReceipt.prompt.messageBudgetChars)} characters.`,
+    ...responseLines,
+    ...(smokeReceipt.reviewerRule ? [`- Reviewer rule: ${smokeReceipt.reviewerRule}`] : [])
+  ];
+}
+
+export function reviewerWorkflowMarkdown(
+  packet: TeacherPacket,
+  modificationId = "mod-short-response-frame",
+  smokeReceipt?: McpSmokeReceipt
+): string {
   const compact = compactTeacherPacket(packet);
   const compactJson = JSON.stringify(compact);
   const fullJson = JSON.stringify(packet);
@@ -825,6 +909,7 @@ export function reviewerWorkflowMarkdown(packet: TeacherPacket, modificationId =
     "",
     `Detector: ${packet.qualityReport.name}`,
     `Result: ${packet.qualityReport.summary}`,
+    ...smokeReceiptMarkdownLines(smokeReceipt),
     "",
     "That is the intended MCP rhythm: compact packet first, one receipt when a recommendation earns inspection, compact audit when the whole rail needs scanning, full handout only when the client is ready to present it."
   ].join("\n");
