@@ -29,7 +29,7 @@ For a terminal-sized MCP walkthrough without opening a client:
 npm run demo:reviewer
 ```
 
-For the full local submission check, including visual QA that starts the showcase server when needed:
+For the full local submission check, including MCP smoke, source polish checks, and visual QA that starts the showcase server when needed:
 
 ```bash
 npm run submission:check
