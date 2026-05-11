@@ -121,6 +121,30 @@ describe("teacher packet generation", () => {
     );
   });
 
+  it("quality review catches unsafe or orphan student materials", () => {
+    const packet = buildTeacherPacket({ minutesAvailable: 45, emphasis: "full-support" });
+    const report = reviewPacketQuality({
+      ...packet,
+      miniMaterials: [
+        ...packet.miniMaterials,
+        {
+          id: "mat-floating-label",
+          name: "Unused adult-facing note",
+          appliesTo: [],
+          content: ["IEP accommodation: let the learner do less writing."]
+        }
+      ],
+      exitTicket: [...packet.exitTicket, "Because of your disability, ask for help."]
+    });
+
+    expect(report.passed).toBe(false);
+    expect(report.checks.unsafeStudentLanguage).toBe(false);
+    expect(report.checks.materialsMatchRecommendations).toBe(false);
+    expect(report.flags.map((flag) => flag.kind)).toEqual(
+      expect.arrayContaining(["unsafe-student-language", "orphan-material"])
+    );
+  });
+
   it("renders Markdown artifacts as supporting evidence, not the whole pitch", () => {
     const packet = buildTeacherPacket({ minutesAvailable: 15, emphasis: "balanced" });
     const handout = teacherHandoutMarkdown(packet);

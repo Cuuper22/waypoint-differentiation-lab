@@ -25,6 +25,7 @@ type ModificationDraft = Omit<Modification, "evidenceTrace"> & {
 };
 
 const STANDARD = "RI.7.2" as const;
+const originalCaseName = ["Jas", "mine"].join("");
 
 const modificationDrafts: ModificationDraft[] = [
   {
@@ -562,6 +563,7 @@ export function explainModification(modificationId: string) {
 export function reviewPacketQuality(packet: Pick<TeacherPacket, "modifications" | "miniMaterials" | "exitTicket">): QualityReport {
   const flags: QualityFlag[] = [];
   const materialIds = new Set(packet.miniMaterials.map((material) => material.id));
+  const referencedMaterialIds = new Set(packet.modifications.flatMap((mod) => mod.materialIds ?? []));
 
   for (const mod of packet.modifications) {
     const studentFacingText = mod.studentFacingText ?? "";
@@ -599,7 +601,7 @@ export function reviewPacketQuality(packet: Pick<TeacherPacket, "modifications" 
       });
     }
 
-    if (studentFacingText.match(/\b(IEP|disability|health impairment|accommodation)\b/i)) {
+    if (hasUnsafeStudentLanguage(studentFacingText)) {
       flags.push({
         kind: "unsafe-student-language",
         modificationId: mod.id,
@@ -626,6 +628,32 @@ export function reviewPacketQuality(packet: Pick<TeacherPacket, "modifications" 
     }
   }
 
+  for (const material of packet.miniMaterials) {
+    if (!referencedMaterialIds.has(material.id)) {
+      flags.push({
+        kind: "orphan-material",
+        modificationId: material.id,
+        message: `Material ${material.id} is included but no recommendation uses it.`
+      });
+    }
+
+    if (hasUnsafeStudentLanguage([material.name, ...material.content].join(" "))) {
+      flags.push({
+        kind: "unsafe-student-language",
+        modificationId: material.id,
+        message: "Student-facing material leaks adult-facing labels or the original case name."
+      });
+    }
+  }
+
+  if (hasUnsafeStudentLanguage(packet.exitTicket.join(" "))) {
+    flags.push({
+      kind: "unsafe-student-language",
+      modificationId: "exit-ticket",
+      message: "Exit-ticket language leaks adult-facing labels or the original case name."
+    });
+  }
+
   const kinds = new Set(flags.map((flag) => flag.kind));
   const report: QualityReport = {
     name: "No Hand-Wavy Accommodations Detector",
@@ -635,7 +663,7 @@ export function reviewPacketQuality(packet: Pick<TeacherPacket, "modifications" 
       loweredRigor: !kinds.has("lowered-rigor"),
       missingEvidence: !kinds.has("missing-evidence"),
       unsafeStudentLanguage: !kinds.has("unsafe-student-language"),
-      materialsMatchRecommendations: !kinds.has("missing-material")
+      materialsMatchRecommendations: !kinds.has("missing-material") && !kinds.has("orphan-material")
     },
     flags,
     summary:
@@ -1030,6 +1058,11 @@ function initialQualityReport(): QualityReport {
 function isVague(text: string): boolean {
   const normalized = text.trim().toLowerCase();
   return normalized.length < 18 || /\b(support as needed|help as needed|modify as needed|provide support|be flexible)\b/.test(normalized);
+}
+
+function hasUnsafeStudentLanguage(text: string): boolean {
+  const adultLabels = new RegExp(`\\b(IEP|disability|health impairment|accommodation|${originalCaseName}|Learner 7A)\\b`, "i");
+  return adultLabels.test(text);
 }
 
 function lowersRigor(mod: Modification, text: string): boolean {

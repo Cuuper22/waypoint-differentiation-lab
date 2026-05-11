@@ -97,7 +97,8 @@ export type QualityFlagKind =
   | "lowered-rigor"
   | "unsafe-student-language"
   | "missing-progress-check"
-  | "missing-material";
+  | "missing-material"
+  | "orphan-material";
 
 export type QualityFlag = {
   kind: QualityFlagKind;

@@ -55,6 +55,7 @@ The prompt `differentiate_community_lesson` tells the client to start with compa
 - unsafe student-facing language
 - missing progress checks
 - material IDs that do not appear in the packet
+- packet materials that are included but not used by any recommendation
 
 The test suite covers the same claims so the showcase does not outrun the implementation.
 
