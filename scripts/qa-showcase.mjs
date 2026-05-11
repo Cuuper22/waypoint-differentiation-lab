@@ -313,6 +313,17 @@ function interactionScript(expectedCatalogBudget) {
       if (!consoleText.includes("MCP budget ledger") || !consoleText.includes("tool catalog <= ${expectedCatalogBudget} chars")) {
         failures.push("MCP call console did not render startup budget");
       }
+      const mcpSteps = Array.from(document.querySelectorAll("[data-mcp-step]"));
+      if (mcpSteps.length !== 4) failures.push("MCP flow did not render four interactive calls");
+      mcpSteps[1]?.click();
+      await wait(120);
+      const mcpDetailText = document.querySelector("[data-mcp-detail]")?.textContent ?? "";
+      if (!mcpDetailText.includes("structuredContent") || !mcpDetailText.includes("evidenceTrace")) {
+        failures.push("MCP flow did not reveal the receipt structuredContent detail");
+      }
+      if (!document.querySelector('[data-mcp-step="1"]')?.classList.contains("is-active")) {
+        failures.push("MCP flow did not mark the selected call");
+      }
       if (!consoleText.includes("get_learner_profile <= 520 chars")) {
         failures.push("MCP call console did not render tool text-channel budgets");
       }

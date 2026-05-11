@@ -975,6 +975,97 @@ export function showcaseData(packet: TeacherPacket) {
       modificationIds: modePacket.modifications.map((modification) => modification.id)
     };
   });
+  const flowPacket = buildTeacherPacket({ minutesAvailable: 15, emphasis: "balanced" });
+  const flowCompact = compactTeacherPacket(flowPacket);
+  const flowBrief = teacherPacketBriefMarkdown(flowPacket);
+  const flowReceipt = explainModification("mod-short-response-frame");
+  const flowReceiptText = [
+    `Receipt for ${flowReceipt.modification.lessonMoment}`,
+    flowReceipt.modification.teacherAction,
+    `${flowReceipt.evidenceTrace.supportType}; preserves ${flowReceipt.evidenceTrace.standardPreserved}.`
+  ].join("\n");
+  const auditSummary = evidenceAuditSummaryMarkdown(flowPacket);
+  const fullAudit = evidenceAuditMarkdown(flowPacket);
+  const auditStructured = {
+    detail: "summary",
+    modificationIds: flowPacket.modifications.map((modification) => modification.id),
+    contentChars: auditSummary.length,
+    nextTool: 'render_evidence_audit({ detail: "full" })'
+  };
+  const gateText = `${flowPacket.qualityReport.name}: ${
+    flowPacket.qualityReport.passed ? "passed" : "needs review"
+  }. ${flowPacket.qualityReport.summary}`;
+  const flowFullChars = JSON.stringify(flowPacket).length;
+  const flowCompactChars = JSON.stringify(flowCompact).length;
+  const receiptChars = JSON.stringify(flowReceipt).length;
+  const auditStructuredChars = JSON.stringify(auditStructured).length;
+  const gateStructuredChars = JSON.stringify(flowPacket.qualityReport).length;
+  const mcpFlow = [
+    {
+      id: "packet",
+      badge: "01",
+      label: "Compact packet",
+      command: 'generate_teacher_packet({ minutesAvailable: 15, emphasis: "balanced", detail: "compact" })',
+      textPreview: "Brief teacher-facing handoff plus IDs, quality status, and next-tool hints.",
+      textChars: flowBrief.length,
+      structuredChars: flowCompactChars,
+      hiddenPayload: `${(flowFullChars - flowCompactChars).toLocaleString("en-US")} chars deferred until full detail is requested`,
+      response: [
+        `${flowCompact.modifications.length} recommendations`,
+        `${flowCompact.materialIds.length} material refs`,
+        `${Math.round((flowCompactChars / flowFullChars) * 100)}% of full packet`
+      ],
+      structuredFields: ["title", "useFirst", "modifications[]", "materialIds", "quality", "nextTools"]
+    },
+    {
+      id: "receipt",
+      badge: "02",
+      label: "One receipt",
+      command: 'explain_modification({ modificationId: "mod-short-response-frame" })',
+      textPreview: "One inspected recommendation gets the evidence trace, not the entire packet again.",
+      textChars: flowReceiptText.length,
+      structuredChars: receiptChars,
+      hiddenPayload: "Other receipts stay out of context until clicked",
+      response: [
+        flowReceipt.evidenceTrace.supportType,
+        flowReceipt.evidenceTrace.standardPreserved,
+        flowReceipt.evidenceTrace.udlAlignment.map((item) => item.principle).join(" + ")
+      ],
+      structuredFields: ["modification", "evidenceTrace", "receipts"]
+    },
+    {
+      id: "audit",
+      badge: "03",
+      label: "Audit summary",
+      command: 'render_evidence_audit({ minutesAvailable: 15, emphasis: "balanced" })',
+      textPreview: "A compact ref index lets a reviewer scan grounding before asking for quote tables.",
+      textChars: auditSummary.length,
+      structuredChars: auditStructuredChars,
+      hiddenPayload: `${(fullAudit.length - auditSummary.length).toLocaleString("en-US")} quote-table chars deferred`,
+      response: [
+        `${flowPacket.modifications.length} refs visible`,
+        `${Math.round((auditSummary.length / fullAudit.length) * 100)}% of full audit`,
+        "full table stays opt-in"
+      ],
+      structuredFields: ["detail", "modificationIds", "contentChars", "nextTool"]
+    },
+    {
+      id: "gate",
+      badge: "04",
+      label: "Quality gate",
+      command: 'review_packet_quality({ minutesAvailable: 15, emphasis: "balanced" })',
+      textPreview: "The verdict is short; the flags and check booleans stay structured for clients.",
+      textChars: gateText.length,
+      structuredChars: gateStructuredChars,
+      hiddenPayload: "No repeated packet body in the quality call",
+      response: [
+        flowPacket.qualityReport.passed ? "passed" : "needs review",
+        "vague advice: blocked",
+        "unsafe language: blocked"
+      ],
+      structuredFields: ["name", "passed", "checks", "flags", "summary"]
+    }
+  ];
 
   return {
     title: "Waypoint Differentiation Lab",
@@ -1001,6 +1092,7 @@ export function showcaseData(packet: TeacherPacket) {
       textBudgets: mcpTextBudgetRows
     },
     packetModes,
+    mcpFlow,
     modifications: packet.modifications.map((mod) => ({
       id: mod.id,
       lessonMoment: mod.lessonMoment,

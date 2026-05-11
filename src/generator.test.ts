@@ -247,6 +247,22 @@ describe("teacher packet generation", () => {
     expect(data.packetModes[2].mode).toBe("full support");
   });
 
+  it("exposes a click-through MCP flow without forcing every receipt into the first view", () => {
+    const packet = buildTeacherPacket({ minutesAvailable: 45, emphasis: "full-support" });
+    const data = showcaseData(packet);
+
+    expect(data.mcpFlow.map((step) => step.id)).toEqual(["packet", "receipt", "audit", "gate"]);
+    expect(data.mcpFlow[0].command).toContain('detail: "compact"');
+    expect(data.mcpFlow[0].structuredFields).toEqual(
+      expect.arrayContaining(["modifications[]", "quality", "nextTools"])
+    );
+    expect(data.mcpFlow[0].hiddenPayload).toContain("deferred");
+    expect(data.mcpFlow[1].structuredFields).toEqual(expect.arrayContaining(["evidenceTrace", "receipts"]));
+    expect(data.mcpFlow[2].command).toContain("render_evidence_audit");
+    expect(data.mcpFlow[3].response).toContain("passed");
+    expect(data.mcpFlow.every((step) => step.textChars > 0 && step.structuredChars > 0)).toBe(true);
+  });
+
   it("renders a reviewer submission health artifact from the same packet", () => {
     const packet = buildTeacherPacket({ minutesAvailable: 45, emphasis: "full-support" });
     const health = buildSubmissionHealth(packet);

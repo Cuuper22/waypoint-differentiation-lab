@@ -185,6 +185,94 @@ export const data = {
       ]
     }
   ],
+  "mcpFlow": [
+    {
+      "id": "packet",
+      "badge": "01",
+      "label": "Compact packet",
+      "command": "generate_teacher_packet({ minutesAvailable: 15, emphasis: \"balanced\", detail: \"compact\" })",
+      "textPreview": "Brief teacher-facing handoff plus IDs, quality status, and next-tool hints.",
+      "textChars": 642,
+      "structuredChars": 3829,
+      "hiddenPayload": "12,905 chars deferred until full detail is requested",
+      "response": [
+        "5 recommendations",
+        "5 material refs",
+        "23% of full packet"
+      ],
+      "structuredFields": [
+        "title",
+        "useFirst",
+        "modifications[]",
+        "materialIds",
+        "quality",
+        "nextTools"
+      ]
+    },
+    {
+      "id": "receipt",
+      "badge": "02",
+      "label": "One receipt",
+      "command": "explain_modification({ modificationId: \"mod-short-response-frame\" })",
+      "textPreview": "One inspected recommendation gets the evidence trace, not the entire packet again.",
+      "textChars": 199,
+      "structuredChars": 2237,
+      "hiddenPayload": "Other receipts stay out of context until clicked",
+      "response": [
+        "assessment",
+        "RI.7.2",
+        "action-expression"
+      ],
+      "structuredFields": [
+        "modification",
+        "evidenceTrace",
+        "receipts"
+      ]
+    },
+    {
+      "id": "audit",
+      "badge": "03",
+      "label": "Audit summary",
+      "command": "render_evidence_audit({ minutesAvailable: 15, emphasis: \"balanced\" })",
+      "textPreview": "A compact ref index lets a reviewer scan grounding before asking for quote tables.",
+      "textChars": 902,
+      "structuredChars": 238,
+      "hiddenPayload": "1,577 quote-table chars deferred",
+      "response": [
+        "5 refs visible",
+        "36% of full audit",
+        "full table stays opt-in"
+      ],
+      "structuredFields": [
+        "detail",
+        "modificationIds",
+        "contentChars",
+        "nextTool"
+      ]
+    },
+    {
+      "id": "gate",
+      "badge": "04",
+      "label": "Quality gate",
+      "command": "review_packet_quality({ minutesAvailable: 15, emphasis: \"balanced\" })",
+      "textPreview": "The verdict is short; the flags and check booleans stay structured for clients.",
+      "textChars": 156,
+      "structuredChars": 334,
+      "hiddenPayload": "No repeated packet body in the quality call",
+      "response": [
+        "passed",
+        "vague advice: blocked",
+        "unsafe language: blocked"
+      ],
+      "structuredFields": [
+        "name",
+        "passed",
+        "checks",
+        "flags",
+        "summary"
+      ]
+    }
+  ],
   "modifications": [
     {
       "id": "mod-preview-vocab",

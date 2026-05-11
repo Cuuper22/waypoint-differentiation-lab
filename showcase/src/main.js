@@ -55,6 +55,7 @@ let currentScene = 0;
 let playTimer = null;
 let demoRunId = 0;
 let currentPayloadMode = 1;
+let currentMcpStep = 0;
 
 frameEls.forEach((frame) => {
   const framePath = frame.dataset.frame;
@@ -363,39 +364,62 @@ function renderMcpConsole() {
   const receipt =
     data.modifications.find((modification) => modification.id === "mod-short-response-frame") ?? data.modifications[0];
   const trace = receipt.evidenceTrace;
-  const calls = [
+  const calls = data.mcpFlow ?? [
     {
+      id: "packet",
       badge: "01",
+      label: "Compact packet",
       command: 'generate_teacher_packet({ minutesAvailable: 15, emphasis: "balanced" })',
+      textPreview: "Brief handoff first, structured IDs beside it.",
+      textChars: stats.compactChars,
+      structuredChars: stats.compactChars,
+      hiddenPayload: "Full handout and quote table stay on demand.",
       response: [
         `${stats.compactPercentOfFull}% of full payload`,
         `${data.packet.useFirst.length} use-first moves`,
         "next: explain_modification"
-      ]
+      ],
+      structuredFields: ["title", "modifications[]", "quality", "nextTools"]
     },
     {
+      id: "receipt",
       badge: "02",
+      label: "One receipt",
       command: `explain_modification({ modificationId: "${receipt.id}" })`,
-      response: [trace.supportType, trace.standardPreserved, trace.udlAlignment.map((item) => item.principle).join(" + ")]
+      textPreview: "Quote-level evidence for one recommendation only.",
+      textChars: 260,
+      structuredChars: 2200,
+      hiddenPayload: "Other receipts stay unloaded.",
+      response: [trace.supportType, trace.standardPreserved, trace.udlAlignment.map((item) => item.principle).join(" + ")],
+      structuredFields: ["modification", "evidenceTrace", "receipts"]
     },
     {
+      id: "gate",
       badge: "03",
+      label: "Quality gate",
       command: 'review_packet_quality({ minutesAvailable: 15, emphasis: "balanced" })',
+      textPreview: "Small verdict, structured checks.",
+      textChars: 260,
+      structuredChars: 720,
+      hiddenPayload: "No repeated packet body.",
       response: [
         data.packet.qualityReport.passed ? "passed" : "needs review",
         "vague advice: blocked",
         "unsafe language: blocked"
-      ]
+      ],
+      structuredFields: ["passed", "checks", "flags", "summary"]
     }
   ];
+  const selected = calls[currentMcpStep] ?? calls[0];
 
   const header = document.createElement("div");
   header.className = "mcp-console-header";
-  header.append(textSpan("MCP call rhythm"), textSpan("compact -> receipt -> gate"));
+  header.append(textSpan("MCP call rhythm"), textSpan("packet -> receipt -> audit -> gate"));
 
   const flow = document.createElement("div");
   flow.className = "mcp-call-flow";
   flow.replaceChildren(...calls.map(mcpCallTemplate));
+  const detail = mcpFlowDetail(selected);
 
   const budgetPanel = document.createElement("div");
   budgetPanel.className = "mcp-budget-panel";
@@ -413,16 +437,28 @@ function renderMcpConsole() {
   );
 
   budgetPanel.append(budgetTitle, budgetRows);
-  mcpConsole.replaceChildren(header, flow, budgetPanel);
+  mcpConsole.replaceChildren(header, flow, detail, budgetPanel);
 }
 
-function mcpCallTemplate(call) {
-  const row = document.createElement("section");
+function mcpCallTemplate(call, index) {
+  const row = document.createElement("button");
+  row.type = "button";
   row.className = "mcp-call";
+  row.dataset.mcpStep = String(index);
+  row.classList.toggle("is-active", index === currentMcpStep);
+  row.setAttribute("aria-pressed", String(index === currentMcpStep));
+  row.addEventListener("click", () => {
+    currentMcpStep = index;
+    renderMcpConsole();
+  });
 
   const badge = document.createElement("span");
   badge.className = "mcp-badge";
   badge.textContent = call.badge;
+
+  const label = document.createElement("strong");
+  label.className = "mcp-call-label";
+  label.textContent = call.label;
 
   const command = document.createElement("pre");
   command.textContent = call.command;
@@ -430,8 +466,45 @@ function mcpCallTemplate(call) {
   const response = document.createElement("ul");
   response.replaceChildren(...call.response.map((item) => listItem(item)));
 
-  row.append(badge, command, response);
+  row.append(badge, label, command, response);
   return row;
+}
+
+function mcpFlowDetail(step) {
+  const detail = document.createElement("div");
+  detail.className = "mcp-call-detail";
+  detail.dataset.mcpDetail = step.id;
+
+  const copy = document.createElement("div");
+  copy.className = "mcp-detail-copy";
+  copy.append(textSpan("Selected call"), textSpan(step.hiddenPayload));
+
+  const command = document.createElement("pre");
+  command.textContent = step.command;
+
+  const meters = document.createElement("div");
+  meters.className = "mcp-detail-meters";
+  meters.append(
+    mcpSizePill("content", step.textChars),
+    mcpSizePill("structuredContent", step.structuredChars)
+  );
+
+  const preview = document.createElement("p");
+  preview.textContent = step.textPreview;
+
+  const fields = document.createElement("ul");
+  fields.className = "mcp-field-list";
+  fields.replaceChildren(...step.structuredFields.map((field) => listItem(field)));
+
+  detail.append(copy, command, meters, preview, fields);
+  return detail;
+}
+
+function mcpSizePill(label, chars) {
+  const pill = document.createElement("span");
+  pill.className = "mcp-size-pill";
+  pill.innerHTML = `<strong>${label}</strong><em>${Number(chars).toLocaleString("en-US")} chars</em>`;
+  return pill;
 }
 
 function mcpBudgetTemplate(row) {

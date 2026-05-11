@@ -1375,16 +1375,31 @@ a {
 
 .mcp-call-flow {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 12px;
 }
 
 .mcp-call {
-  min-height: 244px;
+  min-height: 250px;
   padding: 16px;
   border-radius: 8px;
+  color: inherit;
   background: rgba(255, 255, 255, 0.08);
   border: 1px solid rgba(255, 255, 255, 0.14);
+  text-align: left;
+  transition:
+    border-color 0.18s ease,
+    background 0.18s ease,
+    transform 0.18s ease;
+}
+
+.mcp-call:hover,
+.mcp-call:focus-visible,
+.mcp-call.is-active {
+  border-color: rgba(247, 183, 51, 0.72);
+  background: rgba(255, 255, 255, 0.14);
+  outline: none;
+  transform: translateY(-2px);
 }
 
 .mcp-badge {
@@ -1399,8 +1414,17 @@ a {
   font-weight: 950;
 }
 
+.mcp-call-label {
+  display: block;
+  min-height: 24px;
+  margin-bottom: 10px;
+  color: white;
+  font-size: 1rem;
+  font-weight: 950;
+}
+
 .mcp-call pre {
-  min-height: 86px;
+  min-height: 98px;
   margin: 0;
   padding: 12px;
   border-radius: 8px;
@@ -1432,6 +1456,114 @@ a {
   margin-right: 8px;
   color: var(--mint);
   font-weight: 950;
+}
+
+.mcp-call-detail {
+  display: grid;
+  grid-template-columns: minmax(0, 1.08fr) minmax(260px, 0.92fr);
+  gap: 14px;
+  align-items: stretch;
+  margin-top: 14px;
+  padding: 16px;
+  border-radius: 8px;
+  background:
+    linear-gradient(135deg, rgba(9, 184, 166, 0.16), rgba(247, 183, 51, 0.1)),
+    rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+}
+
+.mcp-detail-copy {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  color: rgba(255, 255, 255, 0.76);
+  font-size: 0.78rem;
+  font-weight: 950;
+  text-transform: uppercase;
+}
+
+.mcp-detail-copy span:last-child {
+  color: var(--gold);
+  text-align: right;
+}
+
+.mcp-call-detail pre {
+  min-height: 118px;
+  margin: 0;
+  padding: 14px;
+  border-radius: 8px;
+  color: #b9fff6;
+  background: rgba(0, 0, 0, 0.32);
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+  font-size: 0.82rem;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.mcp-detail-meters {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.mcp-size-pill {
+  min-height: 74px;
+  display: grid;
+  align-content: center;
+  gap: 6px;
+  padding: 12px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.mcp-size-pill strong {
+  color: rgba(255, 255, 255, 0.72);
+  font-size: 0.72rem;
+  font-weight: 950;
+  text-transform: uppercase;
+}
+
+.mcp-size-pill em {
+  color: white;
+  font-style: normal;
+  font-size: 1.2rem;
+  font-weight: 950;
+}
+
+.mcp-call-detail p {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.8);
+  line-height: 1.55;
+}
+
+.mcp-field-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.mcp-field-list li {
+  min-height: 28px;
+  display: inline-flex;
+  align-items: center;
+  padding: 0 10px;
+  border-radius: 999px;
+  color: var(--night);
+  background: var(--mint);
+  font-size: 0.76rem;
+  font-weight: 950;
+}
+
+.mcp-field-list li::before {
+  content: "";
+  margin: 0;
 }
 
 .mcp-budget-panel {
@@ -1763,6 +1895,7 @@ a {
   .hood-layout,
   .architecture,
   .mcp-call-flow,
+  .mcp-call-detail,
   .rubric-layout,
   .rubric-grid,
   .review-route,
@@ -1816,6 +1949,20 @@ a {
 
   .section-band {
     padding: 82px 18px;
+  }
+
+  .mcp-detail-copy,
+  .mcp-detail-meters {
+    grid-template-columns: 1fr;
+  }
+
+  .mcp-detail-copy {
+    display: grid;
+    text-align: left;
+  }
+
+  .mcp-detail-copy span:last-child {
+    text-align: left;
   }
 
   .cinema {
