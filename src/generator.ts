@@ -1,0 +1,836 @@
+import { evidenceById, learnerProfile, lessonChunks, udlEvidence } from "./knowledge.js";
+import type {
+  EvidenceRef,
+  EvidenceTrace,
+  HandoutSection,
+  MiniMaterial,
+  Modification,
+  QualityFlag,
+  QualityReport,
+  SupportType,
+  TeacherPacket,
+  UdlAlignment
+} from "./types.js";
+
+export type PacketOptions = {
+  minutesAvailable?: 5 | 15 | 45;
+  emphasis?: "minimum-viable" | "balanced" | "full-support";
+};
+
+type ModificationDraft = Omit<Modification, "evidenceTrace"> & {
+  barrierAddressed: string;
+  udlAlignment: UdlAlignment[];
+};
+
+const STANDARD = "RI.7.2" as const;
+
+const modificationDrafts: ModificationDraft[] = [
+  {
+    id: "mod-preview-vocab",
+    category: "access",
+    phase: "before-reading",
+    priority: "build-out",
+    supportType: "access",
+    lessonMoment: "Before reading: purpose and vocabulary",
+    teacherAction:
+      "Give Learner 7A a four-word preview card. For each word, say it, show a student-friendly meaning, and ask them to choose the matching example before the full text starts.",
+    studentFacingText:
+      "Today these words do work: aspect = one part, moral = about right and wrong, narrative = story, specific = exact. Put a check next to the word you expect to see in the definition of community.",
+    rationale:
+      "The lesson requires unit vocabulary in the RI.7.2 written response. Pre-teaching reduces decoding and meaning load before the learner meets the grade-level informational text.",
+    checkForUnderstanding: "Ask the learner to point to the word that means story before paragraph 3.",
+    timeCost: "2 minutes before reading",
+    prepMinutes: 2,
+    materialIds: ["mat-vocab-preview"],
+    iepRefs: ["iep-reading-level", "iep-accommodations"],
+    lessonRefs: ["lesson-vocab", "lesson-short-response"],
+    udlRefs: ["udl-representation"],
+    barrierAddressed: "Vocabulary load can block access to the central idea before the RI.7.2 work even begins.",
+    udlAlignment: [
+      {
+        principle: "representation",
+        checkpoint: "Clarify vocabulary and symbols.",
+        why: "The core lesson stays intact while key words become usable before reading."
+      }
+    ]
+  },
+  {
+    id: "mod-annotation-code",
+    category: "modified-material",
+    phase: "during-reading",
+    priority: "use-first",
+    supportType: "material",
+    lessonMoment: "Paragraphs 1-2: claim and criteria",
+    teacherAction:
+      "Replace open annotation with a two-symbol code: box Lowe's claim and star three traits a definition of community must explain.",
+    studentFacingText:
+      "Box the sentence that tells Lowe's big claim. Star three bullets that tell what a community definition must explain.",
+    rationale:
+      "This preserves the RI.7.2 central-idea work while making annotation concrete enough for a learner whose goal includes prompt-focused annotation.",
+    checkForUnderstanding: "The learner can show one boxed claim and three starred traits before answering the summary question.",
+    timeCost: "No extra time; use during the first whole-class pause",
+    prepMinutes: 1,
+    materialIds: ["mat-annotation-key"],
+    iepRefs: ["iep-ela-goal", "iep-comprehension-stamina"],
+    lessonRefs: ["lesson-p1p2-claim", "lesson-p1p2-summary"],
+    udlRefs: ["udl-representation", "udl-action-expression"],
+    barrierAddressed: "Open-ended annotation creates too many choices, so the learner may not capture the claim or details.",
+    udlAlignment: [
+      {
+        principle: "representation",
+        checkpoint: "Highlight patterns, critical features, big ideas, and relationships.",
+        why: "The box/star code makes the central idea and supporting details visually separable."
+      },
+      {
+        principle: "action-expression",
+        checkpoint: "Use tools for construction and composition.",
+        why: "The learner can mark the grade-level text without inventing an annotation system."
+      }
+    ]
+  },
+  {
+    id: "mod-scaffold-p1p2",
+    category: "scaffolded-question",
+    phase: "during-reading",
+    priority: "build-out",
+    supportType: "scaffold",
+    lessonMoment: "During reading question C for paragraphs 1-2",
+    teacherAction:
+      "Ask the original question, then offer a response frame and selectable traits if Learner 7A stalls for more than 10 seconds.",
+    studentFacingText:
+      "A community can be different from a regular group because ____. A community can make people feel ____. A community can shape what people think is ____ or ____.",
+    rationale:
+      "The scaffold keeps the same RI.7.2 comprehension target but moves the learner from blank-page recall to recognition plus completion.",
+    checkForUnderstanding: "The learner names at least three traits from paragraph 2, orally or in writing.",
+    timeCost: "30 seconds at the pause point",
+    prepMinutes: 1,
+    materialIds: ["mat-traits-frame"],
+    iepRefs: ["iep-reading-level", "iep-accommodations"],
+    lessonRefs: ["lesson-p1p2-summary"],
+    udlRefs: ["udl-action-expression"],
+    barrierAddressed: "Independent recall is the bottleneck, not the target skill of identifying key traits.",
+    udlAlignment: [
+      {
+        principle: "action-expression",
+        checkpoint: "Support planning and strategy development.",
+        why: "A frame gives the learner a path for showing the same central-idea understanding."
+      }
+    ]
+  },
+  {
+    id: "mod-newcastle-bridge",
+    category: "scaffolded-question",
+    phase: "during-reading",
+    priority: "build-out",
+    supportType: "scaffold",
+    lessonMoment: "Paragraphs 3-7: Newcastle example",
+    teacherAction:
+      "Use a two-column bridge chart: left side 'Newcastle detail from text,' right side 'How it proves shared story.' Complete the first row together.",
+    studentFacingText:
+      "Text detail: Lowe supports Newcastle United. This proves shared story because people in that community act out the same story together.",
+    rationale:
+      "The original RI.7.2 task asks how an example supports a definition. The chart makes the evidence-to-idea relationship visible without changing the prompt.",
+    checkForUnderstanding: "The learner adds one more Newcastle detail and explains it with the phrase 'This proves... because...'.",
+    timeCost: "2 minutes during partner reading",
+    prepMinutes: 2,
+    materialIds: ["mat-newcastle-bridge"],
+    iepRefs: ["iep-ela-goal", "iep-comprehension-stamina"],
+    lessonRefs: ["lesson-definition", "lesson-newcastle-question"],
+    udlRefs: ["udl-representation", "udl-action-expression"],
+    barrierAddressed: "The learner may find a detail but lose the reasoning step that connects evidence to the definition.",
+    udlAlignment: [
+      {
+        principle: "representation",
+        checkpoint: "Illustrate through multiple media.",
+        why: "The chart turns an abstract definition-support relationship into a visible bridge."
+      },
+      {
+        principle: "action-expression",
+        checkpoint: "Build fluencies with graduated levels of support.",
+        why: "The first row is modeled, then the learner completes the same kind of reasoning."
+      }
+    ]
+  },
+  {
+    id: "mod-evidence-sorter",
+    category: "modified-material",
+    phase: "during-reading",
+    priority: "build-out",
+    supportType: "material",
+    lessonMoment: "Paragraphs 8-11: why the definition matters",
+    teacherAction:
+      "Give a two-column evidence sorter labeled 'What community is' and 'Why community matters.' Learner 7A places two highlighted details before writing.",
+    studentFacingText:
+      "Put each detail where it fits: What community is, or Why community matters. Then choose one detail from each column for your answer.",
+    rationale:
+      "The lesson asks students to highlight evidence answering both questions. The sorter protects the RI.7.2 evidence-selection demand from becoming a memory pile.",
+    checkForUnderstanding: "The learner places one accurate detail in each column and explains why one belongs there.",
+    timeCost: "2 minutes during the paragraph 8-11 pause",
+    prepMinutes: 2,
+    materialIds: ["mat-evidence-sorter"],
+    iepRefs: ["iep-ela-goal", "iep-comprehension-stamina"],
+    lessonRefs: ["lesson-find-evidence", "lesson-social-change"],
+    udlRefs: ["udl-representation", "udl-action-expression"],
+    barrierAddressed: "The task requires sorting two kinds of evidence, which can overwhelm working memory during reading.",
+    udlAlignment: [
+      {
+        principle: "representation",
+        checkpoint: "Guide information processing and visualization.",
+        why: "Sorting details by purpose makes the RI.7.2 evidence structure explicit."
+      },
+      {
+        principle: "action-expression",
+        checkpoint: "Use graphic organizers for composing and problem solving.",
+        why: "The organizer becomes a bridge from highlighting to a written response."
+      }
+    ]
+  },
+  {
+    id: "mod-checkin-before-independent",
+    category: "accommodation-reminder",
+    phase: "independent-practice",
+    priority: "use-first",
+    supportType: "engagement",
+    lessonMoment: "Transition into independent practice",
+    teacherAction:
+      "Before independent work, do a quiet one-on-one check-in: repeat directions, point to the checklist, and agree on a first step. Use specific positive praise for starting.",
+    studentFacingText:
+      "First step: answer question 2 by finding the sentence that best states the central idea. I will check back after question 2.",
+    rationale:
+      "This uses documented supports and interrupts the withdrawal pattern before independent grade-level RI.7.2 reading becomes a shutdown trigger.",
+    checkForUnderstanding: "The learner can state the first step and begin it within one minute.",
+    timeCost: "45 seconds before independent work",
+    prepMinutes: 0,
+    materialIds: ["mat-first-step-card"],
+    iepRefs: ["iep-accommodations", "iep-positive-praise", "iep-withdrawal-pattern"],
+    lessonRefs: ["lesson-short-response", "lesson-self-checklist"],
+    udlRefs: ["udl-engagement"],
+    barrierAddressed: "Task initiation and stamina can collapse at the exact point the lesson shifts to independent work.",
+    udlAlignment: [
+      {
+        principle: "engagement",
+        checkpoint: "Sustain effort and persistence.",
+        why: "A first-step agreement makes the independent task feel startable and gives the teacher a quick return point."
+      }
+    ]
+  },
+  {
+    id: "mod-short-response-frame",
+    category: "alternative-assessment",
+    phase: "independent-practice",
+    priority: "use-first",
+    supportType: "assessment",
+    lessonMoment: "Independent short response",
+    teacherAction:
+      "Keep the same prompt and evidence expectation, but provide a claim-evidence-explain frame and allow oral rehearsal before writing.",
+    studentFacingText:
+      "Claim: Lowe means a community is ____. Evidence 1: In paragraph __, he says ____. This shows ____. Evidence 2: In paragraph __, he says ____. This shows ____.",
+    rationale:
+      "The lesson asks for a written explanation with two details. The learner's goals name claim writing, evidence selection, and stamina, so the frame supports RI.7.2 access without lowering the target.",
+    checkForUnderstanding: "Accept a rehearsed oral claim first, then require the written frame with two text details.",
+    timeCost: "3 minutes setup; saves time during writing",
+    prepMinutes: 3,
+    materialIds: ["mat-short-response-frame"],
+    iepRefs: ["iep-ela-goal", "iep-comprehension-stamina", "iep-accommodations"],
+    lessonRefs: ["lesson-short-response", "lesson-self-checklist"],
+    udlRefs: ["udl-action-expression"],
+    barrierAddressed: "The learner can know the answer but run out of writing stamina before claim, evidence, and explanation all appear.",
+    udlAlignment: [
+      {
+        principle: "action-expression",
+        checkpoint: "Support executive functions and composition.",
+        why: "Oral rehearsal plus a frame preserves the two-detail written response while reducing planning load."
+      }
+    ]
+  },
+  {
+    id: "mod-discussion-role",
+    category: "access",
+    phase: "discussion",
+    priority: "build-out",
+    supportType: "engagement",
+    lessonMoment: "Student-led discussion",
+    teacherAction:
+      "Give Learner 7A a defined peer role: evidence finder. They read one highlighted line from the text before sharing a personal-community answer.",
+    studentFacingText:
+      "My evidence from Lowe is: ____. My community example is: ____. These connect because ____.",
+    rationale:
+      "Peer talk and helping roles are motivating. The role turns discussion into structured RI.7.2 participation instead of an unbounded social task.",
+    checkForUnderstanding: "The learner contributes once using text evidence and once using a personal example.",
+    timeCost: "No extra time",
+    prepMinutes: 1,
+    materialIds: ["mat-discussion-role"],
+    iepRefs: ["iep-positive-praise", "iep-profile-impact"],
+    lessonRefs: ["lesson-discussion-community", "lesson-definition"],
+    udlRefs: ["udl-engagement", "udl-action-expression"],
+    barrierAddressed: "Discussion can become too open-ended, even though the learner is motivated by peer talk.",
+    udlAlignment: [
+      {
+        principle: "engagement",
+        checkpoint: "Optimize relevance, value, and authenticity.",
+        why: "The role gives the learner a reason to participate with the text, not just around it."
+      },
+      {
+        principle: "action-expression",
+        checkpoint: "Use multiple media for communication.",
+        why: "The learner can first read evidence aloud, then connect it in their own words."
+      }
+    ]
+  },
+  {
+    id: "mod-progress-monitor",
+    category: "progress-monitoring",
+    phase: "discussion",
+    priority: "build-out",
+    supportType: "monitoring",
+    lessonMoment: "End of lesson",
+    teacherAction:
+      "Record three quick data points: annotation completed, literal central-idea answer correct, claim frame started. This doubles as progress evidence without a second form.",
+    studentFacingText:
+      "Exit check: 1. My boxed claim is ____. 2. One detail that supports it is ____. 3. Today I used this strategy: annotate / reread / ask for help.",
+    rationale:
+      "The packet should help the teacher teach tomorrow and collect progress evidence for the same RI.7.2 comprehension and evidence goals.",
+    checkForUnderstanding: "Teacher marks yes or not yet for each of the three data points.",
+    timeCost: "1 minute",
+    prepMinutes: 1,
+    materialIds: ["mat-exit-check"],
+    iepRefs: ["iep-ela-goal", "iep-withdrawal-pattern"],
+    lessonRefs: ["lesson-skill-focus", "lesson-short-response"],
+    udlRefs: ["udl-engagement", "udl-action-expression"],
+    barrierAddressed: "Teachers need quick progress data, but extra paperwork after class is where good intentions go to take a nap.",
+    udlAlignment: [
+      {
+        principle: "engagement",
+        checkpoint: "Develop self-assessment and reflection.",
+        why: "The exit check asks the learner to name the strategy used during the same lesson."
+      },
+      {
+        principle: "action-expression",
+        checkpoint: "Monitor progress.",
+        why: "The teacher gets observable evidence tied to annotation, literal comprehension, and claim writing."
+      }
+    ]
+  }
+];
+
+const miniMaterialsCatalog: MiniMaterial[] = [
+  {
+    id: "mat-vocab-preview",
+    name: "Four-word preview card",
+    appliesTo: ["mod-preview-vocab"],
+    content: [
+      "aspect = one part",
+      "moral = about right and wrong",
+      "narrative = story",
+      "specific = exact",
+      "Circle one word you expect to see in a definition of community."
+    ]
+  },
+  {
+    id: "mat-annotation-key",
+    name: "Two-symbol annotation key",
+    appliesTo: ["mod-annotation-code"],
+    content: [
+      "Box = Lowe's claim or definition.",
+      "Star = detail that explains what makes a community different from a regular group."
+    ]
+  },
+  {
+    id: "mat-traits-frame",
+    name: "Paragraph 2 trait frame",
+    appliesTo: ["mod-scaffold-p1p2"],
+    content: [
+      "A community can be different from a regular group because ____.",
+      "A community can make people feel ____.",
+      "A community can shape what people think is ____ or ____."
+    ]
+  },
+  {
+    id: "mat-newcastle-bridge",
+    name: "Newcastle bridge chart",
+    appliesTo: ["mod-newcastle-bridge"],
+    content: [
+      "Text detail: Lowe supports Newcastle United. How it proves shared story: people in the community act out the same story together.",
+      "Text detail: ________. How it proves shared story: ________."
+    ]
+  },
+  {
+    id: "mat-evidence-sorter",
+    name: "Paragraph 8-11 evidence sorter",
+    appliesTo: ["mod-evidence-sorter"],
+    content: [
+      "What community is: ________",
+      "Why community matters: ________",
+      "Best detail for my answer: ________"
+    ]
+  },
+  {
+    id: "mat-first-step-card",
+    name: "First-step check-in card",
+    appliesTo: ["mod-checkin-before-independent"],
+    content: [
+      "First step: answer question 2 by finding the sentence that best states the central idea.",
+      "Check-back point: after question 2."
+    ]
+  },
+  {
+    id: "mat-short-response-frame",
+    name: "Short-response frame",
+    appliesTo: ["mod-short-response-frame"],
+    content: [
+      "Claim: Lowe means a community is ________.",
+      "Evidence 1: In paragraph __, he says ________.",
+      "This shows ________.",
+      "Evidence 2: In paragraph __, he says ________.",
+      "This shows ________."
+    ]
+  },
+  {
+    id: "mat-discussion-role",
+    name: "Evidence finder discussion role",
+    appliesTo: ["mod-discussion-role"],
+    content: [
+      "My evidence from Lowe is: ________.",
+      "My community example is: ________.",
+      "These connect because ________."
+    ]
+  },
+  {
+    id: "mat-exit-check",
+    name: "Three-point exit check",
+    appliesTo: ["mod-progress-monitor"],
+    content: [
+      "Boxed claim present: yes / not yet",
+      "One literal central-idea answer correct: yes / not yet",
+      "Claim frame started with evidence: yes / not yet",
+      "Strategy used today: annotate / reread / ask for help / check-in"
+    ]
+  }
+];
+
+export const allModifications: Modification[] = modificationDrafts.map((draft) => attachTrace(draft));
+
+export function buildTeacherPacket(options: PacketOptions = {}): TeacherPacket {
+  const minutes = options.minutesAvailable ?? 45;
+  const chosen = chooseModifications(minutes, options.emphasis ?? "balanced");
+  const materialIds = new Set(chosen.flatMap((mod) => mod.materialIds));
+  const miniMaterials = miniMaterialsCatalog.filter((material) => materialIds.has(material.id));
+
+  const packetShell = {
+    title: "Waypoint Differentiation Lab: community lesson packet",
+    caseLabel: "Learner 7A" as const,
+    teacherMode: "Tomorrow Mode" as const,
+    evidenceSystem: "Receipts Rail" as const,
+    qualityCheck: "No Hand-Wavy Accommodations Detector" as const,
+    studentSnapshot:
+      "Learner 7A can participate warmly when the route is clear, but needs explicit supports for informational-text comprehension, annotation, stamina, task initiation, and help-seeking before frustration turns into withdrawal.",
+    lessonSnapshot:
+      "The lesson asks seventh graders to determine and summarize the central idea of Toby Lowe's informational text: community is a shared, identity-forming narrative. The key deliverable is a short response using unit vocabulary and at least two text details.",
+    preservedStandard: STANDARD,
+    useFirst: [
+      "Use the two-symbol annotation key during paragraphs 1-2.",
+      "Do the 45-second first-step check-in before independent practice.",
+      "Keep the original short-response prompt, but add the claim-evidence-explain frame."
+    ],
+    modifications: chosen,
+    miniMaterials,
+    exitTicket: [
+      "Boxed claim present: yes / not yet",
+      "One literal central-idea answer correct: yes / not yet",
+      "Claim frame started with evidence: yes / not yet",
+      "Strategy used today: annotate / reread / ask for help / check-in"
+    ],
+    handoutSections: [] as HandoutSection[],
+    qualityReport: placeholderQualityReport(),
+    groundingReport: groundingReport(chosen)
+  };
+
+  const packet: TeacherPacket = {
+    ...packetShell,
+    handoutSections: handoutSections(packetShell),
+    qualityReport: placeholderQualityReport()
+  };
+  packet.qualityReport = reviewPacketQuality(packet);
+  return packet;
+}
+
+export function chooseModifications(minutes: 5 | 15 | 45, emphasis: PacketOptions["emphasis"]): Modification[] {
+  const selectedIds =
+    minutes === 5
+      ? ["mod-annotation-code", "mod-checkin-before-independent", "mod-short-response-frame"]
+      : minutes === 15 || emphasis === "minimum-viable"
+        ? [
+            "mod-preview-vocab",
+            "mod-annotation-code",
+            "mod-scaffold-p1p2",
+            "mod-checkin-before-independent",
+            "mod-short-response-frame"
+          ]
+        : allModifications.map((mod) => mod.id);
+
+  return selectedIds.map((id) => {
+    const modification = allModifications.find((mod) => mod.id === id);
+    if (!modification) {
+      throw new Error(`Unknown modification id: ${id}`);
+    }
+    return modification;
+  });
+}
+
+export function evidenceTraceForModification(modificationId: string): EvidenceTrace {
+  const draft = modificationDrafts.find((mod) => mod.id === modificationId);
+  if (!draft) {
+    throw new Error(`Unknown modification id: ${modificationId}`);
+  }
+
+  const iep = requiredEvidence(draft.iepRefs[0], "IEP");
+  const lesson = requiredEvidence(draft.lessonRefs[0], "Lesson");
+  const udl = requiredEvidence(draft.udlRefs[0], "UDL");
+
+  return {
+    modificationId,
+    iep,
+    lesson,
+    udl,
+    iepQuote: iep.quote,
+    lessonDemand: lesson.quote,
+    udlAlignment: draft.udlAlignment,
+    barrierAddressed: draft.barrierAddressed,
+    supportType: draft.supportType,
+    standardPreserved: STANDARD,
+    progressCheck: draft.checkForUnderstanding
+  };
+}
+
+export function explainModification(modificationId: string) {
+  const modification = allModifications.find((mod) => mod.id === modificationId);
+  if (!modification) {
+    throw new Error(`Unknown modification id: ${modificationId}`);
+  }
+
+  return {
+    modification,
+    evidenceTrace: modification.evidenceTrace,
+    receipts: {
+      iepQuote: modification.evidenceTrace.iepQuote,
+      lessonDemand: modification.evidenceTrace.lessonDemand,
+      udl: modification.evidenceTrace.udlAlignment,
+      preservedStandard: modification.evidenceTrace.standardPreserved,
+      progressCheck: modification.evidenceTrace.progressCheck
+    }
+  };
+}
+
+export function reviewPacketQuality(packet: Pick<TeacherPacket, "modifications" | "miniMaterials" | "exitTicket">): QualityReport {
+  const flags: QualityFlag[] = [];
+  const materialIds = new Set(packet.miniMaterials.map((material) => material.id));
+
+  for (const mod of packet.modifications) {
+    const studentFacingText = mod.studentFacingText ?? "";
+    const teacherAction = mod.teacherAction ?? "";
+    const rationale = mod.rationale ?? "";
+    const allRefs = [...(mod.iepRefs ?? []), ...(mod.lessonRefs ?? []), ...(mod.udlRefs ?? [])];
+    const refsResolve = allRefs.length > 0 && allRefs.every((ref) => evidenceById(ref));
+    const hasTypedTrace =
+      Boolean(mod.evidenceTrace) &&
+      mod.evidenceTrace?.iep?.source === "IEP" &&
+      mod.evidenceTrace?.lesson?.source === "Lesson" &&
+      mod.evidenceTrace?.udl?.source === "UDL";
+
+    if (!refsResolve || !hasTypedTrace) {
+      flags.push({
+        kind: "missing-evidence",
+        modificationId: mod.id,
+        message: "Recommendation does not resolve to IEP, lesson, and UDL evidence."
+      });
+    }
+
+    if (isVague(teacherAction) || isVague(rationale)) {
+      flags.push({
+        kind: "vague-advice",
+        modificationId: mod.id,
+        message: "Recommendation sounds like a sticky note, not a teacher action."
+      });
+    }
+
+    if (lowersRigor(mod, `${teacherAction} ${studentFacingText} ${rationale}`)) {
+      flags.push({
+        kind: "lowered-rigor",
+        modificationId: mod.id,
+        message: "Recommendation appears to change the RI.7.2 demand instead of preserving it."
+      });
+    }
+
+    if (studentFacingText.match(/\b(IEP|disability|health impairment|accommodation)\b/i)) {
+      flags.push({
+        kind: "unsafe-student-language",
+        modificationId: mod.id,
+        message: "Student-facing material leaks adult-facing labels or the original case name."
+      });
+    }
+
+    if (!mod.checkForUnderstanding || mod.checkForUnderstanding.trim().length < 8) {
+      flags.push({
+        kind: "missing-progress-check",
+        modificationId: mod.id,
+        message: "Recommendation needs a visible check for understanding."
+      });
+    }
+
+    for (const materialId of mod.materialIds ?? []) {
+      if (!materialIds.has(materialId)) {
+        flags.push({
+          kind: "missing-material",
+          modificationId: mod.id,
+          message: `Referenced material ${materialId} is not included in the packet.`
+        });
+      }
+    }
+  }
+
+  const kinds = new Set(flags.map((flag) => flag.kind));
+  const report: QualityReport = {
+    name: "No Hand-Wavy Accommodations Detector",
+    passed: flags.length === 0,
+    checks: {
+      vagueAdvice: !kinds.has("vague-advice"),
+      loweredRigor: !kinds.has("lowered-rigor"),
+      missingEvidence: !kinds.has("missing-evidence"),
+      unsafeStudentLanguage: !kinds.has("unsafe-student-language"),
+      materialsMatchRecommendations: !kinds.has("missing-material")
+    },
+    flags,
+    summary:
+      flags.length === 0
+        ? "All recommendations are specific, evidence-grounded, RI.7.2-preserving, and safe to put in front of a student."
+        : `${flags.length} issue(s) found before this should reach a teacher. The detector is doing its little clipboard job.`
+  };
+
+  return report;
+}
+
+export function groundingReport(mods: Modification[]) {
+  const missingGrounding = mods
+    .filter((mod) => mod.iepRefs.length === 0 || mod.lessonRefs.length === 0 || mod.udlRefs.length === 0)
+    .map((mod) => mod.id);
+
+  return {
+    totalModifications: mods.length,
+    groundedInIepAndLesson: mods.length - missingGrounding.length,
+    missingGrounding
+  };
+}
+
+export function teacherHandoutMarkdown(packet: TeacherPacket): string {
+  const lines = [
+    `# ${packet.teacherMode}: ${packet.title}`,
+    "",
+    `Case: ${packet.caseLabel}`,
+    `Standard preserved: ${packet.preservedStandard}`,
+    "",
+    "## Before Class",
+    ...packet.useFirst.map((item) => `- ${item}`),
+    "",
+    "## During Reading",
+    ...packet.modifications
+      .filter((mod) => mod.phase === "before-reading" || mod.phase === "during-reading")
+      .map((mod) => `- ${mod.lessonMoment}: ${mod.teacherAction}`),
+    "",
+    "## Independent Practice",
+    ...packet.modifications
+      .filter((mod) => mod.phase === "independent-practice")
+      .map((mod) => `- ${mod.lessonMoment}: ${mod.teacherAction}`),
+    "",
+    "## Student-Facing Materials",
+    ...packet.miniMaterials.flatMap((material) => ["", `### ${material.name}`, ...material.content.map((item) => `- ${item}`)]),
+    "",
+    "## Exit Ticket",
+    ...packet.exitTicket.map((item) => `- ${item}`),
+    "",
+    "## Receipts Rail",
+    ...packet.modifications.map(
+      (mod) =>
+        `- ${mod.id}: ${mod.evidenceTrace.iep.id}, ${mod.evidenceTrace.lesson.id}, ${mod.evidenceTrace.udl.id}; preserves ${mod.evidenceTrace.standardPreserved}.`
+    )
+  ];
+
+  return lines.join("\n");
+}
+
+export function evidenceAuditMarkdown(packet: TeacherPacket): string {
+  const lines = [
+    `# ${packet.evidenceSystem}`,
+    "",
+    `Quality gate: ${packet.qualityCheck}`,
+    `Result: ${packet.qualityReport.passed ? "passed" : "needs review"}`,
+    "",
+    "| Modification | IEP quote | Lesson demand | UDL | Barrier | Standard | Progress check |",
+    "| --- | --- | --- | --- | --- | --- | --- |"
+  ];
+
+  for (const mod of packet.modifications) {
+    const trace = mod.evidenceTrace;
+    lines.push(
+      `| ${mod.id} | ${escapeTable(trace.iepQuote)} | ${escapeTable(trace.lessonDemand)} | ${escapeTable(
+        trace.udlAlignment.map((item) => item.principle).join(", ")
+      )} | ${escapeTable(trace.barrierAddressed)} | ${trace.standardPreserved} | ${escapeTable(trace.progressCheck)} |`
+    );
+  }
+
+  if (packet.qualityReport.flags.length > 0) {
+    lines.push("", "## Flags", ...packet.qualityReport.flags.map((flag) => `- ${flag.kind}: ${flag.message}`));
+  }
+
+  return lines.join("\n");
+}
+
+export function lessonMapMarkdown(): string {
+  return lessonChunks
+    .map(
+      (chunk) =>
+        `## ${chunk.title}\nPhase: ${chunk.phase}\nTime: ${chunk.minutes} minutes\nTeacher move: ${chunk.teacherMove}\nStudent task: ${chunk.studentTask}\nEvidence: ${chunk.evidence
+          .map((entry) => `${entry.id}: ${entry.quote}`)
+          .join(" ")}`
+    )
+    .join("\n\n");
+}
+
+export function studentProfileMarkdown(): string {
+  return [
+    `# ${learnerProfile.caseLabel}, Grade ${learnerProfile.grade}`,
+    learnerProfile.sourceNote,
+    "",
+    `Learning impact: ${learnerProfile.learningImpact}`,
+    "## Strengths",
+    ...learnerProfile.strengths.map((item) => `- ${item}`),
+    "## Needs",
+    ...learnerProfile.needs.map((item) => `- ${item}`),
+    "## Supports",
+    ...learnerProfile.accommodations.map((item) => `- ${item}`),
+    "## Goals",
+    ...learnerProfile.goals.map((item) => `- ${item}`),
+    "## Evidence",
+    ...learnerProfile.evidence.map((entry) => `- ${entry.id}: ${entry.quote}`)
+  ].join("\n");
+}
+
+export function showcaseData(packet: TeacherPacket) {
+  return {
+    title: "Waypoint Differentiation Lab",
+    thesis: "Turn one lesson map and one learner profile into tomorrow's evidence-grounded supports.",
+    packet: {
+      caseLabel: packet.caseLabel,
+      teacherMode: packet.teacherMode,
+      evidenceSystem: packet.evidenceSystem,
+      qualityCheck: packet.qualityCheck,
+      preservedStandard: packet.preservedStandard,
+      lessonSnapshot: packet.lessonSnapshot,
+      useFirst: packet.useFirst,
+      qualityReport: packet.qualityReport
+    },
+    modifications: packet.modifications.map((mod) => ({
+      id: mod.id,
+      lessonMoment: mod.lessonMoment,
+      category: mod.category,
+      supportType: mod.supportType,
+      teacherAction: mod.teacherAction,
+      studentFacingText: mod.studentFacingText,
+      rationale: mod.rationale,
+      timeCost: mod.timeCost,
+      evidenceTrace: mod.evidenceTrace
+    })),
+    miniMaterials: packet.miniMaterials,
+    architecture: [
+      "Resources: learner profile and lesson map",
+      "Tools: generate packet, explain modification, review quality",
+      "Generator: deterministic TypeScript rules with typed evidence traces",
+      "Presentation: Claude or any MCP client turns the packet into teacher-ready prose"
+    ]
+  };
+}
+
+function attachTrace(draft: ModificationDraft): Modification {
+  const { barrierAddressed: _barrierAddressed, udlAlignment: _udlAlignment, ...modification } = draft;
+  return {
+    ...modification,
+    evidenceTrace: evidenceTraceForModification(draft.id)
+  };
+}
+
+function requiredEvidence(id: string | undefined, source: EvidenceRef["source"]): EvidenceRef {
+  if (!id) {
+    throw new Error(`Missing ${source} evidence reference`);
+  }
+  const evidence = evidenceById(id);
+  if (!evidence || evidence.source !== source) {
+    throw new Error(`Evidence ${id} did not resolve to source ${source}`);
+  }
+  return evidence;
+}
+
+function handoutSections(packet: Pick<TeacherPacket, "useFirst" | "modifications" | "miniMaterials" | "exitTicket">): HandoutSection[] {
+  return [
+    {
+      id: "before-class",
+      title: "Before Class",
+      items: packet.useFirst
+    },
+    {
+      id: "during-reading",
+      title: "During Reading",
+      items: packet.modifications
+        .filter((mod) => mod.phase === "before-reading" || mod.phase === "during-reading")
+        .map((mod) => `${mod.lessonMoment}: ${mod.teacherAction}`)
+    },
+    {
+      id: "independent-practice",
+      title: "Independent Practice",
+      items: packet.modifications
+        .filter((mod) => mod.phase === "independent-practice")
+        .map((mod) => `${mod.lessonMoment}: ${mod.teacherAction}`)
+    },
+    {
+      id: "materials",
+      title: "Mini Materials",
+      items: packet.miniMaterials.map((material) => material.name)
+    },
+    {
+      id: "exit-ticket",
+      title: "Exit Ticket",
+      items: packet.exitTicket
+    }
+  ];
+}
+
+function placeholderQualityReport(): QualityReport {
+  return {
+    name: "No Hand-Wavy Accommodations Detector",
+    passed: true,
+    checks: {
+      vagueAdvice: true,
+      loweredRigor: true,
+      missingEvidence: true,
+      unsafeStudentLanguage: true,
+      materialsMatchRecommendations: true
+    },
+    flags: [],
+    summary: "Pending review."
+  };
+}
+
+function isVague(text: string): boolean {
+  const normalized = text.trim().toLowerCase();
+  return normalized.length < 18 || /\b(support as needed|help as needed|modify as needed|provide support|be flexible)\b/.test(normalized);
+}
+
+function lowersRigor(mod: Modification, text: string): boolean {
+  const normalized = text.toLowerCase();
+  return (
+    mod.evidenceTrace?.standardPreserved !== STANDARD ||
+    /\b(easier version|skip the text|lower grade|replace the grade-level task|do less)\b/.test(normalized)
+  );
+}
+
+function escapeTable(text: string): string {
+  return text.replaceAll("|", "\\|").replaceAll("\n", " ");
+}

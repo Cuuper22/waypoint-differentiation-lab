@@ -1,0 +1,13 @@
+{
+  "name": "No Hand-Wavy Accommodations Detector",
+  "passed": true,
+  "checks": {
+    "vagueAdvice": true,
+    "loweredRigor": true,
+    "missingEvidence": true,
+    "unsafeStudentLanguage": true,
+    "materialsMatchRecommendations": true
+  },
+  "flags": [],
+  "summary": "All recommendations are specific, evidence-grounded, RI.7.2-preserving, and safe to put in front of a student."
+}
