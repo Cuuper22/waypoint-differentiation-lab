@@ -8,7 +8,9 @@ import {
   evidenceAuditMarkdown,
   evidenceAuditSummaryMarkdown,
   explainModification,
+  learnerProfileSummaryMarkdown,
   learnerProfileSummary,
+  lessonMapSummaryMarkdown,
   lessonMapSummary,
   lessonMapMarkdown,
   reviewPacketQuality,
@@ -148,6 +150,19 @@ function qualityReportText(report: ReturnType<typeof reviewPacketQuality>) {
 }
 
 server.registerResource(
+  "learner-profile-summary",
+  "waypoint://case/learner-7a/summary",
+  {
+    title: "Learner 7A planning summary",
+    description: "Compact planning gist for starting a client workflow without reading the full profile.",
+    mimeType: "text/markdown"
+  },
+  async () => ({
+    contents: [{ uri: "waypoint://case/learner-7a/summary", text: learnerProfileSummaryMarkdown() }]
+  })
+);
+
+server.registerResource(
   "learner-profile",
   "waypoint://case/learner-7a/profile",
   {
@@ -157,6 +172,19 @@ server.registerResource(
   },
   async () => ({
     contents: [{ uri: "waypoint://case/learner-7a/profile", text: studentProfileMarkdown() }]
+  })
+);
+
+server.registerResource(
+  "community-lesson-summary",
+  "waypoint://lesson/community/summary",
+  {
+    title: "Community lesson summary",
+    description: "Compact chunk index for starting a client workflow without reading the full lesson map.",
+    mimeType: "text/markdown"
+  },
+  async () => ({
+    contents: [{ uri: "waypoint://lesson/community/summary", text: lessonMapSummaryMarkdown() }]
   })
 );
 
@@ -420,7 +448,8 @@ server.registerPrompt(
           text: [
             teacherNeed,
             "",
-            "Use the learner-profile and community-lesson-map resources.",
+            "Start with the learner-profile-summary and community-lesson-summary resources.",
+            "Read the full learner-profile or community-lesson-map resources only when quote text changes the handout.",
             "Call generate_teacher_packet with detail compact first. Use explain_modification only for recommendations you actually include.",
             "Return a concise Tomorrow Mode handout with before class, during reading, independent practice, discussion, and exit-ticket sections.",
             "Every recommendation must cite evidence IDs. Pull quote text only when it changes the answer.",

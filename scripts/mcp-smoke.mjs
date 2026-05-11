@@ -1,6 +1,6 @@
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js";
-import { mcpManifestBudgets, mcpTextBudgets } from "../dist/mcp-budgets.js";
+import { mcpManifestBudgets, mcpResourceBudgets, mcpTextBudgets } from "../dist/mcp-budgets.js";
 
 const requiredTools = [
   "generate_teacher_packet",
@@ -13,7 +13,9 @@ const requiredTools = [
 ];
 
 const requiredResources = [
+  "waypoint://case/learner-7a/summary",
   "waypoint://case/learner-7a/profile",
+  "waypoint://lesson/community/summary",
   "waypoint://lesson/community/map",
   "waypoint://packet/community/learner-7a"
 ];
@@ -66,6 +68,20 @@ try {
   for (const resource of requiredResources) {
     assert(resourceUris.has(resource), `Missing MCP resource: ${resource}`);
   }
+
+  const profileSummaryResource = await readTextResource(client, "waypoint://case/learner-7a/summary");
+  assert(
+    profileSummaryResource.length <= mcpResourceBudgets.learnerProfileSummary,
+    `learner-profile summary resource is ${profileSummaryResource.length} chars, over ${mcpResourceBudgets.learnerProfileSummary}`
+  );
+  assert(profileSummaryResource.includes("Learner 7A"), "learner-profile summary resource lost case label");
+
+  const lessonSummaryResource = await readTextResource(client, "waypoint://lesson/community/summary");
+  assert(
+    lessonSummaryResource.length <= mcpResourceBudgets.lessonMapSummary,
+    `lesson-map summary resource is ${lessonSummaryResource.length} chars, over ${mcpResourceBudgets.lessonMapSummary}`
+  );
+  assert(lessonSummaryResource.includes("RI.7.2"), "lesson-map summary resource lost preserved standard");
 
   const packet = await client.callTool({
     name: "generate_teacher_packet",
@@ -154,6 +170,16 @@ function assertTextBudget(result, label, maxCharacters) {
     .trim();
   assert(text, `${label} returned no text content`);
   assert(text.length <= maxCharacters, `${label} text content is ${text.length} chars, over ${maxCharacters}`);
+}
+
+async function readTextResource(client, uri) {
+  const result = await client.readResource({ uri });
+  const text = result.contents
+    ?.map((entry) => entry.text ?? "")
+    .join("\n")
+    .trim();
+  assert(text, `${uri} returned no text`);
+  return text;
 }
 
 function measureToolManifest(tools) {

@@ -41,6 +41,22 @@ export const data = {
       "textChannel": "concise tool list",
       "structuredContent": "shallow passthrough schemas"
     },
+    "resourceBudgets": [
+      {
+        "tool": "learner-profile summary resource",
+        "mode": "resource",
+        "budget": 900,
+        "textChannel": "planning gist",
+        "structuredContent": "full profile resource"
+      },
+      {
+        "tool": "lesson-map summary resource",
+        "mode": "resource",
+        "budget": 1400,
+        "textChannel": "chunk index",
+        "structuredContent": "full lesson resource"
+      }
+    ],
     "textBudgets": [
       {
         "tool": "generate_teacher_packet",

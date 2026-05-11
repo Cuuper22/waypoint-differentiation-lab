@@ -1,5 +1,5 @@
 import { evidenceById, learnerProfile, lessonChunks, udlEvidence } from "./knowledge.js";
-import { mcpCatalogBudgetRow, mcpTextBudgetRows } from "./mcp-budgets.js";
+import { mcpCatalogBudgetRow, mcpResourceBudgetRows, mcpTextBudgetRows } from "./mcp-budgets.js";
 import type {
   CompactTeacherPacket,
   EvidenceRef,
@@ -848,6 +848,22 @@ export function lessonMapSummary() {
   }));
 }
 
+export function lessonMapSummaryMarkdown(): string {
+  return [
+    "# Community lesson summary",
+    "Standard: RI.7.2 central idea, objective summary, and supporting details stay preserved.",
+    "Start light: call generate_teacher_packet detail:compact first. Read the full lesson map only when quote text changes the answer.",
+    "",
+    "Chunks:",
+    ...lessonMapSummary().map(
+      (chunk) =>
+        `- ${chunk.id} (${chunk.phase}, ${chunk.minutes}m): ${chunk.title}. Evidence IDs: ${chunk.evidenceIds.join(", ")}.`
+    ),
+    "",
+    "Full map: waypoint://lesson/community/map"
+  ].join("\n");
+}
+
 export function studentProfileMarkdown(): string {
   return [
     `# ${learnerProfile.caseLabel}, Grade ${learnerProfile.grade}`,
@@ -879,6 +895,19 @@ export function learnerProfileSummary() {
   };
 }
 
+export function learnerProfileSummaryMarkdown(): string {
+  const summary = learnerProfileSummary();
+  return [
+    `# ${summary.caseLabel} summary`,
+    `Grade: ${summary.grade}.`,
+    "Planning barriers: attention, task initiation, stamina, and informational-text comprehension.",
+    "Use strengths: peer talk, helping roles, concrete praise, and structured choice.",
+    "Plan for: chunked reading, modeled summaries, visible steps, movement reset, and quick check-ins.",
+    `Evidence IDs: ${summary.supportIds.join(", ")}.`,
+    "Full profile: waypoint://case/learner-7a/profile"
+  ].join("\n");
+}
+
 export function showcaseData(packet: TeacherPacket) {
   const compact = compactTeacherPacket(packet);
   const compactChars = JSON.stringify(compact).length;
@@ -905,6 +934,7 @@ export function showcaseData(packet: TeacherPacket) {
       defaultTool: "generate_teacher_packet detail=compact",
       onDemandTool: "explain_modification",
       catalogBudget: mcpCatalogBudgetRow,
+      resourceBudgets: mcpResourceBudgetRows,
       textBudgets: mcpTextBudgetRows
     },
     modifications: packet.modifications.map((mod) => ({

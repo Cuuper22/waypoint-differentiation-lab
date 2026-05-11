@@ -63,7 +63,9 @@ Claude Desktop example:
 
 Resources:
 
+- `learner-profile-summary` at `waypoint://case/learner-7a/summary`
 - `learner-profile` at `waypoint://case/learner-7a/profile`
+- `community-lesson-summary` at `waypoint://lesson/community/summary`
 - `community-lesson-map` at `waypoint://lesson/community/map`
 - `sample-teacher-packet` at `waypoint://packet/community/learner-7a`
 - `teacher-handout` at `waypoint://packet/community/learner-7a/handout`
@@ -100,7 +102,7 @@ Every recommendation carries:
 
 The quality gate fails recommendations that are vague, unsupported, lowered in rigor, missing matching materials, or unsafe for student-facing language.
 
-The MCP surface is intentionally light by default. Compact packet output is tested to stay under 30% of the full packet JSON, every public tool must advertise a non-empty object output schema, the tool catalog itself is smoke-tested under a 15,000-character startup budget, tool text responses are smoke-tested against tight character budgets, quote-level evidence stays behind `explain_modification`, and the full audit table stays behind `render_evidence_audit({ detail: "full" })` until a client actually needs it.
+The MCP surface is intentionally light by default. Compact packet output is tested to stay under 30% of the full packet JSON, every public tool must advertise a non-empty object output schema, the tool catalog itself is smoke-tested under a 15,000-character startup budget, compact summary resources are smoke-tested against resource budgets, tool text responses are smoke-tested against tight character budgets, quote-level evidence stays behind `explain_modification`, and the full audit table stays behind `render_evidence_audit({ detail: "full" })` until a client actually needs it.
 
 ## Why this shape
 

@@ -335,7 +335,11 @@ function renderMcpConsole() {
 
   const budgetRows = document.createElement("div");
   budgetRows.className = "mcp-budget-grid";
-  budgetRows.replaceChildren(...[stats.catalogBudget, ...(stats.textBudgets ?? [])].filter(Boolean).map(mcpBudgetTemplate));
+  budgetRows.replaceChildren(
+    ...[stats.catalogBudget, ...(stats.resourceBudgets ?? []), ...(stats.textBudgets ?? [])]
+      .filter(Boolean)
+      .map(mcpBudgetTemplate)
+  );
 
   budgetPanel.append(budgetTitle, budgetRows);
   mcpConsole.replaceChildren(header, flow, budgetPanel);

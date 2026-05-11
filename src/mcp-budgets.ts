@@ -15,6 +15,11 @@ export const mcpManifestBudgets = {
   descriptionMaxChars: 170
 } as const;
 
+export const mcpResourceBudgets = {
+  learnerProfileSummary: 900,
+  lessonMapSummary: 1400
+} as const;
+
 export const mcpCatalogBudgetRow = {
   tool: "tool catalog",
   mode: "startup",
@@ -22,6 +27,23 @@ export const mcpCatalogBudgetRow = {
   textChannel: "concise tool list",
   structuredContent: "shallow passthrough schemas"
 } as const;
+
+export const mcpResourceBudgetRows = [
+  {
+    tool: "learner-profile summary resource",
+    mode: "resource",
+    budget: mcpResourceBudgets.learnerProfileSummary,
+    textChannel: "planning gist",
+    structuredContent: "full profile resource"
+  },
+  {
+    tool: "lesson-map summary resource",
+    mode: "resource",
+    budget: mcpResourceBudgets.lessonMapSummary,
+    textChannel: "chunk index",
+    structuredContent: "full lesson resource"
+  }
+] as const;
 
 export const mcpTextBudgetRows = [
   {

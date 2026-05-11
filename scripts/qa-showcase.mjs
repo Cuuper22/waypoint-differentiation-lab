@@ -285,6 +285,9 @@ function interactionScript() {
       if (!consoleText.includes("get_learner_profile <= 520 chars")) {
         failures.push("MCP call console did not render tool text-channel budgets");
       }
+      if (!consoleText.includes("learner-profile summary resource <= 900 chars")) {
+        failures.push("MCP call console did not render resource budgets");
+      }
 
       const reviewText = document.querySelector("#review-path")?.textContent ?? "";
       if (!reviewText.includes("npm run submission:check") || !reviewText.includes("Five-Minute Reviewer Path")) {
