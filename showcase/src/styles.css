@@ -612,7 +612,8 @@ a {
 
 .story-band,
 .packet-cinema,
-.hood-band {
+.hood-band,
+.rubric-band {
   background:
     linear-gradient(180deg, rgba(248, 240, 228, 0.98), rgba(248, 240, 228, 0.94)),
     url("/generated/texture-grid.svg");
@@ -1305,6 +1306,128 @@ a {
   font-weight: 950;
 }
 
+.rubric-layout {
+  display: grid;
+  grid-template-columns: minmax(250px, 0.78fr) minmax(0, 1.8fr);
+  gap: 18px;
+  align-items: stretch;
+}
+
+.rubric-lead,
+.rubric-card {
+  position: relative;
+  border: 1px solid rgba(17, 24, 39, 0.08);
+  border-radius: 8px;
+  background: rgba(255, 250, 242, 0.92);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+
+.rubric-lead {
+  min-height: 430px;
+  padding: 30px;
+  color: white;
+  background:
+    linear-gradient(145deg, rgba(8, 21, 37, 0.94), rgba(12, 92, 92, 0.86)),
+    url("/generated/cinematic-rail.png") center / cover;
+}
+
+.rubric-lead::after {
+  content: "";
+  position: absolute;
+  inset: auto 22px 22px;
+  height: 124px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  background:
+    linear-gradient(90deg, rgba(255, 255, 255, 0.18) 0 24%, transparent 24% 28%, rgba(255, 255, 255, 0.16) 28% 54%, transparent 54% 58%, rgba(255, 255, 255, 0.14) 58% 100%);
+  opacity: 0.82;
+}
+
+.rubric-lead span,
+.rubric-card span {
+  display: inline-flex;
+  align-items: center;
+  min-height: 30px;
+  padding: 0 10px;
+  border-radius: 999px;
+  color: var(--ink);
+  background: var(--gold);
+  font-size: 0.74rem;
+  font-weight: 950;
+  text-transform: uppercase;
+}
+
+.rubric-lead h3 {
+  max-width: 330px;
+  margin: 24px 0 14px;
+  font-size: clamp(2rem, 4vw, 3.4rem);
+  line-height: 0.98;
+  text-wrap: balance;
+}
+
+.rubric-lead p {
+  max-width: 360px;
+  margin: 0;
+  color: rgba(255, 255, 255, 0.78);
+  line-height: 1.6;
+}
+
+.rubric-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.rubric-card {
+  min-height: 206px;
+  padding: 24px;
+}
+
+.rubric-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 118px;
+  height: 118px;
+  background: radial-gradient(circle at top right, rgba(37, 150, 140, 0.28), transparent 68%);
+}
+
+.rubric-card:nth-child(2)::before {
+  background: radial-gradient(circle at top right, rgba(247, 183, 51, 0.3), transparent 68%);
+}
+
+.rubric-card:nth-child(3)::before {
+  background: radial-gradient(circle at top right, rgba(242, 103, 81, 0.24), transparent 68%);
+}
+
+.rubric-card:nth-child(4)::before {
+  background: radial-gradient(circle at top right, rgba(91, 79, 158, 0.23), transparent 68%);
+}
+
+.rubric-card h3 {
+  margin: 22px 0 10px;
+  font-size: 1.36rem;
+  line-height: 1.08;
+}
+
+.rubric-card p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.55;
+}
+
+.rubric-card strong {
+  display: block;
+  margin-top: 18px;
+  color: var(--teal-dark);
+  font-size: 0.8rem;
+  font-weight: 950;
+  text-transform: uppercase;
+  overflow-wrap: anywhere;
+}
+
 .review-band {
   color: white;
   background:
@@ -1412,6 +1535,8 @@ a {
   .hood-layout,
   .architecture,
   .mcp-call-flow,
+  .rubric-layout,
+  .rubric-grid,
   .review-route,
   .review-proof-strip {
     grid-template-columns: 1fr;

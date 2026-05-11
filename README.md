@@ -8,6 +8,13 @@ Turn a lesson map and a pseudonymized learner profile into tomorrow's classroom 
 
 [Open the live reviewer walkthrough](https://cuuper22.github.io/waypoint-differentiation-lab/) or run it locally from `showcase/`. It is the fast reviewer path: a three-act cinematic walkthrough, packet preview, Receipts Rail, quality gate, lightweight MCP architecture, and five-minute review scorecard in one browser pass. Click **Play reviewer demo** for the guided version.
 
+What to notice:
+
+- **Output quality:** the handout, receipts, audit, and quality report are generated from the same packet data.
+- **Architecture decisions:** compact-first MCP calls keep default payloads small while full evidence stays one tool call away.
+- **Code quality:** `npm run submission:check` builds, tests, smoke-tests stdio, runs visual QA, and prints the compact reviewer workflow.
+- **Domain understanding:** every recommendation preserves `RI.7.2`, maps to UDL, avoids student-facing labels, and has a progress check.
+
 ```bash
 npm ci
 npm run demo

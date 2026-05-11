@@ -187,7 +187,16 @@ function interactionScript() {
       const wait = (ms) => new Promise((done) => setTimeout(done, ms));
     (async () => {
       document.documentElement.style.scrollBehavior = "auto";
-      const required = ["#problem", "#mcp", "#packet", "#receipts", "#quality", "#under-hood", "#review-path"];
+      const required = [
+        "#problem",
+        "#mcp",
+        "#packet",
+        "#receipts",
+        "#quality",
+        "#under-hood",
+        "#rubric-map",
+        "#review-path"
+      ];
       for (const selector of required) {
         if (!document.querySelector(selector)) failures.push("missing section " + selector);
       }
@@ -280,6 +289,16 @@ function interactionScript() {
       const reviewText = document.querySelector("#review-path")?.textContent ?? "";
       if (!reviewText.includes("npm run submission:check") || !reviewText.includes("Five-Minute Reviewer Path")) {
         failures.push("reviewer path scorecard did not render");
+      }
+
+      const rubricText = document.querySelector("#rubric-map")?.textContent ?? "";
+      for (const criterion of [
+        "Output quality",
+        "Architecture decisions",
+        "Code quality",
+        "Domain understanding"
+      ]) {
+        if (!rubricText.includes(criterion)) failures.push("rubric map missing " + criterion);
       }
 
       const images = Array.from(document.images).map((image) => ({
