@@ -67,6 +67,7 @@ const requiredSnippets = [
       "https://cuuper22.github.io/waypoint-differentiation-lab/",
       "assets/showcase-preview.gif",
       "npm run submission:check",
+      "npm run preview:showcase",
       "compact-first MCP calls",
       "9,000-character startup budget",
       "RI.7.2"

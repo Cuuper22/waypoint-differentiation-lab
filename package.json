@@ -14,6 +14,7 @@
     "dev": "tsx src/server.ts",
     "smoke:mcp": "npm run build && node scripts/mcp-smoke.mjs",
     "polish:check": "node scripts/repo-polish-check.mjs",
+    "preview:showcase": "node scripts/capture-showcase-preview.mjs",
     "qa:showcase": "node scripts/qa-showcase.mjs",
     "showcase:dev": "vite --config showcase/vite.config.js",
     "showcase:build": "vite build --config showcase/vite.config.js",

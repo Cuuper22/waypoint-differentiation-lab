@@ -23,6 +23,14 @@ npm run showcase:dev
 
 Open `http://127.0.0.1:5173/`.
 
+The README preview is captured from the real walkthrough states:
+
+```bash
+npm run preview:showcase
+```
+
+That optional command requires `ffmpeg`; the generated GIF is already committed for reviewers.
+
 For a terminal-sized MCP walkthrough without opening a client:
 
 ```bash
