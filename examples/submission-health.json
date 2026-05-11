@@ -10,7 +10,7 @@
   },
   "mcp": {
     "defaultPayload": "compact-first",
-    "startupBudgetChars": 7000,
+    "startupBudgetChars": 5000,
     "compactPacketMaxPercentOfFull": 30,
     "onDemandEvidenceTool": "explain_modification",
     "tools": [

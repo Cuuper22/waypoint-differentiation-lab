@@ -37,7 +37,7 @@ export const data = {
     "catalogBudget": {
       "tool": "tool catalog",
       "mode": "startup",
-      "budget": 7000,
+      "budget": 5000,
       "textChannel": "concise tool list",
       "structuredContent": "shallow passthrough schemas"
     },

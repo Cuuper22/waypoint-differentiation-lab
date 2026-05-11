@@ -112,7 +112,7 @@ Every recommendation carries:
 
 The quality gate fails recommendations that are vague, unsupported, lowered in rigor, missing matching materials, or unsafe for student-facing language.
 
-The MCP surface is intentionally light by default. Compact packet output is tested to stay under 30% of the full packet JSON, every public tool must advertise a non-empty object output schema, the tool catalog itself is smoke-tested under a 7,000-character startup budget, compact summary resources are smoke-tested against resource budgets, tool text responses are smoke-tested against tight character budgets, quote-level evidence stays behind `explain_modification`, and the full audit table stays behind `render_evidence_audit({ detail: "full" })` until a client actually needs it.
+The MCP surface is intentionally light by default. Compact packet output is tested to stay under 30% of the full packet JSON, every public tool must advertise a non-empty object output schema, the tool catalog itself is smoke-tested under a 5,000-character startup budget, compact summary resources are smoke-tested against resource budgets, tool text responses are smoke-tested against tight character budgets, quote-level evidence stays behind `explain_modification`, and the full audit table stays behind `render_evidence_audit({ detail: "full" })` until a client actually needs it.
 
 ## Why this shape
 

@@ -19,62 +19,20 @@ import {
   teacherHandoutMarkdown
 } from "./generator.js";
 import { evidenceById, learnerProfile, lessonChunks } from "./knowledge.js";
-import { EvidenceRefSchema } from "./schemas.js";
 
 const server = new McpServer({
   name: "waypoint-differentiation-lab",
   version: "1.0.0"
 });
 
-const LessonMapChunkOutputSchema = z.object({
-  id: z.string(),
-  phase: z.string(),
-  title: z.string(),
-  minutes: z.number(),
-  evidenceIds: z.array(z.string()).optional()
-}).passthrough();
-const LessonMapOutputSchema = z.object({
-  chunks: z.array(LessonMapChunkOutputSchema)
-}).passthrough();
-const LearnerProfileOutputSchema = z.object({
-  caseLabel: z.literal("Learner 7A"),
-  grade: z.string(),
-  supportIds: z.array(z.string()).optional()
-}).passthrough();
-const ModificationOutputSchema = z.object({
-  id: z.string(),
-  teacherAction: z.string().optional(),
-  standardPreserved: z.literal("RI.7.2").optional(),
-  receiptTool: z.literal("explain_modification").optional()
-}).passthrough();
-const TeacherPacketToolOutputSchema = z.object({
-  caseLabel: z.literal("Learner 7A"),
-  preservedStandard: z.literal("RI.7.2"),
-  modifications: z.array(ModificationOutputSchema),
-  quality: z
-    .object({
-      passed: z.boolean()
-    })
-    .passthrough()
-    .optional()
-}).passthrough();
-const ModificationExplanationOutputSchema = z.object({
-  modification: ModificationOutputSchema,
-  evidenceTrace: z.object({
-    modificationId: z.string(),
-    standardPreserved: z.literal("RI.7.2")
-  }).passthrough()
-}).passthrough();
-const QualityReportOutputSchema = z.object({
-  passed: z.boolean(),
-  summary: z.string(),
-  flags: z.array(z.object({ kind: z.string(), modificationId: z.string().optional() }).passthrough()).optional()
-}).passthrough();
-const EvidenceAuditOutputSchema = z.object({
-  detail: z.enum(["summary", "full"]),
-  modificationIds: z.array(z.string()),
-  nextTool: z.string().optional()
-}).passthrough();
+const IdObjectSchema = z.object({ id: z.string() }).passthrough();
+const LessonMapOutputSchema = z.object({ chunks: z.array(IdObjectSchema) }).passthrough();
+const LearnerProfileOutputSchema = z.object({ caseLabel: z.string() }).passthrough();
+const TeacherPacketToolOutputSchema = z.object({ modifications: z.array(IdObjectSchema) }).passthrough();
+const ModificationExplanationOutputSchema = z.object({ modification: IdObjectSchema }).passthrough();
+const QualityReportOutputSchema = z.object({ passed: z.boolean() }).passthrough();
+const EvidenceLookupOutputSchema = z.object({ id: z.string(), source: z.enum(["IEP", "Lesson", "UDL"]) }).passthrough();
+const EvidenceAuditOutputSchema = z.object({ detail: z.enum(["summary", "full"]) }).passthrough();
 
 function textContent(text: string) {
   return [{ type: "text" as const, text }];
@@ -245,9 +203,8 @@ server.registerTool(
     inputSchema: {
       phase: z
         .enum(["overview", "before-reading", "during-reading", "independent-practice", "discussion", "all"])
-        .default("all")
-        .describe("Optional lesson phase filter."),
-      includeEvidence: z.boolean().default(false).describe("Include quote text. Defaults false to keep MCP payloads light.")
+        .default("all"),
+      includeEvidence: z.boolean().default(false)
     },
     outputSchema: LessonMapOutputSchema,
     annotations: { readOnlyHint: true, idempotentHint: true }
@@ -269,18 +226,9 @@ server.registerTool(
     description:
       "Generate deterministic lesson supports for Learner 7A. Defaults compact; request full for handout and traces.",
     inputSchema: {
-      minutesAvailable: z
-        .union([z.literal(5), z.literal(15), z.literal(45)])
-        .default(45)
-        .describe("How much prep time the teacher has."),
-      emphasis: z
-        .enum(["minimum-viable", "balanced", "full-support"])
-        .default("balanced")
-        .describe("How much support to include."),
-      detail: z
-        .enum(["compact", "full"])
-        .default("compact")
-        .describe("Compact returns IDs and short actions. Full returns the handout and quote-level traces.")
+      minutesAvailable: z.union([z.literal(5), z.literal(15), z.literal(45)]).default(45),
+      emphasis: z.enum(["minimum-viable", "balanced", "full-support"]).default("balanced"),
+      detail: z.enum(["compact", "full"]).default("compact")
     },
     outputSchema: TeacherPacketToolOutputSchema,
     annotations: { readOnlyHint: true, idempotentHint: true }
@@ -308,7 +256,7 @@ server.registerTool(
     description:
       "Return the receipt for one recommendation: quote, lesson demand, UDL, preserved standard, progress check.",
     inputSchema: {
-      modificationId: z.string().describe("Modification ID, such as mod-annotation-code.")
+      modificationId: z.string()
     },
     outputSchema: ModificationExplanationOutputSchema,
     annotations: { readOnlyHint: true, idempotentHint: true }
@@ -336,10 +284,7 @@ server.registerTool(
     description:
       "Run the No Hand-Wavy detector and flag vague, unsupported, unsafe, or lowered-rigor recommendations.",
     inputSchema: {
-      minutesAvailable: z
-        .union([z.literal(5), z.literal(15), z.literal(45)])
-        .default(45)
-        .describe("How much prep time the generated packet should assume."),
+      minutesAvailable: z.union([z.literal(5), z.literal(15), z.literal(45)]).default(45),
       emphasis: z.enum(["minimum-viable", "balanced", "full-support"]).default("balanced")
     },
     outputSchema: QualityReportOutputSchema,
@@ -361,9 +306,9 @@ server.registerTool(
     title: "Look up evidence",
     description: "Look up an evidence ID used in a modification.",
     inputSchema: {
-      id: z.string().describe("Evidence ID, such as iep-ela-goal or lesson-short-response.")
+      id: z.string()
     },
-    outputSchema: EvidenceRefSchema,
+    outputSchema: EvidenceLookupOutputSchema,
     annotations: { readOnlyHint: true, idempotentHint: true }
   },
   async ({ id }) => {
