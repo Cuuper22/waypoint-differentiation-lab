@@ -189,6 +189,8 @@ describe("teacher packet generation", () => {
     expect(data.mcpStats.compactPercentOfFull).toBeLessThan(30);
     expect(data.mcpStats.defaultTool).toContain("compact");
     expect(data.mcpStats.onDemandTool).toBe("explain_modification");
+    expect(data.mcpStats.catalogBudget.tool).toBe("tool catalog");
+    expect(data.mcpStats.catalogBudget.budget).toBe(15000);
   });
 
   it("validates source resources and generated packets against public schemas", () => {

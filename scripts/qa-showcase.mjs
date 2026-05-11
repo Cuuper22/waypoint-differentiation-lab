@@ -266,7 +266,10 @@ function interactionScript() {
       ) {
         failures.push("MCP call console did not render the compact request/response rhythm");
       }
-      if (!consoleText.includes("Text-channel budgets") || !consoleText.includes("get_learner_profile <= 520 chars")) {
+      if (!consoleText.includes("MCP budget ledger") || !consoleText.includes("tool catalog <= 15000 chars")) {
+        failures.push("MCP call console did not render startup budget");
+      }
+      if (!consoleText.includes("get_learner_profile <= 520 chars")) {
         failures.push("MCP call console did not render tool text-channel budgets");
       }
 

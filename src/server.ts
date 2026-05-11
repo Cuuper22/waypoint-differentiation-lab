@@ -18,15 +18,8 @@ import {
 } from "./generator.js";
 import { evidenceById, learnerProfile, lessonChunks } from "./knowledge.js";
 import {
-  CompactModificationSchema,
   EvidenceRefSchema,
-  EvidenceTraceSchema,
-  HandoutSectionSchema,
-  LessonChunkSchema,
-  MiniMaterialSchema,
-  ModificationSchema,
-  QualityReportSchema,
-  UdlAlignmentSchema
+  QualityReportSchema
 } from "./schemas.js";
 
 const server = new McpServer({
@@ -34,36 +27,37 @@ const server = new McpServer({
   version: "1.0.0"
 });
 
-const LessonMapChunkSummarySchema = z.object({
+const LessonMapChunkOutputSchema = z.object({
   id: z.string(),
-  phase: z.enum(["overview", "before-reading", "during-reading", "independent-practice", "discussion"]),
+  phase: z.string(),
   title: z.string(),
   minutes: z.number(),
-  studentTask: z.string(),
-  evidenceIds: z.array(z.string())
-});
+  evidenceIds: z.array(z.string()).optional()
+}).passthrough();
 const LessonMapOutputSchema = z.object({
-  chunks: z.array(z.union([LessonChunkSchema, LessonMapChunkSummarySchema]))
-});
+  chunks: z.array(LessonMapChunkOutputSchema)
+}).passthrough();
 const LearnerProfileOutputSchema = z.object({
   caseLabel: z.literal("Learner 7A"),
   grade: z.string(),
-  sourceNote: z.string(),
-  learningImpact: z.string(),
-  strengths: z.array(z.string()),
-  needs: z.array(z.string()),
   supportIds: z.array(z.string()).optional(),
-  accommodations: z.array(z.string()).optional(),
-  goals: z.array(z.string()).optional(),
   evidence: z.array(EvidenceRefSchema).optional()
-});
+}).passthrough();
+const ModificationOutputSchema = z.object({
+  id: z.string(),
+  lessonMoment: z.string(),
+  teacherAction: z.string(),
+  standardPreserved: z.literal("RI.7.2").optional(),
+  evidenceRefs: z.array(z.string()).optional(),
+  receiptTool: z.literal("explain_modification").optional()
+}).passthrough();
 const TeacherPacketToolOutputSchema = z.object({
   title: z.string(),
   caseLabel: z.literal("Learner 7A"),
   teacherMode: z.literal("Tomorrow Mode"),
   preservedStandard: z.literal("RI.7.2"),
   useFirst: z.array(z.string()),
-  modifications: z.array(z.union([CompactModificationSchema, ModificationSchema])),
+  modifications: z.array(ModificationOutputSchema),
   detail: z.literal("compact").optional(),
   materialIds: z.array(z.string()).optional(),
   quality: z
@@ -73,33 +67,25 @@ const TeacherPacketToolOutputSchema = z.object({
     })
     .optional(),
   nextTools: z.array(z.string()).optional(),
-  evidenceSystem: z.literal("Receipts Rail").optional(),
-  qualityCheck: z.literal("No Hand-Wavy Accommodations Detector").optional(),
-  studentSnapshot: z.string().optional(),
-  lessonSnapshot: z.string().optional(),
-  miniMaterials: z.array(MiniMaterialSchema).optional(),
-  exitTicket: z.array(z.string()).optional(),
-  handoutSections: z.array(HandoutSectionSchema).optional(),
-  qualityReport: QualityReportSchema.optional(),
-  groundingReport: z
-    .object({
-      totalModifications: z.number(),
-      groundedInIepAndLesson: z.number(),
-      missingGrounding: z.array(z.string())
-    })
-    .optional()
-});
+  qualityReport: QualityReportSchema.optional()
+}).passthrough();
 const ModificationExplanationOutputSchema = z.object({
-  modification: ModificationSchema,
-  evidenceTrace: EvidenceTraceSchema,
+  modification: ModificationOutputSchema,
+  evidenceTrace: z.object({
+    modificationId: z.string(),
+    iepQuote: z.string(),
+    lessonDemand: z.string(),
+    barrierAddressed: z.string(),
+    standardPreserved: z.literal("RI.7.2"),
+    progressCheck: z.string()
+  }).passthrough(),
   receipts: z.object({
     iepQuote: z.string(),
     lessonDemand: z.string(),
-    udl: z.array(UdlAlignmentSchema),
     preservedStandard: z.literal("RI.7.2"),
     progressCheck: z.string()
-  })
-});
+  }).passthrough()
+}).passthrough();
 const EvidenceAuditOutputSchema = z.object({
   detail: z.enum(["summary", "full"]),
   markdown: z.string(),

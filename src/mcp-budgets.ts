@@ -8,6 +8,21 @@ export const mcpTextBudgets = {
   renderEvidenceAuditSummary: 1100
 } as const;
 
+export const mcpManifestBudgets = {
+  toolCatalogMaxChars: 15000,
+  toolManifestMaxChars: 4200,
+  outputSchemaMaxChars: 2600,
+  descriptionMaxChars: 170
+} as const;
+
+export const mcpCatalogBudgetRow = {
+  tool: "tool catalog",
+  mode: "startup",
+  budget: mcpManifestBudgets.toolCatalogMaxChars,
+  textChannel: "concise tool list",
+  structuredContent: "shallow passthrough schemas"
+} as const;
+
 export const mcpTextBudgetRows = [
   {
     tool: "generate_teacher_packet",

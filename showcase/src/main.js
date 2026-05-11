@@ -331,11 +331,11 @@ function renderMcpConsole() {
 
   const budgetTitle = document.createElement("div");
   budgetTitle.className = "mcp-budget-title";
-  budgetTitle.append(textSpan("Text-channel budgets"), textSpan("full objects stay structured"));
+  budgetTitle.append(textSpan("MCP budget ledger"), textSpan("startup + response overhead"));
 
   const budgetRows = document.createElement("div");
   budgetRows.className = "mcp-budget-grid";
-  budgetRows.replaceChildren(...(stats.textBudgets ?? []).map(mcpBudgetTemplate));
+  budgetRows.replaceChildren(...[stats.catalogBudget, ...(stats.textBudgets ?? [])].filter(Boolean).map(mcpBudgetTemplate));
 
   budgetPanel.append(budgetTitle, budgetRows);
   mcpConsole.replaceChildren(header, flow, budgetPanel);

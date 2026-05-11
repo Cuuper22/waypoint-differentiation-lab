@@ -34,6 +34,13 @@ export const data = {
     "savedPercent": 78,
     "defaultTool": "generate_teacher_packet detail=compact",
     "onDemandTool": "explain_modification",
+    "catalogBudget": {
+      "tool": "tool catalog",
+      "mode": "startup",
+      "budget": 15000,
+      "textChannel": "concise tool list",
+      "structuredContent": "shallow passthrough schemas"
+    },
     "textBudgets": [
       {
         "tool": "generate_teacher_packet",

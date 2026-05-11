@@ -1,6 +1,6 @@
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js";
-import { mcpTextBudgets } from "../dist/mcp-budgets.js";
+import { mcpManifestBudgets, mcpTextBudgets } from "../dist/mcp-budgets.js";
 
 const requiredTools = [
   "generate_teacher_packet",
@@ -33,6 +33,25 @@ try {
   const tools = await client.listTools();
   const toolNames = new Set(tools.tools.map((tool) => tool.name));
   const toolsByName = new Map(tools.tools.map((tool) => [tool.name, tool]));
+  const manifestMetrics = measureToolManifest(tools.tools);
+  assert(
+    manifestMetrics.totalChars <= mcpManifestBudgets.toolCatalogMaxChars,
+    `MCP tool catalog is ${manifestMetrics.totalChars} chars, over ${mcpManifestBudgets.toolCatalogMaxChars}`
+  );
+  for (const tool of manifestMetrics.tools) {
+    assert(
+      tool.totalChars <= mcpManifestBudgets.toolManifestMaxChars,
+      `${tool.name} tool manifest is ${tool.totalChars} chars, over ${mcpManifestBudgets.toolManifestMaxChars}`
+    );
+    assert(
+      tool.outputSchemaChars <= mcpManifestBudgets.outputSchemaMaxChars,
+      `${tool.name} output schema is ${tool.outputSchemaChars} chars, over ${mcpManifestBudgets.outputSchemaMaxChars}`
+    );
+    assert(
+      tool.descriptionChars <= mcpManifestBudgets.descriptionMaxChars,
+      `${tool.name} description is ${tool.descriptionChars} chars, over ${mcpManifestBudgets.descriptionMaxChars}`
+    );
+  }
   for (const tool of requiredTools) {
     assert(toolNames.has(tool), `Missing MCP tool: ${tool}`);
     assert(toolsByName.get(tool)?.outputSchema?.type === "object", `Missing output schema for MCP tool: ${tool}`);
@@ -111,6 +130,8 @@ try {
         mcpSmoke: "passed",
         tools: tools.tools.length,
         resources: resources.resources.length,
+        toolCatalogChars: manifestMetrics.totalChars,
+        largestToolManifestChars: Math.max(...manifestMetrics.tools.map((tool) => tool.totalChars)),
         compactRecommendations: packet.structuredContent.modifications.length
       },
       null,
@@ -133,4 +154,27 @@ function assertTextBudget(result, label, maxCharacters) {
     .trim();
   assert(text, `${label} returned no text content`);
   assert(text.length <= maxCharacters, `${label} text content is ${text.length} chars, over ${maxCharacters}`);
+}
+
+function measureToolManifest(tools) {
+  const compactTools = tools.map((tool) => ({
+    name: tool.name,
+    title: tool.title,
+    description: tool.description,
+    inputSchema: tool.inputSchema,
+    outputSchema: tool.outputSchema
+  }));
+  const measuredTools = tools.map((tool, index) => {
+    return {
+      name: tool.name,
+      totalChars: JSON.stringify(compactTools[index]).length,
+      inputSchemaChars: JSON.stringify(tool.inputSchema).length,
+      outputSchemaChars: JSON.stringify(tool.outputSchema).length,
+      descriptionChars: (tool.description ?? "").length
+    };
+  });
+  return {
+    totalChars: JSON.stringify(compactTools).length,
+    tools: measuredTools
+  };
 }

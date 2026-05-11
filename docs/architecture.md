@@ -25,7 +25,7 @@ Waypoint Differentiation Lab is intentionally small: structured classroom contex
 
 The builder resolves those refs into an `EvidenceTrace` before a packet can be returned. No vector search is needed for this challenge case; a small, inspectable ruleset is easier to trust.
 
-The default MCP structured output is compact: recommendation IDs, short teacher actions, material IDs, evidence IDs, quality status, and next tool hints. The text channel is intentionally brief so clients do not pay twice for the same data; `src/mcp-budgets.ts` feeds both the stdio smoke test and the showcase budget panel for every public text-returning tool. Quote-level traces remain available through `explain_modification`, and the full audit table remains available through `render_evidence_audit({ detail: "full" })`, so clients do not spend context on receipts they never inspect.
+The default MCP structured output is compact: recommendation IDs, short teacher actions, material IDs, evidence IDs, quality status, and next tool hints. The text channel is intentionally brief so clients do not pay twice for the same data; `src/mcp-budgets.ts` feeds both the stdio smoke test and the showcase budget panel for every public text-returning tool. The same smoke test also caps the tool catalog itself, so startup metadata stays lean. Quote-level traces remain available through `explain_modification`, and the full audit table remains available through `render_evidence_audit({ detail: "full" })`, so clients do not spend context on receipts they never inspect.
 
 ## MCP surface
 
@@ -41,7 +41,7 @@ Tools expose the operations a teacher-facing client needs:
 - `explain_evidence`
 - `render_evidence_audit`
 
-Every public tool advertises a non-empty object output schema. The short text channel gives the client a human-readable handoff; `structuredContent` carries the predictable contract for UI rendering, audits, or a second model pass.
+Every public tool advertises a non-empty object output schema. Those schemas are shallow passthrough contracts rather than giant nested packet replicas: the client gets route-level validation, while `structuredContent` can still carry the rich packet, audits, or a second model pass without inflating the always-visible tool list.
 
 The prompt `differentiate_community_lesson` tells the client to call the generator, inspect receipts, and keep adult-facing labels out of student-facing text.
 
