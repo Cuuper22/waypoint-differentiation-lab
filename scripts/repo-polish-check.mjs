@@ -68,6 +68,7 @@ const requiredSnippets = [
       "assets/showcase-preview.gif",
       "npm run submission:check",
       "compact-first MCP calls",
+      "9,000-character startup budget",
       "RI.7.2"
     ]
   },

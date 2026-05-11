@@ -443,14 +443,14 @@ export function buildTeacherPacket(options: PacketOptions = {}): TeacherPacket {
       "Strategy used today: annotate / reread / ask for help / check-in"
     ],
     handoutSections: [] as HandoutSection[],
-    qualityReport: placeholderQualityReport(),
+    qualityReport: initialQualityReport(),
     groundingReport: groundingReport(chosen)
   };
 
   const packet: TeacherPacket = {
     ...packetShell,
     handoutSections: handoutSections(packetShell),
-    qualityReport: placeholderQualityReport()
+    qualityReport: initialQualityReport()
   };
   packet.qualityReport = reviewPacketQuality(packet);
   return packet;
@@ -1011,7 +1011,7 @@ function handoutSections(packet: Pick<TeacherPacket, "useFirst" | "modifications
   ];
 }
 
-function placeholderQualityReport(): QualityReport {
+function initialQualityReport(): QualityReport {
   return {
     name: "No Hand-Wavy Accommodations Detector",
     passed: true,
@@ -1023,7 +1023,7 @@ function placeholderQualityReport(): QualityReport {
       materialsMatchRecommendations: true
     },
     flags: [],
-    summary: "Pending review."
+    summary: "Review pending."
   };
 }
 
