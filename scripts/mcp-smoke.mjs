@@ -43,6 +43,7 @@ try {
     name: "generate_teacher_packet",
     arguments: { minutesAvailable: 5, emphasis: "minimum-viable", detail: "compact" }
   });
+  assertTextBudget(packet, "generate_teacher_packet compact", 1200);
   assert(packet.structuredContent?.detail === "compact", "generate_teacher_packet did not return compact structured content");
   assert(packet.structuredContent?.quality?.passed === true, "Compact packet quality did not pass");
   assert(
@@ -50,10 +51,25 @@ try {
     "Compact packet did not preserve RI.7.2 on every recommendation"
   );
 
+  const profile = await client.callTool({
+    name: "get_learner_profile",
+    arguments: { detail: "summary" }
+  });
+  assertTextBudget(profile, "get_learner_profile summary", 520);
+  assert(profile.structuredContent?.caseLabel === "Learner 7A", "get_learner_profile lost structured case label");
+
+  const lesson = await client.callTool({
+    name: "get_lesson_map",
+    arguments: { phase: "all", includeEvidence: false }
+  });
+  assertTextBudget(lesson, "get_lesson_map summary", 900);
+  assert(lesson.structuredContent?.chunks?.length >= 6, "get_lesson_map lost structured lesson chunks");
+
   const receipt = await client.callTool({
     name: "explain_modification",
     arguments: { modificationId: "mod-short-response-frame" }
   });
+  assertTextBudget(receipt, "explain_modification receipt", 850);
   assert(
     receipt.structuredContent?.receipts?.preservedStandard === "RI.7.2",
     "explain_modification did not return a preserved-standard receipt"
@@ -63,6 +79,7 @@ try {
     name: "review_packet_quality",
     arguments: { minutesAvailable: 5, emphasis: "minimum-viable" }
   });
+  assertTextBudget(quality, "review_packet_quality summary", 480);
   assert(quality.structuredContent?.passed === true, "review_packet_quality did not pass the generated packet");
 
   console.log(
@@ -83,4 +100,14 @@ try {
 
 function assert(condition, message) {
   if (!condition) throw new Error(message);
+}
+
+function assertTextBudget(result, label, maxCharacters) {
+  const text = result.content
+    ?.filter((entry) => entry.type === "text")
+    .map((entry) => entry.text)
+    .join("\n")
+    .trim();
+  assert(text, `${label} returned no text content`);
+  assert(text.length <= maxCharacters, `${label} text content is ${text.length} chars, over ${maxCharacters}`);
 }

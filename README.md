@@ -64,9 +64,9 @@ Resources:
 Tools:
 
 - `generate_teacher_packet`: builds a deterministic Tomorrow Mode packet for 5, 15, or 45 minutes of prep. Defaults to `detail: "compact"` so clients get IDs and short actions first.
-- `explain_modification`: returns the Receipts Rail trace for one recommendation.
-- `review_packet_quality`: runs the No Hand-Wavy Accommodations Detector.
-- `get_learner_profile`, `get_lesson_map`, and `explain_evidence`: expose the underlying planning context.
+- `explain_modification`: returns a short receipt in `content` and the full Receipts Rail trace in `structuredContent`.
+- `review_packet_quality`: runs the No Hand-Wavy Accommodations Detector with a small text verdict plus structured flags.
+- `get_learner_profile`, `get_lesson_map`, and `explain_evidence`: expose the underlying planning context without dumping raw JSON into the text channel.
 
 ## Inspect the evidence
 
@@ -92,7 +92,7 @@ Every recommendation carries:
 
 The quality gate fails recommendations that are vague, unsupported, lowered in rigor, missing matching materials, or unsafe for student-facing language.
 
-The MCP surface is intentionally light by default. Compact packet output is tested to stay under 30% of the full packet JSON, quote-level evidence stays behind `explain_modification` until a client actually needs it, and the showcase renders the same payload meter from generated data.
+The MCP surface is intentionally light by default. Compact packet output is tested to stay under 30% of the full packet JSON, tool text responses are smoke-tested against tight character budgets, quote-level evidence stays behind `explain_modification` until a client actually needs it, and the showcase renders the same payload meter from generated data.
 
 ## Why this shape
 

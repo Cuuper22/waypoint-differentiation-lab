@@ -25,7 +25,7 @@ Waypoint Differentiation Lab is intentionally small: structured classroom contex
 
 The builder resolves those refs into an `EvidenceTrace` before a packet can be returned. No vector search is needed for this challenge case; a small, inspectable ruleset is easier to trust.
 
-The default MCP structured output is compact: recommendation IDs, short teacher actions, material IDs, evidence IDs, quality status, and next tool hints. The text channel is intentionally brief so clients do not pay twice for the same data. Quote-level traces remain available through `explain_modification`, so clients do not spend context on receipts they never inspect.
+The default MCP structured output is compact: recommendation IDs, short teacher actions, material IDs, evidence IDs, quality status, and next tool hints. The text channel is intentionally brief so clients do not pay twice for the same data; the stdio smoke test enforces budgets for profile, lesson-map, receipt, and quality-review tool text. Quote-level traces remain available through `explain_modification`, so clients do not spend context on receipts they never inspect.
 
 ## MCP surface
 

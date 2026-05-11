@@ -25,6 +25,60 @@ const server = new McpServer({
 
 const FlexibleObjectSchema = z.object({}).passthrough();
 
+function textContent(text: string) {
+  return [{ type: "text" as const, text }];
+}
+
+function learnerProfileToolText(profile: ReturnType<typeof learnerProfileSummary> | typeof learnerProfile, detail: "summary" | "full") {
+  const evidenceIds = "supportIds" in profile ? profile.supportIds : profile.evidence.map((entry) => entry.id);
+  return [
+    `${profile.caseLabel}, grade ${profile.grade}: attention, initiation, stamina, and informational-text comprehension are the planning barriers.`,
+    `Use strengths: peer talk, helping roles, specific praise. Evidence refs: ${evidenceIds.join(", ")}.`,
+    `Returned ${detail} structuredContent; call detail:"full" only when you need goals, accommodations, and quotes.`
+  ].join("\n");
+}
+
+function lessonMapToolText(
+  chunks: Array<{ id: string; phase: string; minutes: number }>,
+  includeEvidence: boolean
+) {
+  const chunkList = chunks.map((chunk) => `${chunk.id} (${chunk.phase}, ${chunk.minutes}m)`).join("; ");
+  const evidenceMode = includeEvidence ? "quote text included" : "evidence IDs only";
+  return [
+    `${chunks.length} lesson chunks returned, ${evidenceMode}.`,
+    chunkList,
+    "Structured content carries teacher moves, student tasks, and evidence refs."
+  ].join("\n");
+}
+
+function shortText(text: string, max = 150) {
+  return text.length <= max ? text : `${text.slice(0, max - 3)}...`;
+}
+
+function modificationReceiptText(explanation: ReturnType<typeof explainModification>) {
+  const trace = explanation.evidenceTrace;
+  return [
+    `Receipt for ${trace.modificationId}: ${explanation.modification.supportType} support, preserves ${trace.standardPreserved}.`,
+    `IEP (${trace.iep.id}): ${shortText(trace.iepQuote)}`,
+    `Lesson (${trace.lesson.id}): ${shortText(trace.lessonDemand)}`,
+    `UDL: ${trace.udlAlignment.map((item) => item.principle).join(", ")}.`,
+    `Progress check: ${shortText(trace.progressCheck, 180)}`,
+    "Full modification and quote trace are in structuredContent."
+  ].join("\n");
+}
+
+function qualityReportText(report: ReturnType<typeof reviewPacketQuality>) {
+  const status = report.passed ? "passed" : "needs review";
+  const flags = report.flags.length
+    ? report.flags.map((flag) => `${flag.kind}:${flag.modificationId}`).join(", ")
+    : "none";
+  return [
+    `${report.name}: ${status}.`,
+    report.summary,
+    `Flags: ${flags}. Structured content includes all check booleans and flag messages.`
+  ].join("\n");
+}
+
 server.registerResource(
   "learner-profile",
   "waypoint://case/learner-7a/profile",
@@ -100,7 +154,7 @@ server.registerTool(
   async ({ detail }) => {
     const profile = detail === "full" ? learnerProfile : learnerProfileSummary();
     return {
-      content: [{ type: "text", text: JSON.stringify(profile, null, 2) }],
+      content: textContent(learnerProfileToolText(profile, detail)),
       structuredContent: profile
     };
   }
@@ -124,7 +178,7 @@ server.registerTool(
     const sourceChunks = includeEvidence ? lessonChunks : lessonMapSummary();
     const chunks = phase === "all" ? sourceChunks : sourceChunks.filter((chunk) => chunk.phase === phase);
     return {
-      content: [{ type: "text", text: JSON.stringify(chunks, null, 2) }],
+      content: textContent(lessonMapToolText(chunks, includeEvidence)),
       structuredContent: { chunks }
     };
   }
@@ -184,13 +238,13 @@ server.registerTool(
     try {
       const explanation = explainModification(modificationId);
       return {
-        content: [{ type: "text", text: JSON.stringify(explanation, null, 2) }],
+        content: textContent(modificationReceiptText(explanation)),
         structuredContent: explanation
       };
     } catch (error) {
       return {
         isError: true,
-        content: [{ type: "text", text: error instanceof Error ? error.message : "Unknown modification error" }]
+        content: textContent(error instanceof Error ? error.message : "Unknown modification error")
       };
     }
   }
@@ -216,7 +270,7 @@ server.registerTool(
     const packet = buildTeacherPacket({ minutesAvailable, emphasis });
     const report = reviewPacketQuality(packet);
     return {
-      content: [{ type: "text", text: JSON.stringify(report, null, 2) }],
+      content: textContent(qualityReportText(report)),
       structuredContent: report
     };
   }
@@ -237,11 +291,11 @@ server.registerTool(
     if (!evidence) {
       return {
         isError: true,
-        content: [{ type: "text", text: `No evidence found for id: ${id}` }]
+        content: textContent(`No evidence found for id: ${id}`)
       };
     }
     return {
-      content: [{ type: "text", text: JSON.stringify(evidence, null, 2) }],
+      content: textContent(`${evidence.id} (${evidence.source}): ${evidence.quote}`),
       structuredContent: evidence
     };
   }
@@ -260,9 +314,10 @@ server.registerTool(
   },
   async ({ minutesAvailable, emphasis }) => {
     const packet = buildTeacherPacket({ minutesAvailable, emphasis });
+    const markdown = evidenceAuditMarkdown(packet);
     return {
-      content: [{ type: "text", text: evidenceAuditMarkdown(packet) }],
-      structuredContent: { markdown: evidenceAuditMarkdown(packet) }
+      content: textContent(markdown),
+      structuredContent: { markdown }
     };
   }
 );
