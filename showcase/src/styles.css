@@ -1903,6 +1903,82 @@ a {
   font-size: 0.9em;
 }
 
+.proof-dock {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.proof-dock a {
+  position: relative;
+  display: grid;
+  min-height: 132px;
+  padding: 18px;
+  overflow: hidden;
+  color: white;
+  text-decoration: none;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 8px;
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0.06)),
+    rgba(255, 255, 255, 0.08);
+  box-shadow: 0 22px 70px rgba(0, 0, 0, 0.18);
+  transition:
+    transform 0.22s ease,
+    border-color 0.22s ease,
+    background 0.22s ease;
+}
+
+.proof-dock a::after {
+  content: "";
+  position: absolute;
+  inset: auto -28px -34px auto;
+  width: 86px;
+  height: 86px;
+  border-radius: 50%;
+  background: rgba(247, 183, 51, 0.24);
+  transition: transform 0.22s ease;
+}
+
+.proof-dock a:hover {
+  transform: translateY(-3px);
+  border-color: rgba(247, 183, 51, 0.5);
+  background:
+    linear-gradient(135deg, rgba(247, 183, 51, 0.18), rgba(94, 209, 194, 0.13)),
+    rgba(255, 255, 255, 0.1);
+}
+
+.proof-dock a:hover::after {
+  transform: scale(1.18);
+}
+
+.proof-dock span {
+  color: var(--gold);
+  font-size: 0.72rem;
+  font-weight: 950;
+  text-transform: uppercase;
+}
+
+.proof-dock strong {
+  align-self: end;
+  max-width: 100%;
+  margin-top: 20px;
+  color: white;
+  font-size: 1.3rem;
+  line-height: 1.08;
+  overflow-wrap: anywhere;
+}
+
+.proof-dock em {
+  position: relative;
+  z-index: 1;
+  color: rgba(255, 255, 255, 0.72);
+  font-size: 0.86rem;
+  font-style: normal;
+  line-height: 1.4;
+}
+
 .review-proof-strip {
   display: grid;
   grid-template-columns: 220px 1fr;
@@ -1953,6 +2029,7 @@ a {
   .rubric-layout,
   .rubric-grid,
   .review-route,
+  .proof-dock,
   .review-proof-strip {
     grid-template-columns: 1fr;
   }

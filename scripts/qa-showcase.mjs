@@ -343,6 +343,15 @@ function interactionScript(expectedCatalogBudget, expectedPromptMessageBudget) {
       if (!reviewText.includes("npm run submission:check") || !reviewText.includes("Five-Minute Reviewer Path")) {
         failures.push("reviewer path scorecard did not render");
       }
+      const proofLinks = Array.from(document.querySelectorAll("[data-proof-dock] a"));
+      if (proofLinks.length !== 4) failures.push("proof dock did not render four direct links");
+      if (!reviewText.includes("Smoke report") || !reviewText.includes("measured stdio budgets")) {
+        failures.push("proof dock did not render the MCP smoke report shortcut");
+      }
+      const proofHrefs = proofLinks.map((link) => link.href);
+      if (!proofHrefs.some((href) => href.endsWith("/examples/mcp-smoke-report.json"))) {
+        failures.push("proof dock is missing the mcp-smoke-report link");
+      }
 
       const rubricText = document.querySelector("#rubric-map")?.textContent ?? "";
       for (const criterion of [
