@@ -37,14 +37,14 @@ export const data = {
     "catalogBudget": {
       "tool": "tool catalog",
       "mode": "startup",
-      "budget": 5000,
+      "budget": 4650,
       "textChannel": "concise tool list",
       "structuredContent": "shallow passthrough schemas"
     },
     "promptBudget": {
       "prompt": "differentiate_community_lesson",
       "mode": "prompt",
-      "catalogBudget": 900,
+      "catalogBudget": 500,
       "messageBudget": 850,
       "textChannel": "compact orchestration route",
       "structuredContent": "summary resources plus compact packet first"
@@ -57,11 +57,11 @@ export const data = {
       "rows": [
         {
           "label": "tool catalog",
-          "value": "4,733 / 5,000 chars"
+          "value": "4,566 / 4,650 chars"
         },
         {
           "label": "largest tool",
-          "value": "900 / 1,000 chars"
+          "value": "863 / 900 chars"
         },
         {
           "label": "prompt message",

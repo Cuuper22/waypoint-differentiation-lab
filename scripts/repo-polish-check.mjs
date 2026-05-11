@@ -75,7 +75,7 @@ const requiredSnippets = [
       "npm run submission:check",
       "npm run preview:showcase",
       "compact-first MCP calls",
-      "5,000-character startup budget",
+      "4,650-character startup budget",
       "prompt catalog and prompt message are budgeted",
       "measured stdio report",
       "RI.7.2"

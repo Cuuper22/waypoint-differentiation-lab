@@ -54,9 +54,9 @@ Result: All recommendations are specific, evidence-grounded, RI.7.2-preserving, 
 
 - Smoke result: passed
 - Startup surface: 7 tools, 6 resources, 1 prompt.
-- Tool catalog: 4,733 / 5,000 characters.
-- Largest tool manifest: 900 / 1,000 characters.
-- Prompt catalog: 240 / 900 characters.
+- Tool catalog: 4,566 / 4,650 characters.
+- Largest tool manifest: 863 / 900 characters.
+- Prompt catalog: 200 / 500 characters.
 - Prompt message: 421 / 850 characters.
 - Compact packet response: 604 / 1,200 text chars; 2,695 / 3,200 structured chars.
 - One-receipt response: 569 / 850 text chars; 2,237 / 2,600 structured chars.

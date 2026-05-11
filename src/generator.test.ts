@@ -34,14 +34,14 @@ const measuredSmokeReceipt: McpSmokeReceipt = {
     tools: 7,
     resources: 6,
     prompts: 1,
-    toolCatalogChars: 4733,
-    toolCatalogBudgetChars: 5000,
-    largestToolManifestChars: 900,
-    largestToolManifestBudgetChars: 1000
+    toolCatalogChars: 4566,
+    toolCatalogBudgetChars: 4650,
+    largestToolManifestChars: 863,
+    largestToolManifestBudgetChars: 900
   },
   prompt: {
-    catalogChars: 240,
-    catalogBudgetChars: 900,
+    catalogChars: 200,
+    catalogBudgetChars: 500,
     messageChars: 421,
     messageBudgetChars: 850
   },
@@ -256,7 +256,7 @@ describe("teacher packet generation", () => {
     expect(workflow).toContain("mod-short-response-frame");
     expect(workflow).toContain("Standard preserved: RI.7.2");
     expect(workflow).toContain("## 5. Check The Meter");
-    expect(workflow).toContain("Tool catalog: 4,733 / 5,000 characters.");
+    expect(workflow).toContain("Tool catalog: 4,566 / 4,650 characters.");
     expect(workflow).toContain("Prompt message: 421 / 850 characters.");
     expect(workflow).toContain("Compact packet response: 604 / 1,200 text chars; 2,695 / 3,200 structured chars.");
     expect(workflow).not.toContain("Learner 7A's");
@@ -290,7 +290,7 @@ describe("teacher packet generation", () => {
     expect(data.mcpStats.measuredSmoke?.rows.map((row) => row.label)).toEqual(
       expect.arrayContaining(["tool catalog", "prompt message", "compact response", "one receipt"])
     );
-    expect(data.mcpStats.measuredSmoke?.rows[0].value).toContain("4,733 / 5,000");
+    expect(data.mcpStats.measuredSmoke?.rows[0].value).toContain("4,566 / 4,650");
   });
 
   it("exposes packet-size modes so the showcase can prove the MCP is not one-size-fits-all", () => {

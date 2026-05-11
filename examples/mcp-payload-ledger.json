@@ -6,14 +6,14 @@
     "startup": {
       "tool": "tool catalog",
       "mode": "startup",
-      "budget": 5000,
+      "budget": 4650,
       "textChannel": "concise tool list",
       "structuredContent": "shallow passthrough schemas"
     },
     "prompts": {
       "prompt": "differentiate_community_lesson",
       "mode": "prompt",
-      "catalogBudget": 900,
+      "catalogBudget": 500,
       "messageBudget": 850,
       "textChannel": "compact orchestration route",
       "structuredContent": "summary resources plus compact packet first"
@@ -89,7 +89,7 @@
   },
   "promptContract": {
     "name": "differentiate_community_lesson",
-    "catalogBudgetChars": 900,
+    "catalogBudgetChars": 500,
     "messageBudgetChars": 850,
     "route": [
       "read summary resources first",

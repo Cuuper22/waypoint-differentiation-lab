@@ -178,8 +178,7 @@ server.registerTool(
   "get_learner_profile",
   {
     title: "Get learner profile",
-    description:
-      "Return Learner 7A planning context. Defaults summary; request full for goals, accommodations, and quotes.",
+    description: "Learner 7A context. Summary default; full adds goals, accommodations, quotes.",
     inputSchema: {
       detail: z.enum(["summary", "full"]).default("summary")
     },
@@ -199,7 +198,7 @@ server.registerTool(
   "get_lesson_map",
   {
     title: "Get lesson map",
-    description: "Return the lesson as teacher-actionable chunks rather than one raw PDF dump.",
+    description: "Lesson chunks with teacher moves; include evidence text only when needed.",
     inputSchema: {
       phase: z
         .enum(["overview", "before-reading", "during-reading", "independent-practice", "discussion", "all"])
@@ -223,8 +222,7 @@ server.registerTool(
   "generate_teacher_packet",
   {
     title: "Generate Tomorrow Mode packet",
-    description:
-      "Generate deterministic lesson supports for Learner 7A. Defaults compact; request full for handout and traces.",
+    description: "Generate lesson supports. Compact default; full adds handout and traces.",
     inputSchema: {
       minutesAvailable: z.union([z.literal(5), z.literal(15), z.literal(45)]).default(45),
       emphasis: z.enum(["minimum-viable", "balanced", "full-support"]).default("balanced"),
@@ -253,8 +251,7 @@ server.registerTool(
   "explain_modification",
   {
     title: "Explain a modification",
-    description:
-      "Return the receipt for one recommendation: quote, lesson demand, UDL, preserved standard, progress check.",
+    description: "One recommendation receipt: quote, demand, UDL, standard, progress check.",
     inputSchema: {
       modificationId: z.string()
     },
@@ -281,8 +278,7 @@ server.registerTool(
   "review_packet_quality",
   {
     title: "Review packet quality",
-    description:
-      "Run the No Hand-Wavy detector and flag vague, unsupported, unsafe, or lowered-rigor recommendations.",
+    description: "Run detector for vague, unsupported, unsafe, or lowered-rigor recommendations.",
     inputSchema: {
       minutesAvailable: z.union([z.literal(5), z.literal(15), z.literal(45)]).default(45),
       emphasis: z.enum(["minimum-viable", "balanced", "full-support"]).default("balanced")
@@ -304,7 +300,7 @@ server.registerTool(
   "explain_evidence",
   {
     title: "Look up evidence",
-    description: "Look up an evidence ID used in a modification.",
+    description: "Look up one evidence ID.",
     inputSchema: {
       id: z.string()
     },
@@ -330,7 +326,7 @@ server.registerTool(
   "render_evidence_audit",
   {
     title: "Render evidence audit",
-    description: "Render compact evidence refs by default; request full for quote-level reviewer markdown.",
+    description: "Compact refs by default; full adds quote-level reviewer markdown.",
     inputSchema: {
       minutesAvailable: z.union([z.literal(5), z.literal(15), z.literal(45)]).default(45),
       emphasis: z.enum(["minimum-viable", "balanced", "full-support"]).default("full-support"),
@@ -357,12 +353,12 @@ server.registerTool(
 server.registerPrompt(
   "differentiate_community_lesson",
   {
-    description: "Compact handoff prompt for a teacher-ready handout from summary resources and packet tools.",
+    description: "Compact handoff: summaries -> compact packet -> receipts.",
     argsSchema: {
       teacherNeed: z
         .string()
         .default("Modify tomorrow's 45-minute lesson for Learner 7A with minimal prep.")
-        .describe("Teacher constraint.")
+        .describe("Teacher need.")
     }
   },
   async ({ teacherNeed }) => ({

@@ -6,73 +6,73 @@
     "tools": 7,
     "resources": 6,
     "prompts": 1,
-    "toolCatalogChars": 4733,
-    "toolCatalogBudgetChars": 5000,
-    "largestToolManifestChars": 900,
-    "largestToolManifestBudgetChars": 1000,
+    "toolCatalogChars": 4566,
+    "toolCatalogBudgetChars": 4650,
+    "largestToolManifestChars": 863,
+    "largestToolManifestBudgetChars": 900,
     "toolManifests": [
       {
         "name": "get_learner_profile",
-        "totalChars": 535,
+        "totalChars": 507,
         "inputSchemaChars": 157,
         "outputSchemaChars": 165,
-        "descriptionChars": 105
+        "descriptionChars": 77
       },
       {
         "name": "get_lesson_map",
-        "totalChars": 715,
+        "totalChars": 712,
         "inputSchemaChars": 275,
         "outputSchemaChars": 266,
-        "descriptionChars": 76
+        "descriptionChars": 73
       },
       {
         "name": "generate_teacher_packet",
-        "totalChars": 900,
+        "totalChars": 863,
         "inputSchemaChars": 389,
         "outputSchemaChars": 280,
-        "descriptionChars": 109
+        "descriptionChars": 72
       },
       {
         "name": "explain_modification",
-        "totalChars": 619,
+        "totalChars": 587,
         "inputSchemaChars": 149,
         "outputSchemaChars": 253,
-        "descriptionChars": 105
+        "descriptionChars": 73
       },
       {
         "name": "review_packet_quality",
-        "totalChars": 688,
+        "totalChars": 666,
         "inputSchemaChars": 316,
         "outputSchemaChars": 160,
-        "descriptionChars": 100
+        "descriptionChars": 78
       },
       {
         "name": "explain_evidence",
-        "totalChars": 490,
+        "totalChars": 468,
         "inputSchemaChars": 125,
         "outputSchemaChars": 217,
-        "descriptionChars": 46
+        "descriptionChars": 24
       },
       {
         "name": "render_evidence_audit",
-        "totalChars": 778,
+        "totalChars": 755,
         "inputSchemaChars": 393,
         "outputSchemaChars": 185,
-        "descriptionChars": 88
+        "descriptionChars": 65
       }
     ]
   },
   "prompt": {
-    "catalogChars": 240,
-    "catalogBudgetChars": 900,
+    "catalogChars": 200,
+    "catalogBudgetChars": 500,
     "messageChars": 421,
     "messageBudgetChars": 850,
     "manifests": [
       {
         "name": "differentiate_community_lesson",
-        "totalChars": 238,
-        "descriptionChars": 91,
-        "argumentsChars": 76
+        "totalChars": 198,
+        "descriptionChars": 57,
+        "argumentsChars": 70
       }
     ],
     "routeChecks": [

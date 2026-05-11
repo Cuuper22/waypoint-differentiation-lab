@@ -323,7 +323,7 @@ function interactionScript(expectedCatalogBudget, expectedPromptMessageBudget) {
       }
       if (
         !consoleText.includes("Real stdio meter") ||
-        !consoleText.includes("4,733 / 5,000 chars") ||
+        !consoleText.includes("4,566 / 4,650 chars") ||
         !consoleText.includes("compact response") ||
         !consoleText.includes("examples/mcp-smoke-report.json")
       ) {
