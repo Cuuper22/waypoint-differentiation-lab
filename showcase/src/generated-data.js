@@ -27,6 +27,14 @@ export const data = {
       "summary": "All recommendations are specific, evidence-grounded, RI.7.2-preserving, and safe to put in front of a student."
     }
   },
+  "mcpStats": {
+    "compactChars": 6232,
+    "fullChars": 28299,
+    "compactPercentOfFull": 22,
+    "savedPercent": 78,
+    "defaultTool": "generate_teacher_packet detail=compact",
+    "onDemandTool": "explain_modification"
+  },
   "modifications": [
     {
       "id": "mod-preview-vocab",

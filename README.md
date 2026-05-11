@@ -6,7 +6,7 @@ Turn a lesson map and a pseudonymized learner profile into tomorrow's classroom 
 
 ## Open the visual walkthrough
 
-The repo front door is the Vite showcase in `showcase/`. It is the fast reviewer path: a three-act cinematic walkthrough, packet preview, Receipts Rail, quality gate, and lightweight MCP architecture in one browser pass.
+The repo front door is the Vite showcase in `showcase/`. It is the fast reviewer path: a three-act cinematic walkthrough, packet preview, Receipts Rail, quality gate, lightweight MCP architecture, and five-minute review scorecard in one browser pass. Click **Play reviewer demo** for the guided version.
 
 ```bash
 npm install
@@ -15,6 +15,18 @@ npm run showcase:dev
 ```
 
 Open `http://127.0.0.1:5173/`.
+
+For a terminal-sized MCP walkthrough without opening a client:
+
+```bash
+npm run demo:reviewer
+```
+
+For the full local submission check, including visual QA that starts the showcase server when needed:
+
+```bash
+npm run submission:check
+```
 
 ## Run the MCP
 
@@ -56,6 +68,7 @@ The generated artifacts come from the same TypeScript packet builder:
 
 - `examples/teacher-handout.md`
 - `examples/evidence-audit.md`
+- `examples/reviewer-workflow.md`
 - `examples/quality-report.json`
 - `examples/compact-packet.json`
 - `examples/sample-packet.json`
@@ -73,7 +86,7 @@ Every recommendation carries:
 
 The quality gate fails recommendations that are vague, unsupported, lowered in rigor, missing matching materials, or unsafe for student-facing language.
 
-The MCP surface is intentionally light by default. Compact packet output is about one quarter of the full packet JSON, and quote-level evidence stays behind `explain_modification` until a client actually needs it.
+The MCP surface is intentionally light by default. Compact packet output is about one quarter of the full packet JSON, quote-level evidence stays behind `explain_modification` until a client actually needs it, and the showcase renders the same payload meter from generated data.
 
 ## Why this shape
 

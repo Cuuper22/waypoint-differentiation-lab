@@ -39,11 +39,18 @@ const modList = document.querySelector("[data-mod-list]");
 const receiptDetail = document.querySelector("[data-receipt-detail]");
 const qualityGrid = document.querySelector("[data-quality-grid]");
 const architecture = document.querySelector("[data-architecture]");
+const payloadMeter = document.querySelector("[data-payload-meter]");
 const detectorButton = document.querySelector("[data-run-detector]");
 const detectorOutput = document.querySelector("[data-detector-output]");
+const runDemoButton = document.querySelector("[data-run-demo]");
+const stopDemoButton = document.querySelector("[data-stop-demo]");
+const demoDirector = document.querySelector("[data-demo-director]");
+const demoStatus = document.querySelector("[data-demo-status]");
+const demoProgress = document.querySelector("[data-demo-progress]");
 
 let currentScene = 0;
 let playTimer = null;
+let demoRunId = 0;
 
 standard.textContent = data.packet.preservedStandard;
 qualityChip.textContent = data.packet.qualityReport.passed ? "Quality passed" : "Needs review";
@@ -53,8 +60,10 @@ renderSceneStrip();
 renderHandout();
 renderRecommendations();
 renderQuality();
+renderPayloadMeter();
 renderArchitecture();
 wireDetector();
+wireReviewerDemo();
 wireScrollButtons();
 wireReveal();
 startAmbientCanvas();
@@ -246,6 +255,46 @@ function renderArchitecture() {
   );
 }
 
+function renderPayloadMeter() {
+  const stats = data.mcpStats;
+  const compactPercent = Math.max(4, Math.min(100, stats.compactPercentOfFull));
+
+  const title = document.createElement("div");
+  title.className = "payload-title";
+  title.innerHTML = `<span>Payload meter</span><strong>${stats.savedPercent}% less default payload</strong>`;
+
+  const rows = document.createElement("div");
+  rows.className = "payload-rows";
+  rows.append(
+    payloadRow("Compact default", stats.compactChars, compactPercent, "IDs, short actions, quality status, next tool hints"),
+    payloadRow("Full packet", stats.fullChars, 100, "Handout text, all traces, all materials, all receipts")
+  );
+
+  const note = document.createElement("p");
+  note.textContent = `${stats.defaultTool} first. Pull ${stats.onDemandTool} only for the recommendation under inspection.`;
+
+  payloadMeter.replaceChildren(title, rows, note);
+}
+
+function payloadRow(label, chars, percent, note) {
+  const row = document.createElement("div");
+  row.className = "payload-row";
+
+  const meta = document.createElement("div");
+  meta.className = "payload-meta";
+  meta.innerHTML = `<strong>${label}</strong><span>${chars.toLocaleString("en-US")} chars</span>`;
+
+  const bar = document.createElement("div");
+  bar.className = "payload-bar";
+  bar.innerHTML = `<span style="--payload-width: ${percent}%"></span>`;
+
+  const text = document.createElement("p");
+  text.textContent = note;
+
+  row.append(meta, bar, text);
+  return row;
+}
+
 function wireDetector() {
   detectorButton.addEventListener("click", () => {
     detectorOutput.replaceChildren();
@@ -255,6 +304,100 @@ function wireDetector() {
     result.textContent = "Flagged: vague advice, lowered rigor, missing evidence. Clipboard has spoken.";
     detectorOutput.append(label, result);
   });
+}
+
+function wireReviewerDemo() {
+  runDemoButton.addEventListener("click", () => runReviewerDemo());
+  stopDemoButton.addEventListener("click", () => stopReviewerDemo());
+}
+
+async function runReviewerDemo() {
+  const runId = demoRunId + 1;
+  demoRunId = runId;
+  stopPlayback();
+  document.body.classList.add("demo-running");
+  demoDirector.hidden = false;
+
+  const steps = [
+    {
+      label: "Start with the actual morning problem.",
+      run: async () => {
+        selectScene(0);
+        await scrollToTarget("#top");
+      }
+    },
+    {
+      label: "Show the evidence rail, not a mystery box.",
+      run: async () => {
+        selectScene(1);
+        await pause(900);
+        await scrollToTarget("#mcp");
+      }
+    },
+    {
+      label: "Land on the teacher artifact.",
+      run: async () => {
+        selectScene(2);
+        await scrollToTarget("#packet");
+      }
+    },
+    {
+      label: "Open a receipt and prove the support.",
+      run: async () => {
+        await scrollToTarget("#receipts");
+        selectModification("mod-short-response-frame");
+      }
+    },
+    {
+      label: "Let the quality gate catch nonsense.",
+      run: async () => {
+        await scrollToTarget("#quality");
+        detectorButton.click();
+      }
+    },
+    {
+      label: "End on the lightweight MCP design.",
+      run: async () => {
+        await scrollToTarget("#under-hood");
+      }
+    }
+  ];
+
+  for (let index = 0; index < steps.length; index += 1) {
+    if (runId !== demoRunId) return;
+    updateDemoProgress(index + 0.2, steps.length, steps[index].label);
+    await steps[index].run();
+    if (runId !== demoRunId) return;
+    updateDemoProgress(index + 1, steps.length, steps[index].label);
+    await pause(index === 0 ? 1300 : 1700);
+  }
+
+  updateDemoProgress(steps.length, steps.length, "Reviewer path complete. Receipts still available on click.");
+  await pause(1400);
+  if (runId === demoRunId) {
+    demoDirector.hidden = true;
+    document.body.classList.remove("demo-running");
+  }
+}
+
+function stopReviewerDemo() {
+  demoRunId += 1;
+  demoDirector.hidden = true;
+  document.body.classList.remove("demo-running");
+}
+
+function updateDemoProgress(index, total, label) {
+  demoStatus.textContent = label;
+  demoProgress.style.transform = `scaleX(${Math.min(1, Math.max(0.04, index / total))})`;
+}
+
+async function scrollToTarget(selector) {
+  document.querySelector(selector)?.scrollIntoView({ behavior: "smooth", block: "start" });
+  await pause(900);
+}
+
+function pause(ms) {
+  return new Promise((resolve) => window.setTimeout(resolve, ms));
 }
 
 function sectionTemplate(section) {

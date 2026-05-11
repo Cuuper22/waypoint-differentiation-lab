@@ -332,6 +332,75 @@ a {
   font-size: 0.78rem;
 }
 
+.demo-director {
+  position: fixed;
+  left: 50%;
+  bottom: 24px;
+  z-index: 60;
+  width: min(640px, calc(100% - 32px));
+  padding: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  color: white;
+  background: rgba(8, 21, 37, 0.84);
+  box-shadow: 0 26px 80px rgba(8, 21, 37, 0.34);
+  transform: translateX(-50%);
+  backdrop-filter: blur(20px);
+}
+
+.demo-director[hidden] {
+  display: none;
+}
+
+.demo-director-topline {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.demo-director-topline strong {
+  font-size: 0.78rem;
+  font-weight: 950;
+  text-transform: uppercase;
+}
+
+.demo-director button {
+  min-height: 34px;
+  padding: 0 12px;
+  border-radius: 999px;
+  color: var(--ink);
+  background: var(--gold);
+  font-size: 0.78rem;
+  font-weight: 950;
+}
+
+.demo-progress {
+  height: 6px;
+  overflow: hidden;
+  margin: 12px 0 10px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.14);
+}
+
+.demo-progress span {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--mint), var(--gold), var(--coral));
+  transform: scaleX(0.04);
+  transform-origin: left center;
+  transition: transform 420ms ease;
+}
+
+.demo-director p {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.78);
+  font-size: 0.95rem;
+  font-weight: 750;
+}
+
 .chapter {
   display: grid;
   grid-template-columns: 74px minmax(0, 850px);
@@ -780,11 +849,102 @@ a {
   font-size: 0.95rem;
 }
 
+.hood-layout {
+  display: grid;
+  grid-template-columns: minmax(320px, 0.82fr) minmax(520px, 1.18fr);
+  gap: 18px;
+  align-items: stretch;
+}
+
 .architecture {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(2, 1fr);
   gap: 18px;
   position: relative;
+}
+
+.payload-meter {
+  min-height: 100%;
+  padding: 24px;
+  border: 1px solid rgba(17, 24, 39, 0.08);
+  border-radius: 8px;
+  background: rgba(255, 250, 242, 0.92);
+  box-shadow: var(--shadow);
+}
+
+.payload-title {
+  display: grid;
+  gap: 10px;
+  margin-bottom: 22px;
+}
+
+.payload-title span {
+  color: var(--teal-dark);
+  font-size: 0.78rem;
+  font-weight: 950;
+  text-transform: uppercase;
+}
+
+.payload-title strong {
+  max-width: 360px;
+  color: var(--night);
+  font-size: clamp(2rem, 4vw, 3.4rem);
+  line-height: 0.98;
+}
+
+.payload-rows {
+  display: grid;
+  gap: 16px;
+}
+
+.payload-row {
+  display: grid;
+  gap: 8px;
+}
+
+.payload-meta {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.payload-meta strong {
+  font-weight: 950;
+}
+
+.payload-meta span,
+.payload-row p,
+.payload-meter > p {
+  color: var(--muted);
+  font-size: 0.92rem;
+}
+
+.payload-bar {
+  height: 14px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: #eee1ce;
+}
+
+.payload-bar span {
+  display: block;
+  width: var(--payload-width);
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--teal), var(--mint), var(--gold));
+}
+
+.payload-row p {
+  margin: 0;
+  line-height: 1.45;
+}
+
+.payload-meter > p {
+  margin: 24px 0 0;
+  padding-top: 18px;
+  border-top: 1px solid var(--line);
+  line-height: 1.55;
 }
 
 .arch-node {
@@ -796,16 +956,16 @@ a {
 .arch-node::after {
   content: "";
   position: absolute;
-  top: 50%;
-  right: -22px;
-  width: 28px;
+  top: 0;
+  left: 0;
+  width: 100%;
   height: 4px;
-  border-radius: 99px;
-  background: var(--gold);
+  border-radius: 8px 8px 0 0;
+  background: linear-gradient(90deg, var(--teal), var(--gold), var(--coral));
 }
 
 .arch-node:last-child::after {
-  display: none;
+  display: block;
 }
 
 .arch-index {
@@ -817,6 +977,83 @@ a {
   color: white;
   background: var(--teal-dark);
   font-weight: 950;
+}
+
+.review-band {
+  color: white;
+  background:
+    linear-gradient(135deg, rgba(8, 21, 37, 0.98), rgba(14, 64, 66, 0.94) 48%, rgba(70, 45, 111, 0.96)),
+    url("/generated/texture-grid.svg");
+}
+
+.review-route {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+
+.review-step,
+.review-proof-strip {
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 28px 90px rgba(0, 0, 0, 0.22);
+  backdrop-filter: blur(18px);
+}
+
+.review-step {
+  min-height: 270px;
+  padding: 24px;
+}
+
+.review-step span {
+  display: inline-flex;
+  align-items: center;
+  min-height: 30px;
+  padding: 0 10px;
+  border-radius: 999px;
+  color: var(--ink);
+  background: var(--gold);
+  font-size: 0.74rem;
+  font-weight: 950;
+  text-transform: uppercase;
+}
+
+.review-step h3 {
+  margin: 22px 0 12px;
+  font-size: 1.45rem;
+  line-height: 1.08;
+}
+
+.review-step p,
+.review-proof-strip p {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.78);
+  line-height: 1.6;
+}
+
+.review-step code {
+  padding: 2px 5px;
+  border-radius: 5px;
+  color: #fff2bf;
+  background: rgba(0, 0, 0, 0.22);
+  font-size: 0.9em;
+}
+
+.review-proof-strip {
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  gap: 20px;
+  align-items: center;
+  margin-top: 18px;
+  padding: 22px 24px;
+}
+
+.review-proof-strip strong {
+  color: var(--gold);
+  font-size: 0.82rem;
+  font-weight: 950;
+  text-transform: uppercase;
 }
 
 [data-reveal] {
@@ -842,7 +1079,10 @@ a {
   .receipts-layout,
   .detector-demo,
   .quality-grid,
-  .architecture {
+  .hood-layout,
+  .architecture,
+  .review-route,
+  .review-proof-strip {
     grid-template-columns: 1fr;
   }
 
@@ -851,12 +1091,10 @@ a {
   }
 
   .arch-node::after {
-    top: auto;
-    right: auto;
-    left: 42px;
-    bottom: -12px;
-    width: 4px;
-    height: 24px;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 4px;
   }
 }
 
@@ -944,6 +1182,8 @@ a {
   .receipt-detail,
   .quality-card,
   .arch-node,
+  .payload-meter,
+  .review-step,
   .detector-demo {
     padding: 20px;
   }
@@ -956,6 +1196,11 @@ a {
   .trace-grid,
   .quality-grid {
     grid-template-columns: 1fr;
+  }
+
+  .demo-director {
+    bottom: 12px;
+    width: calc(100% - 24px);
   }
 }
 

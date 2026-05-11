@@ -10,10 +10,12 @@
   "scripts": {
     "build": "node -e \"require('fs').rmSync('dist',{recursive:true,force:true})\" && tsc -p tsconfig.json",
     "demo": "tsx src/demo.ts",
+    "demo:reviewer": "tsx src/reviewer-demo.ts",
     "dev": "tsx src/server.ts",
     "qa:showcase": "node scripts/qa-showcase.mjs",
     "showcase:dev": "vite --config showcase/vite.config.js",
     "showcase:build": "vite build --config showcase/vite.config.js",
+    "submission:check": "npm run check && npm run qa:showcase && npm run demo:reviewer",
     "test": "vitest run",
     "check": "npm run build && npm test && npm run demo && npm run showcase:build"
   },

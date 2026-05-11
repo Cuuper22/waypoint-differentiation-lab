@@ -23,6 +23,7 @@
         <a href="#packet">Packet</a>
         <a href="#quality">Quality</a>
         <a href="#under-hood">MCP</a>
+        <a href="#review-path">Review</a>
       </nav>
     </header>
 
@@ -40,8 +41,9 @@
             The teacher has a grade-level RI.7.2 lesson, one learner profile, and about twelve minutes before reality starts making demands.
           </p>
           <div class="hero-actions">
-            <button class="primary-action" data-scroll="#packet">Open the packet</button>
-            <button class="ghost-action" data-scroll="#receipts">Inspect receipts</button>
+            <button class="primary-action" type="button" data-run-demo>Play reviewer demo</button>
+            <button class="ghost-action" type="button" data-scroll="#packet">Open the packet</button>
+            <button class="ghost-action" type="button" data-scroll="#receipts">Inspect receipts</button>
           </div>
         </div>
         <div class="story-console" data-reveal>
@@ -55,6 +57,14 @@
           </div>
         </div>
       </section>
+      <aside class="demo-director" data-demo-director hidden aria-live="polite">
+        <div class="demo-director-topline">
+          <strong>Reviewer demo</strong>
+          <button type="button" data-stop-demo>Stop</button>
+        </div>
+        <div class="demo-progress" aria-hidden="true"><span data-demo-progress></span></div>
+        <p data-demo-status>Ready</p>
+      </aside>
 
       <section id="problem" class="section-band story-band">
         <div class="chapter" data-reveal>
@@ -173,7 +183,48 @@
             </p>
           </div>
         </div>
-        <div class="architecture" data-architecture data-reveal></div>
+        <div class="hood-layout">
+          <article class="payload-meter" data-payload-meter data-reveal aria-label="MCP payload meter"></article>
+          <div class="architecture" data-architecture data-reveal></div>
+        </div>
+      </section>
+
+      <section id="review-path" class="section-band review-band">
+        <div class="chapter inverse" data-reveal>
+          <span class="chapter-number">07</span>
+          <div>
+            <h2>Five-Minute Reviewer Path</h2>
+            <p>
+              The submission should be easy to judge without spelunking. Start with the show, poke the receipts, then let the verification command be gloriously boring.
+            </p>
+          </div>
+        </div>
+        <div class="review-route" data-reveal>
+          <article class="review-step">
+            <span>Watch</span>
+            <h3>Play reviewer demo</h3>
+            <p>One guided pass through the classroom problem, packet, evidence rail, quality gate, and MCP payload meter.</p>
+          </article>
+          <article class="review-step">
+            <span>Probe</span>
+            <h3>Open one receipt</h3>
+            <p>Click a recommendation or run <code>npm run demo:reviewer</code> to see the exact compact-first tool rhythm.</p>
+          </article>
+          <article class="review-step">
+            <span>Verify</span>
+            <h3>Run the check</h3>
+            <p><code>npm run submission:check</code> builds, tests, regenerates artifacts, launches visual QA, and prints the reviewer workflow.</p>
+          </article>
+          <article class="review-step">
+            <span>Inspect</span>
+            <h3>Read the proof</h3>
+            <p><code>src/generator.ts</code>, <code>src/server.ts</code>, and <code>src/generator.test.ts</code> carry the domain logic, MCP surface, and guardrails.</p>
+          </article>
+        </div>
+        <div class="review-proof-strip" data-reveal>
+          <strong>Submission posture</strong>
+          <p>Human-directed taste up front. Deterministic evidence and tests underneath. No giant ingestion theater wearing a tiny hat.</p>
+        </div>
       </section>
     </main>
 

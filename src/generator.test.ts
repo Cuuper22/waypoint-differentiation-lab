@@ -5,8 +5,10 @@ import {
   compactTeacherPacket,
   evidenceAuditMarkdown,
   evidenceTraceForModification,
+  reviewerWorkflowMarkdown,
   teacherPacketBriefMarkdown,
   reviewPacketQuality,
+  showcaseData,
   teacherHandoutMarkdown
 } from "./generator.js";
 import { evidenceById } from "./knowledge.js";
@@ -134,5 +136,27 @@ describe("teacher packet generation", () => {
     expect(compactJson).not.toContain("lessonDemand");
     expect(compact.modifications.every((mod) => mod.receiptTool === "explain_modification")).toBe(true);
     expect(brief).toContain("Use `explain_modification` for quote-level evidence");
+  });
+
+  it("renders a reviewer workflow that demonstrates compact-first MCP usage", () => {
+    const packet = buildTeacherPacket({ minutesAvailable: 15, emphasis: "balanced" });
+    const workflow = reviewerWorkflowMarkdown(packet);
+
+    expect(workflow).toContain("generate_teacher_packet");
+    expect(workflow).toContain("explain_modification");
+    expect(workflow).toContain("review_packet_quality");
+    expect(workflow).toContain("mod-short-response-frame");
+    expect(workflow).toContain("Standard preserved: RI.7.2");
+    expect(workflow).not.toContain("Learner 7A's");
+  });
+
+  it("exposes payload stats for the visual showcase", () => {
+    const packet = buildTeacherPacket({ minutesAvailable: 45, emphasis: "full-support" });
+    const data = showcaseData(packet);
+
+    expect(data.mcpStats.compactChars).toBeLessThan(data.mcpStats.fullChars);
+    expect(data.mcpStats.compactPercentOfFull).toBeLessThan(55);
+    expect(data.mcpStats.defaultTool).toContain("compact");
+    expect(data.mcpStats.onDemandTool).toBe("explain_modification");
   });
 });

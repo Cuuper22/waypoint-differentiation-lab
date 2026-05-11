@@ -720,6 +720,62 @@ export function teacherPacketBriefMarkdown(packet: TeacherPacket): string {
   ].join("\n");
 }
 
+export function reviewerWorkflowMarkdown(packet: TeacherPacket, modificationId = "mod-short-response-frame"): string {
+  const compact = compactTeacherPacket(packet);
+  const compactJson = JSON.stringify(compact);
+  const fullJson = JSON.stringify(packet);
+  const selected = compact.modifications.find((modification) => modification.id === modificationId);
+  if (!selected) {
+    throw new Error(`Cannot render reviewer workflow for missing modification: ${modificationId}`);
+  }
+
+  const explanation = explainModification(modificationId);
+  const trace = explanation.evidenceTrace;
+  const sizePercent = Math.round((compactJson.length / fullJson.length) * 100);
+
+  return [
+    "# Reviewer Workflow: Compact First, Receipts On Demand",
+    "",
+    "A reviewer can see the whole MCP shape without asking the client to swallow the whole packet first.",
+    "",
+    "## 1. Start Small",
+    "",
+    "`generate_teacher_packet({ minutesAvailable: 15, emphasis: \"balanced\", detail: \"compact\" })`",
+    "",
+    `- Compact payload: ${compactJson.length.toLocaleString("en-US")} characters`,
+    `- Full packet payload: ${fullJson.length.toLocaleString("en-US")} characters`,
+    `- Default call is ${sizePercent}% of the full packet, with recommendation IDs and next-tool hints intact.`,
+    `- Quality status: ${compact.quality.passed ? "passed" : "needs review"}`,
+    "",
+    "Use-first recommendations:",
+    ...compact.useFirst.map((item) => `- ${item}`),
+    "",
+    "## 2. Pull One Receipt",
+    "",
+    `\`explain_modification({ modificationId: "${modificationId}" })\``,
+    "",
+    `Recommendation: ${selected.lessonMoment}`,
+    `Teacher action: ${selected.teacherAction}`,
+    "",
+    "Receipt:",
+    `- IEP quote: ${trace.iepQuote}`,
+    `- Lesson demand: ${trace.lessonDemand}`,
+    `- UDL: ${trace.udlAlignment.map((item) => `${item.principle} (${item.checkpoint})`).join("; ")}`,
+    `- Barrier: ${trace.barrierAddressed}`,
+    `- Standard preserved: ${trace.standardPreserved}`,
+    `- Progress check: ${trace.progressCheck}`,
+    "",
+    "## 3. Run The Gate",
+    "",
+    "`review_packet_quality({ minutesAvailable: 15, emphasis: \"balanced\" })`",
+    "",
+    `Detector: ${packet.qualityReport.name}`,
+    `Result: ${packet.qualityReport.summary}`,
+    "",
+    "That is the intended MCP rhythm: compact packet first, quote-level trace only when a recommendation earns inspection, full handout only when the client is ready to present it."
+  ].join("\n");
+}
+
 export function evidenceAuditMarkdown(packet: TeacherPacket): string {
   const lines = [
     `# ${packet.evidenceSystem}`,
@@ -801,6 +857,10 @@ export function learnerProfileSummary() {
 }
 
 export function showcaseData(packet: TeacherPacket) {
+  const compact = compactTeacherPacket(packet);
+  const compactChars = JSON.stringify(compact).length;
+  const fullChars = JSON.stringify(packet).length;
+
   return {
     title: "Waypoint Differentiation Lab",
     thesis: "Turn one lesson map and one learner profile into tomorrow's evidence-grounded supports.",
@@ -813,6 +873,14 @@ export function showcaseData(packet: TeacherPacket) {
       lessonSnapshot: packet.lessonSnapshot,
       useFirst: packet.useFirst,
       qualityReport: packet.qualityReport
+    },
+    mcpStats: {
+      compactChars,
+      fullChars,
+      compactPercentOfFull: Math.round((compactChars / fullChars) * 100),
+      savedPercent: Math.round((1 - compactChars / fullChars) * 100),
+      defaultTool: "generate_teacher_packet detail=compact",
+      onDemandTool: "explain_modification"
     },
     modifications: packet.modifications.map((mod) => ({
       id: mod.id,

@@ -11,6 +11,7 @@ const chromePath = process.env.CHROME_PATH ?? findChrome();
 
 mkdirSync(outDir, { recursive: true });
 
+const managedServer = await ensureShowcaseServer();
 const chrome = spawn(
   chromePath,
   [
@@ -52,6 +53,7 @@ try {
 
   const report = {
     url: showcaseUrl,
+    serverStarted: Boolean(managedServer),
     screenshots: {
       desktop: "qa/desktop.png",
       mobile: "qa/mobile.png"
@@ -69,12 +71,76 @@ try {
   }
 } finally {
   chrome.kill("SIGKILL");
+  if (managedServer) {
+    managedServer.kill("SIGTERM");
+  }
   await delay(300);
   try {
     rmSync(userDataDir, { recursive: true, force: true, maxRetries: 3, retryDelay: 200 });
   } catch {
     // Windows can hold the Chromium profile for a moment after the process exits.
   }
+}
+
+async function ensureShowcaseServer() {
+  if (await canReach(showcaseUrl)) return null;
+
+  const url = new URL(showcaseUrl);
+  if (!isLocalHost(url.hostname)) {
+    throw new Error(`SHOWCASE_URL is not reachable and cannot be auto-started: ${showcaseUrl}`);
+  }
+
+  const viteBin = join(process.cwd(), "node_modules", "vite", "bin", "vite.js");
+  if (!existsSync(viteBin)) {
+    throw new Error("Vite is not installed. Run npm install before visual QA.");
+  }
+  const host = url.hostname === "[::1]" ? "::1" : url.hostname;
+
+  const server = spawn(
+    process.execPath,
+    [
+      viteBin,
+      "--config",
+      "showcase/vite.config.js",
+      "--host",
+      host,
+      "--port",
+      url.port || "5173",
+      "--strictPort"
+    ],
+    {
+      stdio: "ignore",
+      env: { ...process.env, BROWSER: "none" }
+    }
+  );
+
+  await waitForHttp(showcaseUrl, 15000, server);
+  return server;
+}
+
+async function waitForHttp(url, timeoutMs, processHandle) {
+  const deadline = Date.now() + timeoutMs;
+  while (Date.now() < deadline) {
+    if (processHandle.exitCode !== null) {
+      throw new Error(`Showcase server exited before ${url} became reachable.`);
+    }
+    if (await canReach(url)) return;
+    await delay(150);
+  }
+  throw new Error(`Timed out waiting for showcase server at ${url}`);
+}
+
+async function canReach(url) {
+  try {
+    const response = await fetch(url, { method: "GET" });
+    return response.ok;
+  } catch {
+    return false;
+  }
+}
+
+function isLocalHost(hostname) {
+  return hostname === "127.0.0.1" || hostname === "localhost" || hostname === "::1" || hostname === "[::1]";
 }
 
 async function runViewport(cdp, viewport) {
@@ -121,7 +187,7 @@ function interactionScript() {
       const wait = (ms) => new Promise((done) => setTimeout(done, ms));
     (async () => {
       document.documentElement.style.scrollBehavior = "auto";
-      const required = ["#problem", "#mcp", "#packet", "#receipts", "#quality", "#under-hood"];
+      const required = ["#problem", "#mcp", "#packet", "#receipts", "#quality", "#under-hood", "#review-path"];
       for (const selector of required) {
         if (!document.querySelector(selector)) failures.push("missing section " + selector);
       }
@@ -161,10 +227,32 @@ function interactionScript() {
       const activeScene = document.querySelector(".scene-dot.is-active");
       if (!activeScene) failures.push("cinematic scrub did not activate a scene");
 
+      document.querySelector("[data-run-demo]")?.click();
+      await wait(850);
+      const demoDirector = document.querySelector("[data-demo-director]");
+      const demoText = document.querySelector("[data-demo-status]")?.textContent ?? "";
+      const demoProgress = getComputedStyle(document.querySelector("[data-demo-progress]")).transform;
+      if (!demoDirector || demoDirector.hidden) failures.push("guided reviewer demo did not open");
+      if (!demoText || demoText === "Ready") failures.push("guided reviewer demo did not advance status");
+      if (demoProgress === "none") failures.push("guided reviewer demo progress did not animate");
+      document.querySelector("[data-stop-demo]")?.click();
+      await wait(120);
+      if (!document.querySelector("[data-demo-director]")?.hidden) failures.push("guided reviewer demo did not stop");
+
       document.querySelector("[data-run-detector]")?.click();
       await wait(120);
       const detectorText = document.querySelector("[data-detector-output]")?.textContent ?? "";
       if (!detectorText.includes("Flagged")) failures.push("quality detector demo did not update");
+
+      const payloadText = document.querySelector("[data-payload-meter]")?.textContent ?? "";
+      if (!payloadText.includes("less default payload") || !payloadText.includes("Compact default")) {
+        failures.push("payload meter did not render compact MCP stats");
+      }
+
+      const reviewText = document.querySelector("#review-path")?.textContent ?? "";
+      if (!reviewText.includes("npm run submission:check") || !reviewText.includes("Five-Minute Reviewer Path")) {
+        failures.push("reviewer path scorecard did not render");
+      }
 
       const images = Array.from(document.images).map((image) => ({
         src: image.currentSrc || image.src,
@@ -309,11 +397,18 @@ function delay(ms) {
 
 function findChrome() {
   const candidates = [
+    process.env.CHROME_PATH,
     "C:/Program Files/Google/Chrome/Application/chrome.exe",
     "C:/Program Files (x86)/Google/Chrome/Application/chrome.exe",
     "C:/Program Files/Microsoft/Edge/Application/msedge.exe",
-    "C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe"
-  ];
+    "C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe",
+    "/usr/bin/google-chrome-stable",
+    "/usr/bin/google-chrome",
+    "/usr/bin/chromium",
+    "/usr/bin/chromium-browser",
+    "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+    "/Applications/Microsoft Edge.app/Contents/MacOS/Microsoft Edge"
+  ].filter(Boolean);
   const found = candidates.find((candidate) => existsSync(candidate));
   if (!found) throw new Error("Chrome or Edge was not found. Set CHROME_PATH to a Chromium executable.");
   return found;
