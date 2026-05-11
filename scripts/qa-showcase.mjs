@@ -155,6 +155,17 @@ function interactionScript() {
         failures.push("receipt detail is missing evidence trace labels");
       }
 
+      document.querySelector("[data-play]")?.click();
+      await wait(450);
+      document.querySelector("[data-play]")?.click();
+      const activeScene = document.querySelector(".scene-dot.is-active");
+      if (!activeScene) failures.push("cinematic scrub did not activate a scene");
+
+      document.querySelector("[data-run-detector]")?.click();
+      await wait(120);
+      const detectorText = document.querySelector("[data-detector-output]")?.textContent ?? "";
+      if (!detectorText.includes("Flagged")) failures.push("quality detector demo did not update");
+
       const images = Array.from(document.images).map((image) => ({
         src: image.currentSrc || image.src,
         complete: image.complete,
@@ -176,7 +187,12 @@ function interactionScript() {
       await wait(240);
 
       const resources = performance.getEntriesByType("resource").map((entry) => entry.name);
-      for (const asset of ["showcase-hero.png", "evidence-flow.svg", "classroom-artifact.svg", "texture-grid.svg"]) {
+      for (const asset of [
+        "cinematic-chaos.png",
+        "cinematic-rail.png",
+        "cinematic-packet.png",
+        "texture-grid.svg"
+      ]) {
         if (!resources.some((name) => name.includes(asset))) failures.push("generated asset not requested: " + asset);
       }
 

@@ -1,6 +1,6 @@
 # Architecture
 
-Waypoint Differentiation Lab is intentionally small: structured classroom context in, auditable teacher packet out.
+Waypoint Differentiation Lab is intentionally small: structured classroom context in, compact packet out, deep receipts on demand.
 
 ## Data model
 
@@ -24,6 +24,8 @@ Waypoint Differentiation Lab is intentionally small: structured classroom contex
 - check for understanding
 
 The builder resolves those refs into an `EvidenceTrace` before a packet can be returned. No vector search is needed for this challenge case; a small, inspectable ruleset is easier to trust.
+
+The default MCP output is compact: recommendation IDs, short teacher actions, material IDs, evidence IDs, quality status, and next tool hints. Quote-level traces remain available through `explain_modification`, so clients do not spend context on receipts they never inspect.
 
 ## MCP surface
 
@@ -56,4 +58,4 @@ The test suite covers the same claims so the showcase does not outrun the implem
 
 ## Showcase
 
-`showcase/` is a Vite app fed by `showcase/src/generated-data.js`, which `npm run demo` writes from the same packet builder. The visual walkthrough is not a separate story pasted on top of the code; it is a product-shaped view of the same packet and evidence traces.
+`showcase/` is a Vite app fed by `showcase/src/generated-data.js`, which `npm run demo` writes from the same packet builder. The visual walkthrough uses generated cinematic frames for the reviewer story, but the recommendations, quality checks, and receipt details come from the same packet and evidence traces.

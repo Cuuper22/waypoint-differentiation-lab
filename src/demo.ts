@@ -2,6 +2,7 @@ import { mkdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import {
   buildTeacherPacket,
+  compactTeacherPacket,
   evidenceAuditMarkdown,
   showcaseData,
   teacherHandoutMarkdown
@@ -15,6 +16,7 @@ mkdirSync(examplesDir, { recursive: true });
 mkdirSync(showcaseSrcDir, { recursive: true });
 
 writeFileSync(join(examplesDir, "sample-packet.json"), `${JSON.stringify(packet, null, 2)}\n`);
+writeFileSync(join(examplesDir, "compact-packet.json"), `${JSON.stringify(compactTeacherPacket(packet), null, 2)}\n`);
 writeFileSync(join(examplesDir, "teacher-handout.md"), `${teacherHandoutMarkdown(packet)}\n`);
 writeFileSync(join(examplesDir, "evidence-audit.md"), `${evidenceAuditMarkdown(packet)}\n`);
 writeFileSync(join(examplesDir, "quality-report.json"), `${JSON.stringify(packet.qualityReport, null, 2)}\n`);
@@ -28,6 +30,7 @@ console.log(
     {
       wrote: [
         "examples/sample-packet.json",
+        "examples/compact-packet.json",
         "examples/teacher-handout.md",
         "examples/evidence-audit.md",
         "examples/quality-report.json",

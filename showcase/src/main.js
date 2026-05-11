@@ -1,8 +1,36 @@
 import "./styles.css";
 import { data } from "./generated-data.js";
 
-const caseLabel = document.querySelector("[data-case-label]");
-const teacherMode = document.querySelector("[data-teacher-mode]");
+const scenes = [
+  {
+    count: "01 / 03",
+    label: "8:03am",
+    title: "At 8:03am, “differentiate this” is not a strategy.",
+    copy:
+      "The teacher has a grade-level RI.7.2 lesson, one learner profile, and about twelve minutes before reality starts making demands."
+  },
+  {
+    count: "02 / 03",
+    label: "Receipts",
+    title: "The useful part is not magic. It is provenance.",
+    copy:
+      "Learner evidence, lesson demand, UDL alignment, and quality checks become a visible rail instead of a hidden mush pile."
+  },
+  {
+    count: "03 / 03",
+    label: "Tomorrow",
+    title: "The final object is classroom-ready, not committee-ready.",
+    copy:
+      "A teacher gets the move, the student-facing language, the material, the progress check, and the reason it preserves the standard."
+  }
+];
+
+const frameEls = [...document.querySelectorAll(".cinema-frame")];
+const sceneCount = document.querySelector("[data-scene-count]");
+const sceneTitle = document.querySelector("[data-scene-title]");
+const sceneCopy = document.querySelector("[data-scene-copy]");
+const sceneStrip = document.querySelector("[data-scene-strip]");
+const playButton = document.querySelector("[data-play]");
 const standard = document.querySelector("[data-standard]");
 const qualityChip = document.querySelector("[data-quality-chip]");
 const packetTitle = document.querySelector("[data-packet-title]");
@@ -11,20 +39,74 @@ const modList = document.querySelector("[data-mod-list]");
 const receiptDetail = document.querySelector("[data-receipt-detail]");
 const qualityGrid = document.querySelector("[data-quality-grid]");
 const architecture = document.querySelector("[data-architecture]");
+const detectorButton = document.querySelector("[data-run-detector]");
+const detectorOutput = document.querySelector("[data-detector-output]");
 
-caseLabel.textContent = data.packet.caseLabel;
-teacherMode.textContent = data.packet.teacherMode;
+let currentScene = 0;
+let playTimer = null;
+
 standard.textContent = data.packet.preservedStandard;
 qualityChip.textContent = data.packet.qualityReport.passed ? "Quality passed" : "Needs review";
 packetTitle.textContent = data.packet.teacherMode;
 
+renderSceneStrip();
 renderHandout();
 renderRecommendations();
 renderQuality();
 renderArchitecture();
+wireDetector();
 wireScrollButtons();
 wireReveal();
 startAmbientCanvas();
+selectScene(0);
+
+function renderSceneStrip() {
+  sceneStrip.replaceChildren(
+    ...scenes.map((scene, index) => {
+      const button = document.createElement("button");
+      button.className = "scene-dot";
+      button.type = "button";
+      button.setAttribute("aria-label", `Show scene ${index + 1}: ${scene.label}`);
+      button.innerHTML = `<strong>${scene.count}</strong><span>${scene.label}</span>`;
+      button.addEventListener("click", () => {
+        stopPlayback();
+        selectScene(index);
+      });
+      return button;
+    })
+  );
+
+  playButton.addEventListener("click", () => {
+    if (playTimer) {
+      stopPlayback();
+      return;
+    }
+    selectScene((currentScene + 1) % scenes.length);
+    playTimer = window.setInterval(() => selectScene((currentScene + 1) % scenes.length), 2200);
+    playButton.setAttribute("aria-label", "Pause cinematic sequence");
+    playButton.classList.add("is-playing");
+  });
+}
+
+function selectScene(index) {
+  currentScene = index;
+  const scene = scenes[index];
+  frameEls.forEach((frame, frameIndex) => frame.classList.toggle("is-active", frameIndex === index));
+  sceneCount.textContent = scene.count;
+  sceneTitle.textContent = scene.title;
+  sceneCopy.textContent = scene.copy;
+  [...sceneStrip.children].forEach((button, buttonIndex) => {
+    button.classList.toggle("is-active", buttonIndex === index);
+    button.setAttribute("aria-pressed", String(buttonIndex === index));
+  });
+}
+
+function stopPlayback() {
+  window.clearInterval(playTimer);
+  playTimer = null;
+  playButton.setAttribute("aria-label", "Play cinematic sequence");
+  playButton.classList.remove("is-playing");
+}
 
 function renderHandout() {
   const sections = [
@@ -33,15 +115,15 @@ function renderHandout() {
       items: data.packet.useFirst
     },
     {
-      title: "Materials That Actually Match",
+      title: "Materials That Match The Move",
       items: data.miniMaterials.slice(0, 5).map((material) => material.name)
     },
     {
-      title: "Tomorrow's Checks",
+      title: "Why It Is Defensible",
       items: [
-        "Central idea answer still targets RI.7.2.",
-        "Every recommendation has IEP, lesson, and UDL evidence.",
-        "Student-facing text keeps adult labels out of the room."
+        "Default packet keeps the standard explicit.",
+        "Receipts load recommendation-by-recommendation.",
+        "Student-facing language avoids adult labels."
       ]
     }
   ];
@@ -87,7 +169,7 @@ function selectModification(id) {
   tags.append(
     tag(`Support: ${modification.supportType}`),
     tag(`Standard: ${trace.standardPreserved}`),
-    tag(`Time: ${modification.timeCost}`)
+    tag(`Default: compact`)
   );
 
   const grid = document.createElement("div");
@@ -96,33 +178,18 @@ function selectModification(id) {
     traceBox("IEP quote", trace.iepQuote),
     traceBox("Lesson demand", trace.lessonDemand),
     traceBox("UDL alignment", trace.udlAlignment.map((item) => `${item.principle}: ${item.why}`).join(" ")),
-    traceBox("Progress check", trace.progressCheck)
+    traceBox("Progress check", trace.progressCheck),
+    traceBox("Student-facing text", modification.studentFacingText),
+    traceBox("Barrier addressed", trace.barrierAddressed)
   );
 
-  const studentText = document.createElement("div");
-  studentText.className = "trace-box";
-  const studentTitle = document.createElement("strong");
-  studentTitle.textContent = "Student-facing text";
-  const studentCopy = document.createElement("p");
-  studentCopy.textContent = modification.studentFacingText;
-  studentText.append(studentTitle, studentCopy);
-
-  const barrier = document.createElement("div");
-  barrier.className = "trace-box";
-  const barrierTitle = document.createElement("strong");
-  barrierTitle.textContent = "Barrier addressed";
-  const barrierCopy = document.createElement("p");
-  barrierCopy.textContent = trace.barrierAddressed;
-  barrier.append(barrierTitle, barrierCopy);
-
-  grid.append(studentText, barrier);
   receiptDetail.replaceChildren(title, action, tags, grid);
 }
 
 function renderQuality() {
   const checks = [
-    ["vagueAdvice", "Specific teacher actions", "No support-as-needed soup."],
-    ["missingEvidence", "Evidence refs resolve", "IEP, lesson, and UDL all show up."],
+    ["vagueAdvice", "Specific teacher actions", "No support-as-needed fog."],
+    ["missingEvidence", "Evidence refs resolve", "IDs first. Quotes only when asked."],
     ["loweredRigor", "RI.7.2 preserved", "No sneaky easier worksheet swap."],
     ["unsafeStudentLanguage", "Safe student language", "Adult labels stay backstage."],
     ["materialsMatchRecommendations", "Materials match", "No orphan handouts wandering around."]
@@ -151,9 +218,15 @@ function renderQuality() {
 }
 
 function renderArchitecture() {
+  const architectureItems = [
+    ["Compact first", "generate_teacher_packet defaults to IDs, short actions, and quality status."],
+    ["Deep on demand", "explain_modification returns the quote-level Receipts Rail for one support."],
+    ["Typed surface", "schemas describe packet, trace, handout, and quality contracts without flooding the client."],
+    ["Presentation layer", "MCP clients can turn compact packets into teacher prose only after they know what they need."]
+  ];
+
   architecture.replaceChildren(
-    ...data.architecture.map((item, index) => {
-      const [title, copy] = item.split(": ");
+    ...architectureItems.map(([title, copy], index) => {
       const node = document.createElement("article");
       node.className = "arch-node";
 
@@ -171,6 +244,17 @@ function renderArchitecture() {
       return node;
     })
   );
+}
+
+function wireDetector() {
+  detectorButton.addEventListener("click", () => {
+    detectorOutput.replaceChildren();
+    const label = document.createElement("span");
+    label.textContent = "scan result";
+    const result = document.createElement("p");
+    result.textContent = "Flagged: vague advice, lowered rigor, missing evidence. Clipboard has spoken.";
+    detectorOutput.append(label, result);
+  });
 }
 
 function sectionTemplate(section) {
@@ -251,10 +335,10 @@ function startAmbientCanvas() {
   let height = 0;
   let tick = 0;
 
-  const dots = Array.from({ length: 18 }, (_, index) => ({
+  const dots = Array.from({ length: 16 }, (_, index) => ({
     x: (index * 173) % 1000,
     y: (index * 97) % 700,
-    radius: 70 + (index % 4) * 28,
+    radius: 80 + (index % 4) * 34,
     hue: ["#0f8b8d", "#e86f51", "#f7b733", "#8c68c8"][index % 4]
   }));
 
@@ -271,14 +355,14 @@ function startAmbientCanvas() {
 
   function draw() {
     context.clearRect(0, 0, width, height);
-    context.fillStyle = "#fff8ed";
+    context.fillStyle = "#f8f0e4";
     context.fillRect(0, 0, width, height);
 
     for (const dot of dots) {
-      const x = (dot.x + Math.sin(tick * 0.006 + dot.radius) * 34) % (width + 180);
-      const y = (dot.y + Math.cos(tick * 0.004 + dot.radius) * 30) % (height + 180);
+      const x = (dot.x + Math.sin(tick * 0.005 + dot.radius) * 42) % (width + 180);
+      const y = (dot.y + Math.cos(tick * 0.004 + dot.radius) * 34) % (height + 180);
       const gradient = context.createRadialGradient(x, y, 0, x, y, dot.radius);
-      gradient.addColorStop(0, `${dot.hue}22`);
+      gradient.addColorStop(0, `${dot.hue}20`);
       gradient.addColorStop(1, `${dot.hue}00`);
       context.fillStyle = gradient;
       context.beginPath();

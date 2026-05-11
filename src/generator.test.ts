@@ -2,8 +2,10 @@ import { describe, expect, it } from "vitest";
 import {
   buildTeacherPacket,
   chooseModifications,
+  compactTeacherPacket,
   evidenceAuditMarkdown,
   evidenceTraceForModification,
+  teacherPacketBriefMarkdown,
   reviewPacketQuality,
   teacherHandoutMarkdown
 } from "./generator.js";
@@ -117,5 +119,20 @@ describe("teacher packet generation", () => {
     expect(handout).not.toContain("Learner 7A's");
     expect(audit).toContain("No Hand-Wavy Accommodations Detector");
     expect(audit).toContain("RI.7.2");
+  });
+
+  it("keeps the default MCP packet compact and moves deep quotes behind receipts", () => {
+    const packet = buildTeacherPacket({ minutesAvailable: 45, emphasis: "full-support" });
+    const compact = compactTeacherPacket(packet);
+    const brief = teacherPacketBriefMarkdown(packet);
+    const compactJson = JSON.stringify(compact);
+    const fullJson = JSON.stringify(packet);
+
+    expect(compact.detail).toBe("compact");
+    expect(compactJson.length).toBeLessThan(fullJson.length * 0.55);
+    expect(compactJson).not.toContain("iepQuote");
+    expect(compactJson).not.toContain("lessonDemand");
+    expect(compact.modifications.every((mod) => mod.receiptTool === "explain_modification")).toBe(true);
+    expect(brief).toContain("Use `explain_modification` for quote-level evidence");
   });
 });

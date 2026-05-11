@@ -2,11 +2,11 @@
 
 Turn a lesson map and a pseudonymized learner profile into tomorrow's classroom supports, with receipts attached to every recommendation.
 
-![Waypoint Differentiation Lab showcase](assets/showcase-hero.png)
+![Waypoint Differentiation Lab cinematic showcase](assets/cinematic-rail.png)
 
 ## Open the visual walkthrough
 
-The repo front door is the Vite showcase in `showcase/`. It is the fast reviewer path: problem, packet, Receipts Rail, quality gate, and MCP architecture in one browser pass.
+The repo front door is the Vite showcase in `showcase/`. It is the fast reviewer path: a three-act cinematic walkthrough, packet preview, Receipts Rail, quality gate, and lightweight MCP architecture in one browser pass.
 
 ```bash
 npm install
@@ -45,7 +45,7 @@ Resources:
 
 Tools:
 
-- `generate_teacher_packet`: builds a deterministic Tomorrow Mode packet for 5, 15, or 45 minutes of prep.
+- `generate_teacher_packet`: builds a deterministic Tomorrow Mode packet for 5, 15, or 45 minutes of prep. Defaults to `detail: "compact"` so clients get IDs and short actions first.
 - `explain_modification`: returns the Receipts Rail trace for one recommendation.
 - `review_packet_quality`: runs the No Hand-Wavy Accommodations Detector.
 - `get_student_profile`, `get_lesson_map`, and `explain_evidence`: expose the underlying planning context.
@@ -57,6 +57,7 @@ The generated artifacts come from the same TypeScript packet builder:
 - `examples/teacher-handout.md`
 - `examples/evidence-audit.md`
 - `examples/quality-report.json`
+- `examples/compact-packet.json`
 - `examples/sample-packet.json`
 - `showcase/src/generated-data.js`
 
@@ -71,6 +72,8 @@ Every recommendation carries:
 - progress check
 
 The quality gate fails recommendations that are vague, unsupported, lowered in rigor, missing matching materials, or unsafe for student-facing language.
+
+The MCP surface is intentionally light by default. Compact packet output is about one quarter of the full packet JSON, and quote-level evidence stays behind `explain_modification` until a client actually needs it.
 
 ## Why this shape
 

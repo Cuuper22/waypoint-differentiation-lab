@@ -4,15 +4,24 @@ import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js"
 import * as z from "zod/v4";
 import {
   buildTeacherPacket,
+  compactTeacherPacket,
   evidenceAuditMarkdown,
   explainModification,
+  learnerProfileSummary,
+  lessonMapSummary,
   lessonMapMarkdown,
   reviewPacketQuality,
   studentProfileMarkdown,
+  teacherPacketBriefMarkdown,
   teacherHandoutMarkdown
 } from "./generator.js";
 import { evidenceById, learnerProfile, lessonChunks } from "./knowledge.js";
-import { LearnerProfileSchema, QualityReportSchema, TeacherPacketSchema } from "./schemas.js";
+import {
+  CompactTeacherPacketSchema,
+  LearnerProfileSchema,
+  QualityReportSchema,
+  TeacherPacketSchema
+} from "./schemas.js";
 
 const server = new McpServer({
   name: "waypoint-differentiation-lab",
@@ -57,7 +66,7 @@ server.registerResource(
     contents: [
       {
         uri: "waypoint://packet/community/learner-7a",
-        text: JSON.stringify(buildTeacherPacket({ minutesAvailable: 45, emphasis: "full-support" }), null, 2)
+        text: JSON.stringify(compactTeacherPacket(buildTeacherPacket({ minutesAvailable: 45, emphasis: "full-support" })), null, 2)
       }
     ]
   })
@@ -83,15 +92,21 @@ server.registerTool(
   "get_student_profile",
   {
     title: "Get learner profile",
-    description: "Return the pseudonymized learner profile with strengths, needs, supports, goals, and evidence IDs.",
-    inputSchema: {},
-    outputSchema: LearnerProfileSchema,
+    description:
+      "Return the pseudonymized learner profile. Defaults to a compact summary; request full only when writing a complete handout.",
+    inputSchema: {
+      detail: z.enum(["summary", "full"]).default("summary")
+    },
+    outputSchema: z.union([LearnerProfileSchema, z.any()]),
     annotations: { readOnlyHint: true, idempotentHint: true }
   },
-  async () => ({
-    content: [{ type: "text", text: JSON.stringify(learnerProfile, null, 2) }],
-    structuredContent: learnerProfile
-  })
+  async ({ detail }) => {
+    const profile = detail === "full" ? learnerProfile : learnerProfileSummary();
+    return {
+      content: [{ type: "text", text: JSON.stringify(profile, null, 2) }],
+      structuredContent: profile
+    };
+  }
 );
 
 server.registerTool(
@@ -103,12 +118,14 @@ server.registerTool(
       phase: z
         .enum(["overview", "before-reading", "during-reading", "independent-practice", "discussion", "all"])
         .default("all")
-        .describe("Optional lesson phase filter.")
+        .describe("Optional lesson phase filter."),
+      includeEvidence: z.boolean().default(false).describe("Include quote text. Defaults false to keep MCP payloads light.")
     },
     annotations: { readOnlyHint: true, idempotentHint: true }
   },
-  async ({ phase }) => {
-    const chunks = phase === "all" ? lessonChunks : lessonChunks.filter((chunk) => chunk.phase === phase);
+  async ({ phase, includeEvidence }) => {
+    const sourceChunks = includeEvidence ? lessonChunks : lessonMapSummary();
+    const chunks = phase === "all" ? sourceChunks : sourceChunks.filter((chunk) => chunk.phase === phase);
     return {
       content: [{ type: "text", text: JSON.stringify(chunks, null, 2) }],
       structuredContent: { chunks }
@@ -130,13 +147,24 @@ server.registerTool(
       emphasis: z
         .enum(["minimum-viable", "balanced", "full-support"])
         .default("balanced")
-        .describe("How much support to include.")
+        .describe("How much support to include."),
+      detail: z
+        .enum(["compact", "full"])
+        .default("compact")
+        .describe("Compact returns IDs and short actions. Full returns the handout and quote-level traces.")
     },
-    outputSchema: TeacherPacketSchema,
+    outputSchema: z.union([CompactTeacherPacketSchema, TeacherPacketSchema]),
     annotations: { readOnlyHint: true, idempotentHint: true }
   },
-  async ({ minutesAvailable, emphasis }) => {
+  async ({ minutesAvailable, emphasis, detail }) => {
     const packet = buildTeacherPacket({ minutesAvailable, emphasis });
+    if (detail === "compact") {
+      const compact = compactTeacherPacket(packet);
+      return {
+        content: [{ type: "text", text: teacherPacketBriefMarkdown(packet) }],
+        structuredContent: compact
+      };
+    }
     return {
       content: [{ type: "text", text: teacherHandoutMarkdown(packet) }],
       structuredContent: packet
@@ -263,9 +291,9 @@ server.registerPrompt(
             teacherNeed,
             "",
             "Use the learner-profile and community-lesson-map resources.",
-            "Call generate_teacher_packet, then use explain_modification for any recommendation you include.",
+            "Call generate_teacher_packet with detail compact first. Use explain_modification only for recommendations you actually include.",
             "Return a concise Tomorrow Mode handout with before class, during reading, independent practice, discussion, and exit-ticket sections.",
-            "Every recommendation must cite at least one learner-profile evidence ID, one lesson evidence ID, and one UDL evidence ID.",
+            "Every recommendation must cite evidence IDs. Pull quote text only when it changes the answer.",
             "Do not put adult-facing labels in student-facing language."
           ].join("\n")
         }

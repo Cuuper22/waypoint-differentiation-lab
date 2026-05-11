@@ -119,6 +119,38 @@ export type QualityReport = {
   summary: string;
 };
 
+export type CompactModification = {
+  id: string;
+  lessonMoment: string;
+  supportType: SupportType;
+  teacherAction: string;
+  timeCost: string;
+  materialIds: string[];
+  refs: {
+    iep: string[];
+    lesson: string[];
+    udl: string[];
+  };
+  standardPreserved: "RI.7.2";
+  receiptTool: "explain_modification";
+};
+
+export type CompactTeacherPacket = {
+  title: string;
+  caseLabel: "Learner 7A";
+  teacherMode: "Tomorrow Mode";
+  detail: "compact";
+  preservedStandard: "RI.7.2";
+  useFirst: string[];
+  modifications: CompactModification[];
+  materialIds: string[];
+  quality: {
+    passed: boolean;
+    summary: string;
+  };
+  nextTools: string[];
+};
+
 export type TeacherPacket = {
   title: string;
   caseLabel: "Learner 7A";

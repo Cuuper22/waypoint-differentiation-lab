@@ -1,0 +1,265 @@
+{
+  "title": "Waypoint Differentiation Lab: community lesson packet",
+  "caseLabel": "Learner 7A",
+  "teacherMode": "Tomorrow Mode",
+  "detail": "compact",
+  "preservedStandard": "RI.7.2",
+  "useFirst": [
+    "Use the two-symbol annotation key during paragraphs 1-2.",
+    "Do the 45-second first-step check-in before independent practice.",
+    "Keep the original short-response prompt, but add the claim-evidence-explain frame."
+  ],
+  "modifications": [
+    {
+      "id": "mod-preview-vocab",
+      "lessonMoment": "Before reading: purpose and vocabulary",
+      "supportType": "access",
+      "teacherAction": "Give Learner 7A a four-word preview card. For each word, say it, show a student-friendly meaning, and ask them to choose the matching example before the full text starts.",
+      "timeCost": "2 minutes before reading",
+      "materialIds": [
+        "mat-vocab-preview"
+      ],
+      "refs": {
+        "iep": [
+          "iep-reading-level",
+          "iep-accommodations"
+        ],
+        "lesson": [
+          "lesson-vocab",
+          "lesson-short-response"
+        ],
+        "udl": [
+          "udl-representation"
+        ]
+      },
+      "standardPreserved": "RI.7.2",
+      "receiptTool": "explain_modification"
+    },
+    {
+      "id": "mod-annotation-code",
+      "lessonMoment": "Paragraphs 1-2: claim and criteria",
+      "supportType": "material",
+      "teacherAction": "Replace open annotation with a two-symbol code: box Lowe's claim and star three traits a definition of community must explain.",
+      "timeCost": "No extra time; use during the first whole-class pause",
+      "materialIds": [
+        "mat-annotation-key"
+      ],
+      "refs": {
+        "iep": [
+          "iep-ela-goal",
+          "iep-comprehension-stamina"
+        ],
+        "lesson": [
+          "lesson-p1p2-claim",
+          "lesson-p1p2-summary"
+        ],
+        "udl": [
+          "udl-representation",
+          "udl-action-expression"
+        ]
+      },
+      "standardPreserved": "RI.7.2",
+      "receiptTool": "explain_modification"
+    },
+    {
+      "id": "mod-scaffold-p1p2",
+      "lessonMoment": "During reading question C for paragraphs 1-2",
+      "supportType": "scaffold",
+      "teacherAction": "Ask the original question, then offer a response frame and selectable traits if Learner 7A stalls for more than 10 seconds.",
+      "timeCost": "30 seconds at the pause point",
+      "materialIds": [
+        "mat-traits-frame"
+      ],
+      "refs": {
+        "iep": [
+          "iep-reading-level",
+          "iep-accommodations"
+        ],
+        "lesson": [
+          "lesson-p1p2-summary"
+        ],
+        "udl": [
+          "udl-action-expression"
+        ]
+      },
+      "standardPreserved": "RI.7.2",
+      "receiptTool": "explain_modification"
+    },
+    {
+      "id": "mod-newcastle-bridge",
+      "lessonMoment": "Paragraphs 3-7: Newcastle example",
+      "supportType": "scaffold",
+      "teacherAction": "Use a two-column bridge chart: left side 'Newcastle detail from text,' right side 'How it proves shared story.' Complete the first row together.",
+      "timeCost": "2 minutes during partner reading",
+      "materialIds": [
+        "mat-newcastle-bridge"
+      ],
+      "refs": {
+        "iep": [
+          "iep-ela-goal",
+          "iep-comprehension-stamina"
+        ],
+        "lesson": [
+          "lesson-definition",
+          "lesson-newcastle-question"
+        ],
+        "udl": [
+          "udl-representation",
+          "udl-action-expression"
+        ]
+      },
+      "standardPreserved": "RI.7.2",
+      "receiptTool": "explain_modification"
+    },
+    {
+      "id": "mod-evidence-sorter",
+      "lessonMoment": "Paragraphs 8-11: why the definition matters",
+      "supportType": "material",
+      "teacherAction": "Give a two-column evidence sorter labeled 'What community is' and 'Why community matters.' Learner 7A places two highlighted details before writing.",
+      "timeCost": "2 minutes during the paragraph 8-11 pause",
+      "materialIds": [
+        "mat-evidence-sorter"
+      ],
+      "refs": {
+        "iep": [
+          "iep-ela-goal",
+          "iep-comprehension-stamina"
+        ],
+        "lesson": [
+          "lesson-find-evidence",
+          "lesson-social-change"
+        ],
+        "udl": [
+          "udl-representation",
+          "udl-action-expression"
+        ]
+      },
+      "standardPreserved": "RI.7.2",
+      "receiptTool": "explain_modification"
+    },
+    {
+      "id": "mod-checkin-before-independent",
+      "lessonMoment": "Transition into independent practice",
+      "supportType": "engagement",
+      "teacherAction": "Before independent work, do a quiet one-on-one check-in: repeat directions, point to the checklist, and agree on a first step. Use specific positive praise for starting.",
+      "timeCost": "45 seconds before independent work",
+      "materialIds": [
+        "mat-first-step-card"
+      ],
+      "refs": {
+        "iep": [
+          "iep-accommodations",
+          "iep-positive-praise",
+          "iep-withdrawal-pattern"
+        ],
+        "lesson": [
+          "lesson-short-response",
+          "lesson-self-checklist"
+        ],
+        "udl": [
+          "udl-engagement"
+        ]
+      },
+      "standardPreserved": "RI.7.2",
+      "receiptTool": "explain_modification"
+    },
+    {
+      "id": "mod-short-response-frame",
+      "lessonMoment": "Independent short response",
+      "supportType": "assessment",
+      "teacherAction": "Keep the same prompt and evidence expectation, but provide a claim-evidence-explain frame and allow oral rehearsal before writing.",
+      "timeCost": "3 minutes setup; saves time during writing",
+      "materialIds": [
+        "mat-short-response-frame"
+      ],
+      "refs": {
+        "iep": [
+          "iep-ela-goal",
+          "iep-comprehension-stamina",
+          "iep-accommodations"
+        ],
+        "lesson": [
+          "lesson-short-response",
+          "lesson-self-checklist"
+        ],
+        "udl": [
+          "udl-action-expression"
+        ]
+      },
+      "standardPreserved": "RI.7.2",
+      "receiptTool": "explain_modification"
+    },
+    {
+      "id": "mod-discussion-role",
+      "lessonMoment": "Student-led discussion",
+      "supportType": "engagement",
+      "teacherAction": "Give Learner 7A a defined peer role: evidence finder. They read one highlighted line from the text before sharing a personal-community answer.",
+      "timeCost": "No extra time",
+      "materialIds": [
+        "mat-discussion-role"
+      ],
+      "refs": {
+        "iep": [
+          "iep-positive-praise",
+          "iep-profile-impact"
+        ],
+        "lesson": [
+          "lesson-discussion-community",
+          "lesson-definition"
+        ],
+        "udl": [
+          "udl-engagement",
+          "udl-action-expression"
+        ]
+      },
+      "standardPreserved": "RI.7.2",
+      "receiptTool": "explain_modification"
+    },
+    {
+      "id": "mod-progress-monitor",
+      "lessonMoment": "End of lesson",
+      "supportType": "monitoring",
+      "teacherAction": "Record three quick data points: annotation completed, literal central-idea answer correct, claim frame started. This doubles as progress evidence without a second form.",
+      "timeCost": "1 minute",
+      "materialIds": [
+        "mat-exit-check"
+      ],
+      "refs": {
+        "iep": [
+          "iep-ela-goal",
+          "iep-withdrawal-pattern"
+        ],
+        "lesson": [
+          "lesson-skill-focus",
+          "lesson-short-response"
+        ],
+        "udl": [
+          "udl-engagement",
+          "udl-action-expression"
+        ]
+      },
+      "standardPreserved": "RI.7.2",
+      "receiptTool": "explain_modification"
+    }
+  ],
+  "materialIds": [
+    "mat-vocab-preview",
+    "mat-annotation-key",
+    "mat-traits-frame",
+    "mat-newcastle-bridge",
+    "mat-evidence-sorter",
+    "mat-first-step-card",
+    "mat-short-response-frame",
+    "mat-discussion-role",
+    "mat-exit-check"
+  ],
+  "quality": {
+    "passed": true,
+    "summary": "All recommendations are specific, evidence-grounded, RI.7.2-preserving, and safe to put in front of a student."
+  },
+  "nextTools": [
+    "explain_modification({ modificationId }) for quote-level receipts",
+    "review_packet_quality({ minutesAvailable, emphasis }) for detector output",
+    "generate_teacher_packet({ detail: 'full' }) only when you need full handout text"
+  ]
+}

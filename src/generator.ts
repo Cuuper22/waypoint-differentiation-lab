@@ -1,5 +1,6 @@
 import { evidenceById, learnerProfile, lessonChunks, udlEvidence } from "./knowledge.js";
 import type {
+  CompactTeacherPacket,
   EvidenceRef,
   EvidenceTrace,
   HandoutSection,
@@ -454,6 +455,42 @@ export function buildTeacherPacket(options: PacketOptions = {}): TeacherPacket {
   return packet;
 }
 
+export function compactTeacherPacket(packet: TeacherPacket): CompactTeacherPacket {
+  return {
+    title: packet.title,
+    caseLabel: packet.caseLabel,
+    teacherMode: packet.teacherMode,
+    detail: "compact",
+    preservedStandard: packet.preservedStandard,
+    useFirst: packet.useFirst,
+    modifications: packet.modifications.map((mod) => ({
+      id: mod.id,
+      lessonMoment: mod.lessonMoment,
+      supportType: mod.supportType,
+      teacherAction: mod.teacherAction,
+      timeCost: mod.timeCost,
+      materialIds: mod.materialIds,
+      refs: {
+        iep: mod.iepRefs,
+        lesson: mod.lessonRefs,
+        udl: mod.udlRefs
+      },
+      standardPreserved: mod.evidenceTrace.standardPreserved,
+      receiptTool: "explain_modification"
+    })),
+    materialIds: packet.miniMaterials.map((material) => material.id),
+    quality: {
+      passed: packet.qualityReport.passed,
+      summary: packet.qualityReport.summary
+    },
+    nextTools: [
+      "explain_modification({ modificationId }) for quote-level receipts",
+      "review_packet_quality({ minutesAvailable, emphasis }) for detector output",
+      "generate_teacher_packet({ detail: 'full' }) only when you need full handout text"
+    ]
+  };
+}
+
 export function chooseModifications(minutes: 5 | 15 | 45, emphasis: PacketOptions["emphasis"]): Modification[] {
   const selectedIds =
     minutes === 5
@@ -657,6 +694,32 @@ export function teacherHandoutMarkdown(packet: TeacherPacket): string {
   return lines.join("\n");
 }
 
+export function teacherPacketBriefMarkdown(packet: TeacherPacket): string {
+  const compact = compactTeacherPacket(packet);
+  return [
+    `# ${compact.teacherMode}: compact packet`,
+    "",
+    `Case: ${compact.caseLabel}`,
+    `Standard preserved: ${compact.preservedStandard}`,
+    `Quality: ${compact.quality.passed ? "passed" : "needs review"}`,
+    "",
+    "## Use first",
+    ...compact.useFirst.map((item) => `- ${item}`),
+    "",
+    "## Recommendations",
+    ...compact.modifications.map(
+      (mod) =>
+        `- ${mod.id}: ${mod.lessonMoment}; support=${mod.supportType}; refs=${[
+          ...mod.refs.iep,
+          ...mod.refs.lesson,
+          ...mod.refs.udl
+        ].join(", ")}; receipt=explain_modification`
+    ),
+    "",
+    "Use `explain_modification` for quote-level evidence only when a recommendation needs inspection."
+  ].join("\n");
+}
+
 export function evidenceAuditMarkdown(packet: TeacherPacket): string {
   const lines = [
     `# ${packet.evidenceSystem}`,
@@ -695,6 +758,17 @@ export function lessonMapMarkdown(): string {
     .join("\n\n");
 }
 
+export function lessonMapSummary() {
+  return lessonChunks.map((chunk) => ({
+    id: chunk.id,
+    phase: chunk.phase,
+    title: chunk.title,
+    minutes: chunk.minutes,
+    studentTask: chunk.studentTask,
+    evidenceIds: chunk.evidence.map((entry) => entry.id)
+  }));
+}
+
 export function studentProfileMarkdown(): string {
   return [
     `# ${learnerProfile.caseLabel}, Grade ${learnerProfile.grade}`,
@@ -712,6 +786,18 @@ export function studentProfileMarkdown(): string {
     "## Evidence",
     ...learnerProfile.evidence.map((entry) => `- ${entry.id}: ${entry.quote}`)
   ].join("\n");
+}
+
+export function learnerProfileSummary() {
+  return {
+    caseLabel: learnerProfile.caseLabel,
+    grade: learnerProfile.grade,
+    learningImpact: learnerProfile.learningImpact,
+    strengths: learnerProfile.strengths,
+    needs: learnerProfile.needs,
+    supportIds: learnerProfile.evidence.map((entry) => entry.id),
+    sourceNote: learnerProfile.sourceNote
+  };
 }
 
 export function showcaseData(packet: TeacherPacket) {

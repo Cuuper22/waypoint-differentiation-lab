@@ -93,6 +93,38 @@ export const QualityReportSchema = z.object({
   summary: z.string()
 });
 
+export const CompactModificationSchema = z.object({
+  id: z.string(),
+  lessonMoment: z.string(),
+  supportType: z.enum(["access", "scaffold", "material", "assessment", "monitoring", "engagement"]),
+  teacherAction: z.string(),
+  timeCost: z.string(),
+  materialIds: z.array(z.string()),
+  refs: z.object({
+    iep: z.array(z.string()),
+    lesson: z.array(z.string()),
+    udl: z.array(z.string())
+  }),
+  standardPreserved: z.literal("RI.7.2"),
+  receiptTool: z.literal("explain_modification")
+});
+
+export const CompactTeacherPacketSchema = z.object({
+  title: z.string(),
+  caseLabel: z.literal("Learner 7A"),
+  teacherMode: z.literal("Tomorrow Mode"),
+  detail: z.literal("compact"),
+  preservedStandard: z.literal("RI.7.2"),
+  useFirst: z.array(z.string()),
+  modifications: z.array(CompactModificationSchema),
+  materialIds: z.array(z.string()),
+  quality: z.object({
+    passed: z.boolean(),
+    summary: z.string()
+  }),
+  nextTools: z.array(z.string())
+});
+
 export const TeacherPacketSchema = z.object({
   title: z.string(),
   caseLabel: z.literal("Learner 7A"),
