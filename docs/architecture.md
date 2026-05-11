@@ -9,7 +9,7 @@ Waypoint Differentiation Lab is intentionally small: structured classroom contex
 - `learnerProfile`: pseudonymized IEP-derived planning context for Learner 7A.
 - `lessonChunks`: the lesson split into teachable moments with evidence IDs.
 
-`src/types.ts` and `src/schemas.ts` define packet, modification, evidence trace, quality report, and handout-section contracts.
+`src/types.ts` and `src/schemas.ts` define source-resource, packet, modification, evidence trace, quality report, and handout-section contracts. Tests parse both the input resources and generated outputs through those public schemas.
 
 ## Generator
 

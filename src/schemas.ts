@@ -158,3 +158,13 @@ export const LearnerProfileSchema = z.object({
   goals: z.array(z.string()),
   evidence: z.array(EvidenceRefSchema)
 });
+
+export const LessonChunkSchema = z.object({
+  id: z.string(),
+  phase: z.enum(["overview", "before-reading", "during-reading", "independent-practice", "discussion"]),
+  title: z.string(),
+  minutes: z.number(),
+  teacherMove: z.string(),
+  studentTask: z.string(),
+  evidence: z.array(EvidenceRefSchema)
+});

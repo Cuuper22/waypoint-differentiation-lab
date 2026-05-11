@@ -11,7 +11,16 @@ import {
   showcaseData,
   teacherHandoutMarkdown
 } from "./generator.js";
-import { evidenceById } from "./knowledge.js";
+import { evidenceById, learnerProfile, lessonChunks, udlEvidence } from "./knowledge.js";
+import {
+  CompactTeacherPacketSchema,
+  EvidenceRefSchema,
+  HandoutSectionSchema,
+  LearnerProfileSchema,
+  LessonChunkSchema,
+  QualityReportSchema,
+  TeacherPacketSchema
+} from "./schemas.js";
 
 describe("teacher packet generation", () => {
   it("frames the public case with generic reviewer-safe labels", () => {
@@ -165,5 +174,19 @@ describe("teacher packet generation", () => {
     expect(data.mcpStats.compactPercentOfFull).toBeLessThan(30);
     expect(data.mcpStats.defaultTool).toContain("compact");
     expect(data.mcpStats.onDemandTool).toBe("explain_modification");
+  });
+
+  it("validates source resources and generated packets against public schemas", () => {
+    const packet = buildTeacherPacket({ minutesAvailable: 45, emphasis: "full-support" });
+    const compact = compactTeacherPacket(packet);
+
+    expect(() => LearnerProfileSchema.parse(learnerProfile)).not.toThrow();
+    expect(() => lessonChunks.forEach((chunk) => LessonChunkSchema.parse(chunk))).not.toThrow();
+    expect(() => udlEvidence.forEach((entry) => EvidenceRefSchema.parse(entry))).not.toThrow();
+    expect(udlEvidence.every((entry) => entry.source === "UDL")).toBe(true);
+    expect(() => TeacherPacketSchema.parse(packet)).not.toThrow();
+    expect(() => CompactTeacherPacketSchema.parse(compact)).not.toThrow();
+    expect(() => QualityReportSchema.parse(packet.qualityReport)).not.toThrow();
+    expect(() => packet.handoutSections.forEach((section) => HandoutSectionSchema.parse(section))).not.toThrow();
   });
 });
