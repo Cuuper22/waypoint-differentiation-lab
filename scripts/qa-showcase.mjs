@@ -306,6 +306,32 @@ function interactionScript(expectedCatalogBudget, expectedPromptMessageBudget, e
       const detectorText = document.querySelector("[data-detector-output]")?.textContent ?? "";
       if (!detectorText.includes("Flagged")) failures.push("quality detector demo did not update");
 
+      const teacherReview = document.querySelector("[data-teacher-review]");
+      const teacherReviewText = teacherReview?.textContent ?? "";
+      if (
+        !teacherReviewText.includes("Teacher review handoff") ||
+        !teacherReviewText.includes("Teacher stays in the chair") ||
+        !teacherReviewText.includes("Use tomorrow")
+      ) {
+        failures.push("teacher review handoff did not render");
+      }
+      const reviewChoices = Array.from(document.querySelectorAll("[data-review-choice]"));
+      if (reviewChoices.length !== 3) failures.push("teacher review handoff did not render three choices");
+      reviewChoices[1]?.click();
+      await wait(120);
+      const editedReviewText = document.querySelector("[data-teacher-review]")?.textContent ?? "";
+      if (!editedReviewText.includes("Shorten the student text")) {
+        failures.push("teacher review handoff did not switch to the edit decision");
+      }
+      Array.from(document.querySelectorAll("[data-review-choice]"))[2]?.click();
+      await wait(220);
+      if (document.querySelector("[data-review-state]")?.dataset.reviewState !== "Open receipt") {
+        failures.push("teacher review handoff did not mark the receipt decision");
+      }
+      if (!document.querySelector('[data-mod-list] button[data-modification-id="mod-short-response-frame"]')?.classList.contains("is-active")) {
+        failures.push("teacher review receipt action did not open the selected receipt");
+      }
+
       const payloadText = document.querySelector("[data-payload-meter]")?.textContent ?? "";
       if (!payloadText.includes("less default payload") || !payloadText.includes("Compact default")) {
         failures.push("payload meter did not render compact MCP stats");

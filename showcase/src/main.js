@@ -42,6 +42,7 @@ const modList = document.querySelector("[data-mod-list]");
 const receiptDetail = document.querySelector("[data-receipt-detail]");
 const evidenceMorph = document.querySelector("[data-evidence-morph]");
 const qualityGrid = document.querySelector("[data-quality-grid]");
+const teacherReview = document.querySelector("[data-teacher-review]");
 const architecture = document.querySelector("[data-architecture]");
 const payloadMeter = document.querySelector("[data-payload-meter]");
 const mcpConsole = document.querySelector("[data-mcp-console]");
@@ -58,6 +59,7 @@ let playTimer = null;
 let demoRunId = 0;
 let currentPayloadMode = 1;
 let currentMcpStep = 0;
+let currentReviewChoice = 0;
 
 frameEls.forEach((frame) => {
   const framePath = frame.dataset.frame;
@@ -76,6 +78,7 @@ renderHandout();
 renderProgressLoop();
 renderRecommendations();
 renderQuality();
+renderTeacherReview();
 renderPayloadMeter();
 renderMcpConsole();
 renderArchitecture();
@@ -315,6 +318,80 @@ function renderQuality() {
       return card;
     })
   );
+}
+
+function renderTeacherReview() {
+  const focus =
+    data.modifications.find((modification) => modification.id === "mod-short-response-frame") ?? data.modifications[0];
+  const choices = [
+    {
+      label: "Use tomorrow",
+      eyebrow: "ready",
+      decision: "Use as-is",
+      note: "The support keeps the original RI.7.2 prompt, adds a writing frame, and leaves the teacher with a fast progress check."
+    },
+    {
+      label: "Tighten wording",
+      eyebrow: "teacher edit",
+      decision: "Shorten the student text",
+      note: "Keep claim, evidence, and explanation slots. Cut any wording that does not sound like this classroom."
+    },
+    {
+      label: "Open receipt",
+      eyebrow: "audit",
+      decision: "Inspect before accepting",
+      note: "Jump to the quote-level receipt so the teacher can check the evidence trail before using the move.",
+      receipt: true
+    }
+  ];
+  const selected = choices[currentReviewChoice];
+
+  const copy = document.createElement("div");
+  copy.className = "teacher-review-copy";
+  copy.innerHTML = `
+    <span>Teacher review handoff</span>
+    <h3>Teacher stays in the chair.</h3>
+    <p>The packet proposes a move; the teacher can accept it, tune the wording, or inspect the receipt without losing the standard or the evidence trail.</p>
+  `;
+
+  const controls = document.createElement("div");
+  controls.className = "teacher-review-actions";
+  controls.replaceChildren(
+    ...choices.map((choice, index) => {
+      const button = document.createElement("button");
+      button.className = "teacher-review-choice";
+      button.type = "button";
+      button.dataset.reviewChoice = choice.label;
+      button.classList.toggle("is-active", index === currentReviewChoice);
+      button.setAttribute("aria-pressed", String(index === currentReviewChoice));
+      button.innerHTML = `<span>${choice.eyebrow}</span><strong>${choice.label}</strong>`;
+      button.addEventListener("click", () => {
+        currentReviewChoice = index;
+        if (choice.receipt) {
+          selectModification(focus.id);
+          document.querySelector("#receipts")?.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+        renderTeacherReview();
+      });
+      return button;
+    })
+  );
+
+  const decision = document.createElement("div");
+  decision.className = "teacher-review-decision";
+  decision.dataset.reviewState = selected.label;
+  decision.innerHTML = `
+    <span>${selected.decision}</span>
+    <h4>${focus.lessonMoment}</h4>
+    <p>${selected.note}</p>
+    <div class="teacher-review-proof">
+      <strong>${focus.evidenceTrace.standardPreserved}</strong>
+      <strong>${focus.supportType}</strong>
+      <strong>${focus.evidenceTrace.udlAlignment.map((item) => item.principle).join(" + ")}</strong>
+    </div>
+  `;
+
+  teacherReview.replaceChildren(copy, controls, decision);
 }
 
 function renderArchitecture() {
