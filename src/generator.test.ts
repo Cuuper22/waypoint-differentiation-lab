@@ -302,6 +302,7 @@ describe("teacher packet generation", () => {
         "examples/evidence-audit.md",
         "examples/quality-report.json",
         "examples/mcp-payload-ledger.json",
+        "examples/mcp-smoke-report.json",
         "showcase/src/generated-data.js"
       ])
     );
@@ -326,6 +327,7 @@ describe("teacher packet generation", () => {
     ].join("|");
 
     expect(health.reviewerPath[0]).toMatch(/visual walkthrough/i);
+    expect(health.reviewerPath[2]).toContain("examples/mcp-smoke-report.json");
     expect(JSON.stringify(health)).not.toMatch(new RegExp(forbiddenFraming, "i"));
   });
 

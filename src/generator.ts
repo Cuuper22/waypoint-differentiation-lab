@@ -1213,6 +1213,7 @@ export function buildSubmissionHealth(packet: TeacherPacket): SubmissionHealth {
         "examples/compact-packet.json",
         "examples/sample-packet.json",
         "examples/mcp-payload-ledger.json",
+        "examples/mcp-smoke-report.json",
         "examples/submission-health.json",
         "showcase/src/generated-data.js"
       ],
@@ -1251,6 +1252,7 @@ export function buildSubmissionHealth(packet: TeacherPacket): SubmissionHealth {
     reviewerPath: [
       "Open the visual walkthrough and play the guided reviewer demo.",
       "Skim examples/submission-health.json for the packet, MCP, evidence, and verification map.",
+      "Open examples/mcp-smoke-report.json for the measured stdio startup, prompt, resource, and response budgets.",
       "Run npm run submission:check to rebuild artifacts, test contracts, smoke the MCP, and QA the browser walkthrough.",
       "Inspect examples/evidence-audit.md or call explain_modification when a recommendation needs receipts."
     ]

@@ -1,5 +1,7 @@
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js";
+import { mkdirSync, writeFileSync } from "node:fs";
+import { join } from "node:path";
 import {
   mcpManifestBudgets,
   mcpPromptBudgets,
@@ -188,6 +190,69 @@ try {
   assert(audit.structuredContent?.detail === "summary", "render_evidence_audit default should be summary detail");
   assert(audit.structuredContent?.markdown === undefined, "render_evidence_audit duplicated markdown in structured content");
 
+  const smokeReportPath = writeSmokeReport({
+    artifact: "mcp-smoke-report",
+    purpose: "Measured stdio MCP contract from the real server entrypoint.",
+    result: "passed",
+    startup: {
+      tools: tools.tools.length,
+      resources: resources.resources.length,
+      prompts: prompts.prompts.length,
+      toolCatalogChars: manifestMetrics.totalChars,
+      toolCatalogBudgetChars: mcpManifestBudgets.toolCatalogMaxChars,
+      largestToolManifestChars: Math.max(...manifestMetrics.tools.map((tool) => tool.totalChars)),
+      largestToolManifestBudgetChars: mcpManifestBudgets.toolManifestMaxChars,
+      toolManifests: manifestMetrics.tools
+    },
+    prompt: {
+      catalogChars: promptMetrics.totalChars,
+      catalogBudgetChars: mcpPromptBudgets.promptCatalogMaxChars,
+      messageChars: handoffPromptText.length,
+      messageBudgetChars: mcpPromptBudgets.promptMessageMaxChars,
+      manifests: promptMetrics.prompts,
+      routeChecks: ["summary resources first", "compact packet first", "receipts on demand"]
+    },
+    resources: [
+      {
+        uri: "waypoint://case/learner-7a/summary",
+        textChars: profileSummaryResource.length,
+        budgetChars: mcpResourceBudgets.learnerProfileSummary
+      },
+      {
+        uri: "waypoint://lesson/community/summary",
+        textChars: lessonSummaryResource.length,
+        budgetChars: mcpResourceBudgets.lessonMapSummary
+      }
+    ],
+    responses: [
+      responseMetric("generate_teacher_packet", "compact", packet, {
+        text: mcpTextBudgets.generateTeacherPacketCompact,
+        structured: mcpStructuredBudgets.generateTeacherPacketCompact
+      }),
+      responseMetric("get_learner_profile", "summary", profile, {
+        text: mcpTextBudgets.getLearnerProfileSummary
+      }),
+      responseMetric("get_lesson_map", "summary", lesson, {
+        text: mcpTextBudgets.getLessonMapSummary
+      }),
+      responseMetric("explain_modification", "receipt", receipt, {
+        text: mcpTextBudgets.explainModificationReceipt,
+        structured: mcpStructuredBudgets.explainModificationReceipt
+      }),
+      responseMetric("review_packet_quality", "summary", quality, {
+        text: mcpTextBudgets.reviewPacketQualitySummary
+      }),
+      responseMetric("explain_evidence", "lookup", evidence, {
+        text: mcpTextBudgets.explainEvidenceLookup
+      }),
+      responseMetric("render_evidence_audit", "summary", audit, {
+        text: mcpTextBudgets.renderEvidenceAuditSummary,
+        structured: mcpStructuredBudgets.renderEvidenceAuditSummary
+      })
+    ],
+    reviewerRule: "The default path spends context on decisions and IDs, then pulls quote-level receipts only when asked."
+  });
+
   console.log(
     JSON.stringify(
       {
@@ -199,7 +264,8 @@ try {
         promptCatalogChars: promptMetrics.totalChars,
         handoffPromptChars: handoffPromptText.length,
         largestToolManifestChars: Math.max(...manifestMetrics.tools.map((tool) => tool.totalChars)),
-        compactRecommendations: packet.structuredContent.modifications.length
+        compactRecommendations: packet.structuredContent.modifications.length,
+        smokeReport: smokeReportPath
       },
       null,
       2
@@ -227,6 +293,35 @@ function assertStructuredBudget(result, label, maxCharacters) {
   assert(result.structuredContent, `${label} returned no structured content`);
   const chars = JSON.stringify(result.structuredContent).length;
   assert(chars <= maxCharacters, `${label} structured content is ${chars} chars, over ${maxCharacters}`);
+}
+
+function responseMetric(tool, mode, result, budgets) {
+  return {
+    tool,
+    mode,
+    textChars: textChars(result),
+    textBudgetChars: budgets.text,
+    structuredChars: result.structuredContent ? JSON.stringify(result.structuredContent).length : 0,
+    structuredBudgetChars: budgets.structured ?? null
+  };
+}
+
+function textChars(result) {
+  return (
+    result.content
+      ?.filter((entry) => entry.type === "text")
+      .map((entry) => entry.text)
+      .join("\n")
+      .trim().length ?? 0
+  );
+}
+
+function writeSmokeReport(report) {
+  const examplesDir = join(process.cwd(), "examples");
+  mkdirSync(examplesDir, { recursive: true });
+  const relativePath = "examples/mcp-smoke-report.json";
+  writeFileSync(join(process.cwd(), relativePath), `${JSON.stringify(report, null, 2)}\n`);
+  return relativePath;
 }
 
 async function readTextResource(client, uri) {
