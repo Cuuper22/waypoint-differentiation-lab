@@ -1,6 +1,6 @@
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js";
-import { mcpManifestBudgets, mcpResourceBudgets, mcpTextBudgets } from "../dist/mcp-budgets.js";
+import { mcpManifestBudgets, mcpResourceBudgets, mcpStructuredBudgets, mcpTextBudgets } from "../dist/mcp-budgets.js";
 
 const requiredTools = [
   "generate_teacher_packet",
@@ -88,6 +88,11 @@ try {
     arguments: { minutesAvailable: 5, emphasis: "minimum-viable", detail: "compact" }
   });
   assertTextBudget(packet, "generate_teacher_packet compact", mcpTextBudgets.generateTeacherPacketCompact);
+  assertStructuredBudget(
+    packet,
+    "generate_teacher_packet compact",
+    mcpStructuredBudgets.generateTeacherPacketCompact
+  );
   assert(packet.structuredContent?.detail === "compact", "generate_teacher_packet did not return compact structured content");
   assert(packet.structuredContent?.quality?.passed === true, "Compact packet quality did not pass");
   assert(
@@ -114,6 +119,7 @@ try {
     arguments: { modificationId: "mod-short-response-frame" }
   });
   assertTextBudget(receipt, "explain_modification receipt", mcpTextBudgets.explainModificationReceipt);
+  assertStructuredBudget(receipt, "explain_modification receipt", mcpStructuredBudgets.explainModificationReceipt);
   assert(
     receipt.structuredContent?.receipts?.preservedStandard === "RI.7.2",
     "explain_modification did not return a preserved-standard receipt"
@@ -138,7 +144,9 @@ try {
     arguments: { minutesAvailable: 5, emphasis: "minimum-viable" }
   });
   assertTextBudget(audit, "render_evidence_audit summary", mcpTextBudgets.renderEvidenceAuditSummary);
+  assertStructuredBudget(audit, "render_evidence_audit summary", mcpStructuredBudgets.renderEvidenceAuditSummary);
   assert(audit.structuredContent?.detail === "summary", "render_evidence_audit default should be summary detail");
+  assert(audit.structuredContent?.markdown === undefined, "render_evidence_audit duplicated markdown in structured content");
 
   console.log(
     JSON.stringify(
@@ -170,6 +178,12 @@ function assertTextBudget(result, label, maxCharacters) {
     .trim();
   assert(text, `${label} returned no text content`);
   assert(text.length <= maxCharacters, `${label} text content is ${text.length} chars, over ${maxCharacters}`);
+}
+
+function assertStructuredBudget(result, label, maxCharacters) {
+  assert(result.structuredContent, `${label} returned no structured content`);
+  const chars = JSON.stringify(result.structuredContent).length;
+  assert(chars <= maxCharacters, `${label} structured content is ${chars} chars, over ${maxCharacters}`);
 }
 
 async function readTextResource(client, uri) {

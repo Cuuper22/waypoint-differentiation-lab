@@ -63,7 +63,7 @@ export const data = {
         "mode": "compact",
         "budget": 1200,
         "textChannel": "brief handoff",
-        "structuredContent": "compact packet"
+        "structuredContent": "compact packet <= 3200 chars"
       },
       {
         "tool": "get_learner_profile",
@@ -84,7 +84,7 @@ export const data = {
         "mode": "receipt",
         "budget": 850,
         "textChannel": "short receipt",
-        "structuredContent": "quote trace"
+        "structuredContent": "slim quote trace <= 2600 chars"
       },
       {
         "tool": "review_packet_quality",
@@ -105,7 +105,7 @@ export const data = {
         "mode": "summary",
         "budget": 1100,
         "textChannel": "ref index",
-        "structuredContent": "audit selector"
+        "structuredContent": "audit selector <= 260 chars"
       }
     ]
   },

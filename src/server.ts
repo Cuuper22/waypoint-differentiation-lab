@@ -346,8 +346,8 @@ server.registerTool(
       content: textContent(markdown),
       structuredContent: {
         detail,
-        markdown,
         modificationIds: packet.modifications.map((mod) => mod.id),
+        contentChars: markdown.length,
         nextTool: detail === "summary" ? "render_evidence_audit({ detail: 'full' })" : undefined
       }
     };

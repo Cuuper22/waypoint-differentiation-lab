@@ -8,6 +8,12 @@ export const mcpTextBudgets = {
   renderEvidenceAuditSummary: 1100
 } as const;
 
+export const mcpStructuredBudgets = {
+  generateTeacherPacketCompact: 3200,
+  explainModificationReceipt: 2600,
+  renderEvidenceAuditSummary: 260
+} as const;
+
 export const mcpManifestBudgets = {
   toolCatalogMaxChars: 5000,
   toolManifestMaxChars: 1000,
@@ -51,7 +57,7 @@ export const mcpTextBudgetRows = [
     mode: "compact",
     budget: mcpTextBudgets.generateTeacherPacketCompact,
     textChannel: "brief handoff",
-    structuredContent: "compact packet"
+    structuredContent: `compact packet <= ${mcpStructuredBudgets.generateTeacherPacketCompact} chars`
   },
   {
     tool: "get_learner_profile",
@@ -72,7 +78,7 @@ export const mcpTextBudgetRows = [
     mode: "receipt",
     budget: mcpTextBudgets.explainModificationReceipt,
     textChannel: "short receipt",
-    structuredContent: "quote trace"
+    structuredContent: `slim quote trace <= ${mcpStructuredBudgets.explainModificationReceipt} chars`
   },
   {
     tool: "review_packet_quality",
@@ -93,6 +99,6 @@ export const mcpTextBudgetRows = [
     mode: "summary",
     budget: mcpTextBudgets.renderEvidenceAuditSummary,
     textChannel: "ref index",
-    structuredContent: "audit selector"
+    structuredContent: `audit selector <= ${mcpStructuredBudgets.renderEvidenceAuditSummary} chars`
   }
 ] as const;

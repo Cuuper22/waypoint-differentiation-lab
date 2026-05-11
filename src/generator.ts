@@ -549,12 +549,21 @@ export function explainModification(modificationId: string) {
   }
 
   return {
-    modification,
+    modification: {
+      id: modification.id,
+      lessonMoment: modification.lessonMoment,
+      supportType: modification.supportType,
+      teacherAction: modification.teacherAction,
+      studentFacingText: modification.studentFacingText,
+      timeCost: modification.timeCost,
+      materialIds: modification.materialIds,
+      standardPreserved: modification.evidenceTrace.standardPreserved
+    },
     evidenceTrace: modification.evidenceTrace,
     receipts: {
-      iepQuote: modification.evidenceTrace.iepQuote,
-      lessonDemand: modification.evidenceTrace.lessonDemand,
-      udl: modification.evidenceTrace.udlAlignment,
+      iep: modification.evidenceTrace.iep.id,
+      lesson: modification.evidenceTrace.lesson.id,
+      udl: modification.evidenceTrace.udl.id,
       preservedStandard: modification.evidenceTrace.standardPreserved,
       progressCheck: modification.evidenceTrace.progressCheck
     }

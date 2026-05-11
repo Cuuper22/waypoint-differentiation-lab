@@ -7,6 +7,7 @@ import {
   evidenceAuditMarkdown,
   evidenceAuditSummaryMarkdown,
   evidenceTraceForModification,
+  explainModification,
   reviewerWorkflowMarkdown,
   teacherPacketBriefMarkdown,
   reviewPacketQuality,
@@ -179,6 +180,20 @@ describe("teacher packet generation", () => {
     expect(compact.modifications.every((mod) => mod.receiptTool === "explain_modification")).toBe(true);
     expect(brief).toContain("Use `explain_modification` for quote-level evidence");
     expect(brief.length).toBeLessThan(compactJson.length * 0.2);
+  });
+
+  it("keeps on-demand receipts slim without hiding evidence", () => {
+    const explanation = explainModification("mod-short-response-frame");
+    const payload = JSON.stringify(explanation);
+
+    expect(payload.length).toBeLessThan(2600);
+    expect(payload).not.toContain("iepRefs");
+    expect(payload).not.toContain("lessonRefs");
+    expect(payload).not.toContain("udlRefs");
+    expect(payload).not.toContain("rationale");
+    expect(explanation.modification.teacherAction).toContain("claim-evidence-explain");
+    expect(explanation.evidenceTrace.iepQuote).toContain("literal comprehension");
+    expect(explanation.receipts.preservedStandard).toBe("RI.7.2");
   });
 
   it("renders a reviewer workflow that demonstrates compact-first MCP usage", () => {
