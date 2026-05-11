@@ -6,9 +6,9 @@
     "tools": 7,
     "resources": 6,
     "prompts": 1,
-    "toolCatalogChars": 4414,
+    "toolCatalogChars": 4174,
     "toolCatalogBudgetChars": 4500,
-    "largestToolManifestChars": 845,
+    "largestToolManifestChars": 765,
     "largestToolManifestBudgetChars": 900,
     "toolManifests": [
       {
@@ -27,8 +27,8 @@
       },
       {
         "name": "generate_teacher_packet",
-        "totalChars": 845,
-        "inputSchemaChars": 389,
+        "totalChars": 765,
+        "inputSchemaChars": 309,
         "outputSchemaChars": 280,
         "descriptionChars": 54
       },
@@ -41,8 +41,8 @@
       },
       {
         "name": "review_packet_quality",
-        "totalChars": 640,
-        "inputSchemaChars": 316,
+        "totalChars": 560,
+        "inputSchemaChars": 236,
         "outputSchemaChars": 160,
         "descriptionChars": 52
       },
@@ -55,8 +55,8 @@
       },
       {
         "name": "render_evidence_audit",
-        "totalChars": 734,
-        "inputSchemaChars": 393,
+        "totalChars": 654,
+        "inputSchemaChars": 313,
         "outputSchemaChars": 185,
         "descriptionChars": 44
       }

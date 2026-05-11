@@ -142,6 +142,16 @@ try {
     "Compact packet did not preserve RI.7.2 on every recommendation"
   );
 
+  const invalidMinutes = await client.callTool({
+    name: "generate_teacher_packet",
+    arguments: { minutesAvailable: 10, emphasis: "balanced", detail: "compact" }
+  });
+  assert(invalidMinutes.isError === true, "generate_teacher_packet accepted unsupported prep minutes");
+  assert(
+    invalidMinutes.content?.some((item) => item.text?.includes("minutesAvailable must be 5, 15, or 45")),
+    "generate_teacher_packet unsupported prep minutes did not explain the allowed values"
+  );
+
   const fullPacket = await client.callTool({
     name: "generate_teacher_packet",
     arguments: { minutesAvailable: 5, emphasis: "minimum-viable", detail: "full" }
