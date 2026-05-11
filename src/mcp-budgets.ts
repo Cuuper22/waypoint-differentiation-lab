@@ -21,6 +21,12 @@ export const mcpManifestBudgets = {
   descriptionMaxChars: 120
 } as const;
 
+export const mcpPromptBudgets = {
+  promptCatalogMaxChars: 900,
+  promptManifestMaxChars: 650,
+  promptMessageMaxChars: 850
+} as const;
+
 export const mcpResourceBudgets = {
   learnerProfileSummary: 900,
   lessonMapSummary: 1400
@@ -32,6 +38,15 @@ export const mcpCatalogBudgetRow = {
   budget: mcpManifestBudgets.toolCatalogMaxChars,
   textChannel: "concise tool list",
   structuredContent: "shallow passthrough schemas"
+} as const;
+
+export const mcpPromptBudgetRow = {
+  prompt: "differentiate_community_lesson",
+  mode: "prompt",
+  catalogBudget: mcpPromptBudgets.promptCatalogMaxChars,
+  messageBudget: mcpPromptBudgets.promptMessageMaxChars,
+  textChannel: "compact orchestration route",
+  structuredContent: "summary resources plus compact packet first"
 } as const;
 
 export const mcpResourceBudgetRows = [

@@ -74,6 +74,7 @@ const requiredSnippets = [
       "npm run preview:showcase",
       "compact-first MCP calls",
       "5,000-character startup budget",
+      "prompt catalog and prompt message are budgeted",
       "RI.7.2"
     ]
   },
@@ -86,7 +87,8 @@ const requiredSnippets = [
     snippets: [
       "waypoint://case/learner-7a/summary",
       "waypoint://lesson/community/summary",
-      "Start with the learner-profile-summary"
+      "Use summary resources first",
+      "generate_teacher_packet({ detail"
     ]
   },
   {

@@ -1,6 +1,12 @@
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js";
-import { mcpManifestBudgets, mcpResourceBudgets, mcpStructuredBudgets, mcpTextBudgets } from "../dist/mcp-budgets.js";
+import {
+  mcpManifestBudgets,
+  mcpPromptBudgets,
+  mcpResourceBudgets,
+  mcpStructuredBudgets,
+  mcpTextBudgets
+} from "../dist/mcp-budgets.js";
 
 const requiredTools = [
   "generate_teacher_packet",
@@ -19,6 +25,8 @@ const requiredResources = [
   "waypoint://lesson/community/map",
   "waypoint://packet/community/learner-7a"
 ];
+
+const requiredPrompts = ["differentiate_community_lesson"];
 
 const transport = new StdioClientTransport({
   command: process.execPath,
@@ -68,6 +76,38 @@ try {
   for (const resource of requiredResources) {
     assert(resourceUris.has(resource), `Missing MCP resource: ${resource}`);
   }
+
+  const prompts = await client.listPrompts();
+  const promptNames = new Set(prompts.prompts.map((prompt) => prompt.name));
+  const promptMetrics = measurePromptManifest(prompts.prompts);
+  assert(
+    promptMetrics.totalChars <= mcpPromptBudgets.promptCatalogMaxChars,
+    `MCP prompt catalog is ${promptMetrics.totalChars} chars, over ${mcpPromptBudgets.promptCatalogMaxChars}`
+  );
+  for (const prompt of promptMetrics.prompts) {
+    assert(
+      prompt.totalChars <= mcpPromptBudgets.promptManifestMaxChars,
+      `${prompt.name} prompt manifest is ${prompt.totalChars} chars, over ${mcpPromptBudgets.promptManifestMaxChars}`
+    );
+  }
+  for (const prompt of requiredPrompts) {
+    assert(promptNames.has(prompt), `Missing MCP prompt: ${prompt}`);
+  }
+
+  const handoffPrompt = await client.getPrompt({
+    name: "differentiate_community_lesson",
+    arguments: { teacherNeed: "Need the 15-minute balanced packet." }
+  });
+  const handoffPromptText = handoffPrompt.messages
+    ?.map((message) => message.content?.text ?? "")
+    .join("\n")
+    .trim();
+  assert(handoffPromptText, "differentiate_community_lesson returned no prompt text");
+  assert(
+    handoffPromptText.length <= mcpPromptBudgets.promptMessageMaxChars,
+    `differentiate_community_lesson prompt text is ${handoffPromptText.length} chars, over ${mcpPromptBudgets.promptMessageMaxChars}`
+  );
+  assert(handoffPromptText.includes('detail: "compact"'), "handoff prompt lost compact-first instruction");
 
   const profileSummaryResource = await readTextResource(client, "waypoint://case/learner-7a/summary");
   assert(
@@ -154,7 +194,10 @@ try {
         mcpSmoke: "passed",
         tools: tools.tools.length,
         resources: resources.resources.length,
+        prompts: prompts.prompts.length,
         toolCatalogChars: manifestMetrics.totalChars,
+        promptCatalogChars: promptMetrics.totalChars,
+        handoffPromptChars: handoffPromptText.length,
         largestToolManifestChars: Math.max(...manifestMetrics.tools.map((tool) => tool.totalChars)),
         compactRecommendations: packet.structuredContent.modifications.length
       },
@@ -216,5 +259,23 @@ function measureToolManifest(tools) {
   return {
     totalChars: JSON.stringify(compactTools).length,
     tools: measuredTools
+  };
+}
+
+function measurePromptManifest(prompts) {
+  const compactPrompts = prompts.map((prompt) => ({
+    name: prompt.name,
+    description: prompt.description,
+    arguments: prompt.arguments
+  }));
+  const measuredPrompts = prompts.map((prompt, index) => ({
+    name: prompt.name,
+    totalChars: JSON.stringify(compactPrompts[index]).length,
+    descriptionChars: (prompt.description ?? "").length,
+    argumentsChars: JSON.stringify(prompt.arguments ?? []).length
+  }));
+  return {
+    totalChars: JSON.stringify(compactPrompts).length,
+    prompts: measuredPrompts
   };
 }

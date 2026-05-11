@@ -41,6 +41,14 @@ export const data = {
       "textChannel": "concise tool list",
       "structuredContent": "shallow passthrough schemas"
     },
+    "promptBudget": {
+      "prompt": "differentiate_community_lesson",
+      "mode": "prompt",
+      "catalogBudget": 900,
+      "messageBudget": 850,
+      "textChannel": "compact orchestration route",
+      "structuredContent": "summary resources plus compact packet first"
+    },
     "resourceBudgets": [
       {
         "tool": "learner-profile summary resource",

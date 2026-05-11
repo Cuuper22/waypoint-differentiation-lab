@@ -10,6 +10,14 @@
       "textChannel": "concise tool list",
       "structuredContent": "shallow passthrough schemas"
     },
+    "prompts": {
+      "prompt": "differentiate_community_lesson",
+      "mode": "prompt",
+      "catalogBudget": 900,
+      "messageBudget": 850,
+      "textChannel": "compact orchestration route",
+      "structuredContent": "summary resources plus compact packet first"
+    },
     "compactPacketMaxPercentOfFull": 30,
     "resources": [
       {
@@ -77,6 +85,17 @@
         "textChannel": "ref index",
         "structuredContent": "audit selector <= 260 chars"
       }
+    ]
+  },
+  "promptContract": {
+    "name": "differentiate_community_lesson",
+    "catalogBudgetChars": 900,
+    "messageBudgetChars": 850,
+    "route": [
+      "read summary resources first",
+      "generate compact packet before full detail",
+      "pull receipts only for chosen recommendations",
+      "keep adult-facing labels out of student text"
     ]
   },
   "packetModes": [

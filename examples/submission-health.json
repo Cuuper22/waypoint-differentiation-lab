@@ -11,8 +11,12 @@
   "mcp": {
     "defaultPayload": "compact-first",
     "startupBudgetChars": 5000,
+    "promptMessageBudgetChars": 850,
     "compactPacketMaxPercentOfFull": 30,
     "onDemandEvidenceTool": "explain_modification",
+    "prompts": [
+      "differentiate_community_lesson"
+    ],
     "tools": [
       "generate_teacher_packet",
       "explain_modification",

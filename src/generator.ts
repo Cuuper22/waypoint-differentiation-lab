@@ -1,5 +1,12 @@
 import { evidenceById, learnerProfile, lessonChunks, udlEvidence } from "./knowledge.js";
-import { mcpCatalogBudgetRow, mcpManifestBudgets, mcpResourceBudgetRows, mcpTextBudgetRows } from "./mcp-budgets.js";
+import {
+  mcpCatalogBudgetRow,
+  mcpManifestBudgets,
+  mcpPromptBudgetRow,
+  mcpPromptBudgets,
+  mcpResourceBudgetRows,
+  mcpTextBudgetRows
+} from "./mcp-budgets.js";
 import type {
   CompactTeacherPacket,
   EvidenceRef,
@@ -1088,6 +1095,7 @@ export function showcaseData(packet: TeacherPacket) {
       defaultTool: "generate_teacher_packet detail=compact",
       onDemandTool: "explain_modification",
       catalogBudget: mcpCatalogBudgetRow,
+      promptBudget: mcpPromptBudgetRow,
       resourceBudgets: mcpResourceBudgetRows,
       textBudgets: mcpTextBudgetRows
     },
@@ -1122,9 +1130,21 @@ export function buildMcpPayloadLedger(packet: TeacherPacket) {
     defaultRhythm: "compact packet -> one receipt -> compact audit -> quality gate",
     budgets: {
       startup: data.mcpStats.catalogBudget,
+      prompts: data.mcpStats.promptBudget,
       compactPacketMaxPercentOfFull: 30,
       resources: data.mcpStats.resourceBudgets,
       textResponses: data.mcpStats.textBudgets
+    },
+    promptContract: {
+      name: "differentiate_community_lesson",
+      catalogBudgetChars: mcpPromptBudgets.promptCatalogMaxChars,
+      messageBudgetChars: mcpPromptBudgets.promptMessageMaxChars,
+      route: [
+        "read summary resources first",
+        "generate compact packet before full detail",
+        "pull receipts only for chosen recommendations",
+        "keep adult-facing labels out of student text"
+      ]
     },
     packetModes: data.packetModes.map((mode) => ({
       mode: mode.mode,
@@ -1162,8 +1182,10 @@ export function buildSubmissionHealth(packet: TeacherPacket): SubmissionHealth {
     mcp: {
       defaultPayload: "compact-first",
       startupBudgetChars: mcpManifestBudgets.toolCatalogMaxChars,
+      promptMessageBudgetChars: mcpPromptBudgets.promptMessageMaxChars,
       compactPacketMaxPercentOfFull: 30,
       onDemandEvidenceTool: "explain_modification",
+      prompts: ["differentiate_community_lesson"],
       tools: [
         "generate_teacher_packet",
         "explain_modification",

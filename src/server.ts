@@ -357,12 +357,12 @@ server.registerTool(
 server.registerPrompt(
   "differentiate_community_lesson",
   {
-    description: "Prompt an MCP client to turn the resources and tools into a final teacher handout.",
+    description: "Compact handoff prompt for a teacher-ready handout from summary resources and packet tools.",
     argsSchema: {
       teacherNeed: z
         .string()
-        .default("I need tomorrow's 45-minute lesson modified for Learner 7A with minimal prep.")
-        .describe("Teacher's situation or constraint.")
+        .default("Modify tomorrow's 45-minute lesson for Learner 7A with minimal prep.")
+        .describe("Teacher constraint.")
     }
   },
   async ({ teacherNeed }) => ({
@@ -374,12 +374,10 @@ server.registerPrompt(
           text: [
             teacherNeed,
             "",
-            "Start with the learner-profile-summary and community-lesson-summary resources.",
-            "Read the full learner-profile or community-lesson-map resources only when quote text changes the handout.",
-            "Call generate_teacher_packet with detail compact first. Use explain_modification only for recommendations you actually include.",
-            "Return a concise Tomorrow Mode handout with before class, during reading, independent practice, discussion, and exit-ticket sections.",
-            "Every recommendation must cite evidence IDs. Pull quote text only when it changes the answer.",
-            "Do not put adult-facing labels in student-facing language."
+            "Use summary resources first: learner-profile-summary and community-lesson-summary.",
+            "Call generate_teacher_packet({ detail: \"compact\" }) before any full read.",
+            "Use explain_modification only for recommendations in the handout; request full audit only if quotes matter.",
+            "Return a concise Tomorrow Mode handout with evidence IDs, RI.7.2 preserved, and no adult-facing labels in student text."
           ].join("\n")
         }
       }

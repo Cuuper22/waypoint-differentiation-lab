@@ -187,8 +187,10 @@ export type SubmissionHealth = {
   mcp: {
     defaultPayload: "compact-first";
     startupBudgetChars: number;
+    promptMessageBudgetChars: number;
     compactPacketMaxPercentOfFull: number;
     onDemandEvidenceTool: "explain_modification";
+    prompts: string[];
     tools: string[];
     resources: string[];
   };

@@ -25,7 +25,7 @@ import {
   QualityReportSchema,
   TeacherPacketSchema
 } from "./schemas.js";
-import { mcpManifestBudgets } from "./mcp-budgets.js";
+import { mcpManifestBudgets, mcpPromptBudgets } from "./mcp-budgets.js";
 
 describe("teacher packet generation", () => {
   it("frames the public case with generic reviewer-safe labels", () => {
@@ -233,6 +233,8 @@ describe("teacher packet generation", () => {
     expect(data.mcpStats.onDemandTool).toBe("explain_modification");
     expect(data.mcpStats.catalogBudget.tool).toBe("tool catalog");
     expect(data.mcpStats.catalogBudget.budget).toBe(mcpManifestBudgets.toolCatalogMaxChars);
+    expect(data.mcpStats.promptBudget.prompt).toBe("differentiate_community_lesson");
+    expect(data.mcpStats.promptBudget.messageBudget).toBe(mcpPromptBudgets.promptMessageMaxChars);
   });
 
   it("exposes packet-size modes so the showcase can prove the MCP is not one-size-fits-all", () => {
@@ -270,6 +272,8 @@ describe("teacher packet generation", () => {
 
     expect(ledger.defaultRhythm).toContain("compact packet");
     expect(ledger.budgets.startup.budget).toBe(mcpManifestBudgets.toolCatalogMaxChars);
+    expect(ledger.budgets.prompts.messageBudget).toBe(mcpPromptBudgets.promptMessageMaxChars);
+    expect(ledger.promptContract.route).toContain("generate compact packet before full detail");
     expect(ledger.packetModes.map((mode) => mode.minutesAvailable)).toEqual([5, 15, 45]);
     expect(ledger.packetModes.every((mode) => mode.compactPercentOfFull < ledger.budgets.compactPacketMaxPercentOfFull)).toBe(
       true
@@ -289,6 +293,8 @@ describe("teacher packet generation", () => {
     expect(health.demo.localCommand).toBe("npm run showcase:dev");
     expect(health.mcp.defaultPayload).toBe("compact-first");
     expect(health.mcp.startupBudgetChars).toBe(mcpManifestBudgets.toolCatalogMaxChars);
+    expect(health.mcp.promptMessageBudgetChars).toBe(mcpPromptBudgets.promptMessageMaxChars);
+    expect(health.mcp.prompts).toEqual(["differentiate_community_lesson"]);
     expect(health.mcp.onDemandEvidenceTool).toBe("explain_modification");
     expect(health.evidence.generatedArtifacts).toEqual(
       expect.arrayContaining([
