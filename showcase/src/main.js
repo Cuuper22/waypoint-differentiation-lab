@@ -37,6 +37,7 @@ const qualityChip = document.querySelector("[data-quality-chip]");
 const heroProof = document.querySelector("[data-hero-proof]");
 const packetTitle = document.querySelector("[data-packet-title]");
 const handoutSections = document.querySelector("[data-handout-sections]");
+const progressLoop = document.querySelector("[data-progress-loop]");
 const modList = document.querySelector("[data-mod-list]");
 const receiptDetail = document.querySelector("[data-receipt-detail]");
 const evidenceMorph = document.querySelector("[data-evidence-morph]");
@@ -72,6 +73,7 @@ packetTitle.textContent = data.packet.teacherMode;
 renderSceneStrip();
 renderHeroProof();
 renderHandout();
+renderProgressLoop();
 renderRecommendations();
 renderQuality();
 renderPayloadMeter();
@@ -174,6 +176,35 @@ function renderHandout() {
   ];
 
   handoutSections.replaceChildren(...sections.map(sectionTemplate));
+}
+
+function renderProgressLoop() {
+  const loop = data.progressLoop;
+  const header = document.createElement("div");
+  header.className = "progress-loop-copy";
+  header.innerHTML = `<span>${loop.standard}</span><h3>${loop.title}</h3><p>${loop.teacherMove}</p>`;
+
+  const checks = document.createElement("div");
+  checks.className = "progress-checks";
+  checks.replaceChildren(
+    ...loop.checks.map((check, index) => {
+      const item = document.createElement("button");
+      item.className = "progress-check";
+      item.type = "button";
+      item.dataset.progressCheck = String(index + 1);
+      item.innerHTML = `<span>${String(index + 1).padStart(2, "0")}</span><strong>${check}</strong>`;
+      item.addEventListener("click", () => selectModification(loop.receiptId));
+      return item;
+    })
+  );
+
+  const receipt = document.createElement("a");
+  receipt.className = "progress-receipt";
+  receipt.href = "#receipts";
+  receipt.addEventListener("click", () => selectModification(loop.receiptId));
+  receipt.innerHTML = `<span>Receipt on click</span><strong>${loop.evidenceCheck}</strong>`;
+
+  progressLoop.replaceChildren(header, checks, receipt);
 }
 
 function renderRecommendations() {

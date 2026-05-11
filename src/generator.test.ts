@@ -293,6 +293,18 @@ describe("teacher packet generation", () => {
     expect(data.mcpStats.measuredSmoke?.rows[0].value).toContain("4,566 / 4,650");
   });
 
+  it("exposes the progress-monitoring loop for the showcase", () => {
+    const packet = buildTeacherPacket({ minutesAvailable: 45, emphasis: "full-support" });
+    const data = showcaseData(packet, measuredSmokeReceipt);
+
+    expect(data.progressLoop.title).toContain("Progress monitoring");
+    expect(data.progressLoop.teacherMove).toContain("Record three quick data points");
+    expect(data.progressLoop.checks).toEqual(packet.exitTicket);
+    expect(data.progressLoop.checks.join(" ")).toContain("not yet");
+    expect(data.progressLoop.receiptId).toBe("mod-progress-monitor");
+    expect(data.progressLoop.standard).toBe("RI.7.2");
+  });
+
   it("exposes packet-size modes so the showcase can prove the MCP is not one-size-fits-all", () => {
     const packet = buildTeacherPacket({ minutesAvailable: 45, emphasis: "full-support" });
     const data = showcaseData(packet);

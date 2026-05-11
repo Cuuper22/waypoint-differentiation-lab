@@ -314,6 +314,19 @@ export const data = {
       ]
     }
   ],
+  "progressLoop": {
+    "title": "Progress monitoring without a second form",
+    "teacherMove": "Record three quick data points: annotation completed, literal central-idea answer correct, claim frame started. This doubles as progress evidence without a second form.",
+    "checks": [
+      "Boxed claim present: yes / not yet",
+      "One literal central-idea answer correct: yes / not yet",
+      "Claim frame started with evidence: yes / not yet",
+      "Strategy used today: annotate / reread / ask for help / check-in"
+    ],
+    "receiptId": "mod-progress-monitor",
+    "evidenceCheck": "Teacher marks yes or not yet for each of the three data points.",
+    "standard": "RI.7.2"
+  },
   "modifications": [
     {
       "id": "mod-preview-vocab",

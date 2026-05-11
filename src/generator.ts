@@ -1107,6 +1107,7 @@ export function showcaseData(packet: TeacherPacket, smokeReceipt?: McpSmokeRecei
   const compact = compactTeacherPacket(packet);
   const compactChars = JSON.stringify(compact).length;
   const fullChars = JSON.stringify(packet).length;
+  const progressMonitor = packet.modifications.find((modification) => modification.id === "mod-progress-monitor");
   const packetModes = [
     { minutesAvailable: 5 as const, emphasis: "minimum-viable" as const, mode: "five-minute triage" },
     { minutesAvailable: 15 as const, emphasis: "balanced" as const, mode: "balanced pass" },
@@ -1252,6 +1253,16 @@ export function showcaseData(packet: TeacherPacket, smokeReceipt?: McpSmokeRecei
     },
     packetModes,
     mcpFlow,
+    progressLoop: {
+      title: "Progress monitoring without a second form",
+      teacherMove:
+        progressMonitor?.teacherAction ??
+        "Use the same classroom work to collect progress evidence for the preserved standard.",
+      checks: packet.exitTicket,
+      receiptId: progressMonitor?.id ?? "mod-progress-monitor",
+      evidenceCheck: progressMonitor?.evidenceTrace.progressCheck ?? packet.exitTicket[0],
+      standard: packet.preservedStandard
+    },
     modifications: packet.modifications.map((mod) => ({
       id: mod.id,
       lessonMoment: mod.lessonMoment,

@@ -845,6 +845,92 @@ a {
   padding: 28px;
 }
 
+.progress-loop {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: minmax(240px, 0.72fr) minmax(360px, 1fr) minmax(220px, 0.48fr);
+  gap: 14px;
+  padding: 16px;
+  border: 1px solid rgba(17, 24, 39, 0.08);
+  border-radius: 8px;
+  background:
+    linear-gradient(135deg, rgba(15, 139, 141, 0.12), rgba(247, 183, 51, 0.12)),
+    rgba(255, 250, 242, 0.94);
+  box-shadow: var(--shadow);
+}
+
+.progress-loop-copy {
+  padding: 12px;
+}
+
+.progress-loop-copy span,
+.progress-receipt span,
+.progress-check span {
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
+  color: var(--teal-dark);
+  font-size: 0.72rem;
+  font-weight: 950;
+  text-transform: uppercase;
+}
+
+.progress-loop-copy h3 {
+  margin: 10px 0;
+  font-size: 1.45rem;
+  line-height: 1.05;
+}
+
+.progress-loop-copy p {
+  margin: 0;
+  color: var(--graphite);
+  line-height: 1.5;
+}
+
+.progress-checks {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.progress-check,
+.progress-receipt {
+  min-height: 92px;
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  color: var(--ink);
+  background: rgba(255, 253, 248, 0.92);
+  text-align: left;
+}
+
+.progress-check:hover,
+.progress-check:focus-visible,
+.progress-receipt:hover,
+.progress-receipt:focus-visible {
+  outline: 3px solid rgba(15, 139, 141, 0.16);
+}
+
+.progress-check strong,
+.progress-receipt strong {
+  display: block;
+  margin-top: 8px;
+  font-size: 0.96rem;
+  line-height: 1.32;
+}
+
+.progress-receipt {
+  display: block;
+  background:
+    linear-gradient(145deg, rgba(8, 21, 37, 0.94), rgba(11, 89, 93, 0.84)),
+    var(--night);
+  color: white;
+}
+
+.progress-receipt span {
+  color: var(--gold);
+}
+
 .panel-topline {
   display: flex;
   flex-wrap: wrap;
@@ -2169,6 +2255,7 @@ a {
 
   .artifact-grid,
   .packet-stage,
+  .progress-loop,
   .receipts-layout,
   .detector-demo,
   .quality-grid,
@@ -2186,6 +2273,10 @@ a {
 
   .quality-grid {
     grid-template-columns: repeat(2, 1fr);
+  }
+
+  .progress-checks {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .evidence-morph {
@@ -2380,7 +2471,9 @@ a {
   }
 
   .trace-grid,
-  .quality-grid {
+  .quality-grid,
+  .progress-loop,
+  .progress-checks {
     grid-template-columns: 1fr;
   }
 

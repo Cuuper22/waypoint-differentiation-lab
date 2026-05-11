@@ -358,6 +358,18 @@ function interactionScript(expectedCatalogBudget, expectedPromptMessageBudget) {
       if (!reviewText.includes("npm run submission:check") || !reviewText.includes("Five-Minute Reviewer Path")) {
         failures.push("reviewer path scorecard did not render");
       }
+      const progressText = document.querySelector("[data-progress-loop]")?.textContent ?? "";
+      for (const proof of [
+        "Progress monitoring without a second form",
+        "Boxed claim present: yes / not yet",
+        "One literal central-idea answer correct",
+        "Receipt on click"
+      ]) {
+        if (!progressText.includes(proof)) failures.push("progress monitoring loop missing " + proof);
+      }
+      if (document.querySelectorAll("[data-progress-check]").length !== 4) {
+        failures.push("progress monitoring loop did not render four checks");
+      }
       const proofLinks = Array.from(document.querySelectorAll("[data-proof-dock] a"));
       if (proofLinks.length !== 4) failures.push("proof dock did not render four direct links");
       if (!reviewText.includes("Smoke report") || !reviewText.includes("measured stdio budgets")) {
