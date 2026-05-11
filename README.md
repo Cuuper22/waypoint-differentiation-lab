@@ -1,0 +1,91 @@
+# Waypoint Differentiation Lab
+
+Turn a lesson map and a pseudonymized learner profile into tomorrow's classroom supports, with receipts attached to every recommendation.
+
+![Waypoint Differentiation Lab showcase](assets/showcase-hero.png)
+
+## Open the visual walkthrough
+
+The repo front door is the Vite showcase in `showcase/`. It is the fast reviewer path: problem, packet, Receipts Rail, quality gate, and MCP architecture in one browser pass.
+
+```bash
+npm install
+npm run demo
+npm run showcase:dev
+```
+
+Open `http://127.0.0.1:5173/`.
+
+## Run the MCP
+
+```bash
+npm run build
+npm run dev
+```
+
+Claude Desktop example:
+
+```json
+{
+  "mcpServers": {
+    "waypoint-differentiation-lab": {
+      "command": "node",
+      "args": ["/absolute/path/to/waypoint-differentiation-lab/dist/server.js"]
+    }
+  }
+}
+```
+
+Resources:
+
+- `learner-profile` at `waypoint://case/learner-7a/profile`
+- `community-lesson-map` at `waypoint://lesson/community/map`
+- `sample-teacher-packet` at `waypoint://packet/community/learner-7a`
+- `teacher-handout` at `waypoint://packet/community/learner-7a/handout`
+
+Tools:
+
+- `generate_teacher_packet`: builds a deterministic Tomorrow Mode packet for 5, 15, or 45 minutes of prep.
+- `explain_modification`: returns the Receipts Rail trace for one recommendation.
+- `review_packet_quality`: runs the No Hand-Wavy Accommodations Detector.
+- `get_student_profile`, `get_lesson_map`, and `explain_evidence`: expose the underlying planning context.
+
+## Inspect the evidence
+
+The generated artifacts come from the same TypeScript packet builder:
+
+- `examples/teacher-handout.md`
+- `examples/evidence-audit.md`
+- `examples/quality-report.json`
+- `examples/sample-packet.json`
+- `showcase/src/generated-data.js`
+
+Every recommendation carries:
+
+- IEP-derived source quote
+- lesson demand
+- UDL alignment
+- barrier addressed
+- support type
+- preserved standard: `RI.7.2`
+- progress check
+
+The quality gate fails recommendations that are vague, unsupported, lowered in rigor, missing matching materials, or unsafe for student-facing language.
+
+## Why this shape
+
+Waypoint's public product framing emphasizes saving special education teachers time, targeted instructional resources, progress monitoring, and teacher review. The challenge asks for output quality, architecture decisions, code quality, and domain understanding, not a giant ingestion theater. CAST's UDL framing keeps the supports grounded in representation, engagement, and action/expression instead of name-dropping a framework and wandering off.
+
+Links:
+
+- [Waypoint Learning](https://trywaypointlearning.com/)
+- [Waypoint challenge](https://github.com/igoldstein19/waypoint-challenge/)
+- [CAST UDL overview](https://www.cast.org/resources/about-universal-design-for-learning/)
+
+## Verify
+
+```bash
+npm run check
+```
+
+That runs TypeScript build, Vitest, artifact generation, and the showcase production build.
