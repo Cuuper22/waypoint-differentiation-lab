@@ -34,6 +34,7 @@ const sceneStrip = document.querySelector("[data-scene-strip]");
 const playButton = document.querySelector("[data-play]");
 const standard = document.querySelector("[data-standard]");
 const qualityChip = document.querySelector("[data-quality-chip]");
+const heroProof = document.querySelector("[data-hero-proof]");
 const packetTitle = document.querySelector("[data-packet-title]");
 const handoutSections = document.querySelector("[data-handout-sections]");
 const modList = document.querySelector("[data-mod-list]");
@@ -69,6 +70,7 @@ qualityChip.textContent = data.packet.qualityReport.passed ? "Quality passed" : 
 packetTitle.textContent = data.packet.teacherMode;
 
 renderSceneStrip();
+renderHeroProof();
 renderHandout();
 renderRecommendations();
 renderQuality();
@@ -129,6 +131,26 @@ function stopPlayback() {
   playTimer = null;
   playButton.setAttribute("aria-label", "Play cinematic sequence");
   playButton.classList.remove("is-playing");
+}
+
+function renderHeroProof() {
+  const smoke = data.mcpStats.measuredSmoke;
+  const rows = [
+    ["default payload", `${data.mcpStats.compactPercentOfFull}% of full packet`],
+    ["standard", `${data.packet.preservedStandard} preserved`],
+    ["MCP meter", smoke?.rows?.[0]?.value ?? "smoke-tested"],
+    ["verification", "18 tests + smoke + browser QA"]
+  ];
+
+  heroProof.replaceChildren(
+    ...rows.map(([label, value]) => {
+      const item = document.createElement("a");
+      item.className = "hero-proof";
+      item.href = label === "verification" ? "#review-path" : label === "MCP meter" ? "#under-hood" : "#receipts";
+      item.innerHTML = `<span>${label}</span><strong>${value}</strong>`;
+      return item;
+    })
+  );
 }
 
 function renderHandout() {

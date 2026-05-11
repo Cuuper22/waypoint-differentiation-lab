@@ -444,6 +444,68 @@ a {
   backdrop-filter: blur(12px);
 }
 
+.hero-proof-strip {
+  position: relative;
+  display: grid;
+  width: min(660px, 100%);
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: 22px;
+}
+
+.hero-proof {
+  position: relative;
+  min-height: 76px;
+  overflow: hidden;
+  padding: 13px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.24);
+  border-radius: 8px;
+  color: white;
+  background:
+    linear-gradient(150deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0.05)),
+    rgba(8, 21, 37, 0.34);
+  box-shadow: 0 18px 42px rgba(0, 0, 0, 0.22);
+  backdrop-filter: blur(16px);
+}
+
+.hero-proof::after {
+  content: "";
+  position: absolute;
+  inset: auto 12px 0;
+  height: 3px;
+  border-radius: 999px 999px 0 0;
+  background: linear-gradient(90deg, var(--mint), var(--gold), var(--coral));
+  opacity: 0.88;
+  transform: scaleX(0.42);
+  transform-origin: left;
+  transition: transform 360ms ease;
+}
+
+.hero-proof:hover::after,
+.hero-proof:focus-visible::after {
+  transform: scaleX(1);
+}
+
+.hero-proof span,
+.hero-proof strong {
+  position: relative;
+  z-index: 1;
+  display: block;
+}
+
+.hero-proof span {
+  color: var(--gold);
+  font-size: 0.68rem;
+  font-weight: 950;
+  text-transform: uppercase;
+}
+
+.hero-proof strong {
+  margin-top: 8px;
+  font-size: 0.94rem;
+  line-height: 1.12;
+}
+
 .primary-action:hover,
 .primary-action:focus-visible,
 .ghost-action:hover,
@@ -2101,6 +2163,10 @@ a {
     display: none;
   }
 
+  .hero-proof-strip {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
   .artifact-grid,
   .packet-stage,
   .receipts-layout,
@@ -2212,6 +2278,26 @@ a {
 
   .cinema-copy p:not(.scene-count) {
     font-size: 1rem;
+  }
+
+  .hero-actions {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .primary-action,
+  .ghost-action {
+    width: 100%;
+    min-height: 48px;
+  }
+
+  .hero-proof-strip {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .hero-proof {
+    min-height: 62px;
   }
 
   .story-console {

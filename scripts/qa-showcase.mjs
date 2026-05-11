@@ -213,6 +213,13 @@ function interactionScript(expectedCatalogBudget, expectedPromptMessageBudget) {
       if (!sourceLink.includes("github.com/Cuuper22/waypoint-differentiation-lab")) {
         failures.push("first screen is missing source and tests link");
       }
+      const heroProofText = document.querySelector("[data-hero-proof]")?.textContent ?? "";
+      for (const proof of ["22% of full packet", "RI.7.2 preserved", "4,566 / 4,650 chars", "18 tests"]) {
+        if (!heroProofText.includes(proof)) failures.push("hero proof pulse missing " + proof);
+      }
+      if (document.querySelectorAll("[data-hero-proof] a").length !== 4) {
+        failures.push("hero proof pulse did not render four proof links");
+      }
 
       heroButton?.click();
       await wait(700);
