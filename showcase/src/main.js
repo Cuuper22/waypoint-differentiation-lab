@@ -54,6 +54,7 @@ const demoProgress = document.querySelector("[data-demo-progress]");
 let currentScene = 0;
 let playTimer = null;
 let demoRunId = 0;
+let currentPayloadMode = 1;
 
 frameEls.forEach((frame) => {
   const framePath = frame.dataset.frame;
@@ -293,23 +294,68 @@ function renderArchitecture() {
 
 function renderPayloadMeter() {
   const stats = data.mcpStats;
-  const compactPercent = Math.max(4, Math.min(100, stats.compactPercentOfFull));
+  const modes = data.packetModes ?? [];
+  const mode = modes[currentPayloadMode] ?? {
+    mode: "default",
+    minutesAvailable: 45,
+    defaultCall: "generate_teacher_packet({ detail: \"compact\" })",
+    compactChars: stats.compactChars,
+    fullChars: stats.fullChars,
+    compactPercentOfFull: stats.compactPercentOfFull,
+    savedPercent: stats.savedPercent,
+    recommendations: data.modifications.length,
+    materials: data.miniMaterials.length,
+    modificationIds: data.modifications.map((modification) => modification.id)
+  };
+  const compactPercent = Math.max(4, Math.min(100, mode.compactPercentOfFull));
 
   const title = document.createElement("div");
   title.className = "payload-title";
-  title.innerHTML = `<span>Payload meter</span><strong>${stats.savedPercent}% less default payload</strong>`;
+  title.innerHTML = `<span>Payload meter</span><strong>${mode.savedPercent}% less default payload</strong>`;
+
+  const switcher = document.createElement("div");
+  switcher.className = "payload-switch";
+  switcher.setAttribute("aria-label", "Packet size modes");
+  switcher.replaceChildren(
+    ...modes.map((packetMode, index) => {
+      const button = document.createElement("button");
+      button.className = "payload-mode";
+      button.type = "button";
+      button.dataset.payloadMode = String(index);
+      button.setAttribute("aria-pressed", String(index === currentPayloadMode));
+      button.innerHTML = `<strong>${packetMode.minutesAvailable} min</strong><span>${packetMode.recommendations} moves</span>`;
+      button.classList.toggle("is-active", index === currentPayloadMode);
+      button.addEventListener("click", () => {
+        currentPayloadMode = index;
+        renderPayloadMeter();
+      });
+      return button;
+    })
+  );
+
+  const summary = document.createElement("div");
+  summary.className = "payload-summary";
+  summary.append(
+    tag(`${mode.mode}`),
+    tag(`${mode.recommendations} recommendations`),
+    tag(`${mode.materials} materials`)
+  );
 
   const rows = document.createElement("div");
   rows.className = "payload-rows";
   rows.append(
-    payloadRow("Compact default", stats.compactChars, compactPercent, "IDs, short actions, quality status, next tool hints"),
-    payloadRow("Full packet", stats.fullChars, 100, "Handout text, all traces, all materials, all receipts")
+    payloadRow("Compact default", mode.compactChars, compactPercent, "IDs, short actions, quality status, next tool hints"),
+    payloadRow("Full packet", mode.fullChars, 100, "Handout text, all traces, all materials, all receipts")
   );
 
-  const note = document.createElement("p");
-  note.textContent = `${stats.defaultTool} first. Pull ${stats.onDemandTool} only for the recommendation under inspection.`;
+  const command = document.createElement("pre");
+  command.className = "payload-command";
+  command.textContent = mode.defaultCall;
 
-  payloadMeter.replaceChildren(title, rows, note);
+  const note = document.createElement("p");
+  note.textContent = `${stats.onDemandTool} stays the deep-dive path. The packet size changes, the evidence model does not.`;
+
+  payloadMeter.replaceChildren(title, switcher, summary, rows, command, note);
 }
 
 function renderMcpConsole() {

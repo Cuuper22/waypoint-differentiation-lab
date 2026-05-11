@@ -234,6 +234,19 @@ describe("teacher packet generation", () => {
     expect(data.mcpStats.catalogBudget.budget).toBe(mcpManifestBudgets.toolCatalogMaxChars);
   });
 
+  it("exposes packet-size modes so the showcase can prove the MCP is not one-size-fits-all", () => {
+    const packet = buildTeacherPacket({ minutesAvailable: 45, emphasis: "full-support" });
+    const data = showcaseData(packet);
+
+    expect(data.packetModes.map((mode) => mode.minutesAvailable)).toEqual([5, 15, 45]);
+    expect(data.packetModes.map((mode) => mode.recommendations)).toEqual([3, 5, 9]);
+    expect(data.packetModes.every((mode) => mode.compactPercentOfFull < 30)).toBe(true);
+    expect(data.packetModes[0].compactChars).toBeLessThan(data.packetModes[1].compactChars);
+    expect(data.packetModes[1].compactChars).toBeLessThan(data.packetModes[2].compactChars);
+    expect(data.packetModes[0].defaultCall).toContain("minutesAvailable: 5");
+    expect(data.packetModes[2].mode).toBe("full support");
+  });
+
   it("renders a reviewer submission health artifact from the same packet", () => {
     const packet = buildTeacherPacket({ minutesAvailable: 45, emphasis: "full-support" });
     const health = buildSubmissionHealth(packet);

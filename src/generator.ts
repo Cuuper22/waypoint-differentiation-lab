@@ -950,6 +950,31 @@ export function showcaseData(packet: TeacherPacket) {
   const compact = compactTeacherPacket(packet);
   const compactChars = JSON.stringify(compact).length;
   const fullChars = JSON.stringify(packet).length;
+  const packetModes = [
+    { minutesAvailable: 5 as const, emphasis: "minimum-viable" as const, mode: "five-minute triage" },
+    { minutesAvailable: 15 as const, emphasis: "balanced" as const, mode: "balanced pass" },
+    { minutesAvailable: 45 as const, emphasis: "full-support" as const, mode: "full support" }
+  ].map(({ minutesAvailable, emphasis, mode }) => {
+    const modePacket = buildTeacherPacket({ minutesAvailable, emphasis });
+    const modeCompact = compactTeacherPacket(modePacket);
+    const modeCompactChars = JSON.stringify(modeCompact).length;
+    const modeFullChars = JSON.stringify(modePacket).length;
+
+    return {
+      mode,
+      minutesAvailable,
+      emphasis,
+      defaultCall: `generate_teacher_packet({ minutesAvailable: ${minutesAvailable}, emphasis: "${emphasis}", detail: "compact" })`,
+      compactChars: modeCompactChars,
+      fullChars: modeFullChars,
+      compactPercentOfFull: Math.round((modeCompactChars / modeFullChars) * 100),
+      savedPercent: Math.round((1 - modeCompactChars / modeFullChars) * 100),
+      recommendations: modePacket.modifications.length,
+      materials: modePacket.miniMaterials.length,
+      useFirst: modePacket.useFirst,
+      modificationIds: modePacket.modifications.map((modification) => modification.id)
+    };
+  });
 
   return {
     title: "Waypoint Differentiation Lab",
@@ -975,6 +1000,7 @@ export function showcaseData(packet: TeacherPacket) {
       resourceBudgets: mcpResourceBudgetRows,
       textBudgets: mcpTextBudgetRows
     },
+    packetModes,
     modifications: packet.modifications.map((mod) => ({
       id: mod.id,
       lessonMoment: mod.lessonMoment,

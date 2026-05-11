@@ -109,6 +109,82 @@ export const data = {
       }
     ]
   },
+  "packetModes": [
+    {
+      "mode": "five-minute triage",
+      "minutesAvailable": 5,
+      "emphasis": "minimum-viable",
+      "defaultCall": "generate_teacher_packet({ minutesAvailable: 5, emphasis: \"minimum-viable\", detail: \"compact\" })",
+      "compactChars": 2695,
+      "fullChars": 11335,
+      "compactPercentOfFull": 24,
+      "savedPercent": 76,
+      "recommendations": 3,
+      "materials": 3,
+      "useFirst": [
+        "Use the two-symbol annotation key during paragraphs 1-2.",
+        "Do the 45-second first-step check-in before independent practice.",
+        "Keep the original short-response prompt, but add the claim-evidence-explain frame."
+      ],
+      "modificationIds": [
+        "mod-annotation-code",
+        "mod-checkin-before-independent",
+        "mod-short-response-frame"
+      ]
+    },
+    {
+      "mode": "balanced pass",
+      "minutesAvailable": 15,
+      "emphasis": "balanced",
+      "defaultCall": "generate_teacher_packet({ minutesAvailable: 15, emphasis: \"balanced\", detail: \"compact\" })",
+      "compactChars": 3829,
+      "fullChars": 16734,
+      "compactPercentOfFull": 23,
+      "savedPercent": 77,
+      "recommendations": 5,
+      "materials": 5,
+      "useFirst": [
+        "Use the two-symbol annotation key during paragraphs 1-2.",
+        "Do the 45-second first-step check-in before independent practice.",
+        "Keep the original short-response prompt, but add the claim-evidence-explain frame."
+      ],
+      "modificationIds": [
+        "mod-preview-vocab",
+        "mod-annotation-code",
+        "mod-scaffold-p1p2",
+        "mod-checkin-before-independent",
+        "mod-short-response-frame"
+      ]
+    },
+    {
+      "mode": "full support",
+      "minutesAvailable": 45,
+      "emphasis": "full-support",
+      "defaultCall": "generate_teacher_packet({ minutesAvailable: 45, emphasis: \"full-support\", detail: \"compact\" })",
+      "compactChars": 6232,
+      "fullChars": 28299,
+      "compactPercentOfFull": 22,
+      "savedPercent": 78,
+      "recommendations": 9,
+      "materials": 9,
+      "useFirst": [
+        "Use the two-symbol annotation key during paragraphs 1-2.",
+        "Do the 45-second first-step check-in before independent practice.",
+        "Keep the original short-response prompt, but add the claim-evidence-explain frame."
+      ],
+      "modificationIds": [
+        "mod-preview-vocab",
+        "mod-annotation-code",
+        "mod-scaffold-p1p2",
+        "mod-newcastle-bridge",
+        "mod-evidence-sorter",
+        "mod-checkin-before-independent",
+        "mod-short-response-frame",
+        "mod-discussion-role",
+        "mod-progress-monitor"
+      ]
+    }
+  ],
   "modifications": [
     {
       "id": "mod-preview-vocab",

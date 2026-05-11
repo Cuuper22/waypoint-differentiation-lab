@@ -1227,6 +1227,54 @@ a {
   line-height: 0.98;
 }
 
+.payload-switch {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-bottom: 16px;
+  padding: 6px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fff8ec;
+}
+
+.payload-mode {
+  min-height: 58px;
+  display: grid;
+  gap: 2px;
+  align-content: center;
+  border-radius: 7px;
+  color: var(--graphite);
+  background: transparent;
+  text-align: center;
+}
+
+.payload-mode.is-active,
+.payload-mode:hover,
+.payload-mode:focus-visible {
+  color: white;
+  background: var(--teal-dark);
+  outline: none;
+}
+
+.payload-mode strong {
+  font-size: 0.95rem;
+  font-weight: 950;
+}
+
+.payload-mode span {
+  font-size: 0.72rem;
+  font-weight: 850;
+  opacity: 0.72;
+}
+
+.payload-summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 18px;
+}
+
 .payload-rows {
   display: grid;
   gap: 16px;
@@ -1273,6 +1321,20 @@ a {
 .payload-row p {
   margin: 0;
   line-height: 1.45;
+}
+
+.payload-command {
+  margin: 18px 0 0;
+  padding: 13px;
+  border-radius: 8px;
+  color: var(--teal-dark);
+  background: #eef8f5;
+  border: 1px solid rgba(15, 139, 141, 0.16);
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+  font-size: 0.78rem;
+  line-height: 1.45;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
 }
 
 .payload-meter > p {

@@ -290,6 +290,17 @@ function interactionScript(expectedCatalogBudget) {
       if (!payloadText.includes("less default payload") || !payloadText.includes("Compact default")) {
         failures.push("payload meter did not render compact MCP stats");
       }
+      const payloadModes = Array.from(document.querySelectorAll("[data-payload-mode]"));
+      if (payloadModes.length !== 3) failures.push("payload meter did not render three packet modes");
+      payloadModes[2]?.click();
+      await wait(120);
+      const expandedPayloadText = document.querySelector("[data-payload-meter]")?.textContent ?? "";
+      if (!expandedPayloadText.includes("45 min") || !expandedPayloadText.includes("9 recommendations")) {
+        failures.push("payload meter did not switch to the full-support packet mode");
+      }
+      if (!document.querySelector('[data-payload-mode="2"]')?.classList.contains("is-active")) {
+        failures.push("payload meter did not mark the selected packet mode");
+      }
 
       const consoleText = document.querySelector("[data-mcp-console]")?.textContent ?? "";
       if (
