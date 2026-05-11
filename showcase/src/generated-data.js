@@ -854,6 +854,6 @@ export const data = {
     "Resources: learner profile and lesson map",
     "Tools: generate packet, explain modification, review quality",
     "Generator: deterministic TypeScript rules with typed evidence traces",
-    "Presentation: Claude or any MCP client turns the packet into teacher-ready prose"
+    "Presentation: client layer turns the packet into teacher-ready prose"
   ]
 };
