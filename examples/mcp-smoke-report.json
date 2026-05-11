@@ -6,7 +6,7 @@
     "tools": 7,
     "resources": 6,
     "prompts": 1,
-    "toolCatalogChars": 4174,
+    "toolCatalogChars": 4078,
     "toolCatalogBudgetChars": 4500,
     "largestToolManifestChars": 765,
     "largestToolManifestBudgetChars": 900,
@@ -20,8 +20,8 @@
       },
       {
         "name": "get_lesson_map",
-        "totalChars": 677,
-        "inputSchemaChars": 275,
+        "totalChars": 581,
+        "inputSchemaChars": 179,
         "outputSchemaChars": 266,
         "descriptionChars": 38
       },

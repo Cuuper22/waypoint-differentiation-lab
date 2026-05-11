@@ -60,7 +60,7 @@ export const data = {
       "rows": [
         {
           "label": "tool catalog",
-          "value": "4,174 / 4,500 chars"
+          "value": "4,078 / 4,500 chars"
         },
         {
           "label": "largest tool",

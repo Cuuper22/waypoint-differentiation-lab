@@ -34,8 +34,10 @@ const QualityReportOutputSchema = z.object({ passed: z.boolean() }).passthrough(
 const EvidenceLookupOutputSchema = z.object({ id: z.string(), source: z.enum(["IEP", "Lesson", "UDL"]) }).passthrough();
 const EvidenceAuditOutputSchema = z.object({ detail: z.enum(["summary", "full"]) }).passthrough();
 const PrepMinutesSchema = z.number().default(45);
+const LessonPhaseSchema = z.string().default("all");
 
 type PrepMinutes = 5 | 15 | 45;
+type LessonPhase = "overview" | "before-reading" | "during-reading" | "independent-practice" | "discussion" | "all";
 
 function textContent(text: string) {
   return [{ type: "text" as const, text }];
@@ -51,6 +53,20 @@ function toolError(error: unknown) {
 function prepMinutes(value: number): PrepMinutes {
   if (value === 5 || value === 15 || value === 45) return value;
   throw new Error("minutesAvailable must be 5, 15, or 45.");
+}
+
+function lessonPhase(value: string): LessonPhase {
+  if (
+    value === "overview" ||
+    value === "before-reading" ||
+    value === "during-reading" ||
+    value === "independent-practice" ||
+    value === "discussion" ||
+    value === "all"
+  ) {
+    return value;
+  }
+  throw new Error("phase must be overview, before-reading, during-reading, independent-practice, discussion, or all.");
 }
 
 function learnerProfileToolText(profile: ReturnType<typeof learnerProfileSummary> | typeof learnerProfile, detail: "summary" | "full") {
@@ -215,21 +231,25 @@ server.registerTool(
     title: "Get lesson map",
     description: "Lesson chunks; evidence text optional.",
     inputSchema: {
-      phase: z
-        .enum(["overview", "before-reading", "during-reading", "independent-practice", "discussion", "all"])
-        .default("all"),
+      phase: LessonPhaseSchema,
       includeEvidence: z.boolean().default(false)
     },
     outputSchema: LessonMapOutputSchema,
     annotations: { readOnlyHint: true, idempotentHint: true }
   },
   async ({ phase, includeEvidence }) => {
-    const sourceChunks = includeEvidence ? lessonChunks : lessonMapSummary();
-    const chunks = phase === "all" ? sourceChunks : sourceChunks.filter((chunk) => chunk.phase === phase);
-    return {
-      content: textContent(lessonMapToolText(chunks, includeEvidence)),
-      structuredContent: { chunks }
-    };
+    try {
+      const selectedPhase = lessonPhase(phase);
+      const sourceChunks = includeEvidence ? lessonChunks : lessonMapSummary();
+      const chunks =
+        selectedPhase === "all" ? sourceChunks : sourceChunks.filter((chunk) => chunk.phase === selectedPhase);
+      return {
+        content: textContent(lessonMapToolText(chunks, includeEvidence)),
+        structuredContent: { chunks }
+      };
+    } catch (error) {
+      return toolError(error);
+    }
   }
 );
 

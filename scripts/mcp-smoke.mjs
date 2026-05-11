@@ -183,6 +183,16 @@ try {
   assertTextBudget(lesson, "get_lesson_map summary", mcpTextBudgets.getLessonMapSummary);
   assert(lesson.structuredContent?.chunks?.length >= 6, "get_lesson_map lost structured lesson chunks");
 
+  const invalidPhase = await client.callTool({
+    name: "get_lesson_map",
+    arguments: { phase: "worksheet-zone", includeEvidence: false }
+  });
+  assert(invalidPhase.isError === true, "get_lesson_map accepted an unsupported lesson phase");
+  assert(
+    invalidPhase.content?.some((item) => item.text?.includes("phase must be overview")),
+    "get_lesson_map unsupported phase did not explain the allowed values"
+  );
+
   const receipt = await client.callTool({
     name: "explain_modification",
     arguments: { modificationId: "mod-short-response-frame" }
