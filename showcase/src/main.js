@@ -53,7 +53,23 @@ const stopDemoButton = document.querySelector("[data-stop-demo]");
 const demoDirector = document.querySelector("[data-demo-director]");
 const demoStatus = document.querySelector("[data-demo-status]");
 const demoProgress = document.querySelector("[data-demo-progress]");
+const navLinks = [...document.querySelectorAll(".nav-links a")];
+const journeyLabel = document.querySelector("[data-journey-label]");
+const journeyStep = document.querySelector("[data-journey-step]");
+const journeyProgress = document.querySelector("[data-journey-progress]");
 const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+const journeyChapters = [
+  { selector: "#top", label: "Cold open", step: "00 / 08" },
+  { selector: "#problem", label: "8:03am Problem", step: "01 / 08" },
+  { selector: "#mcp", label: "Receipts Interface", step: "02 / 08" },
+  { selector: "#packet", label: "Tomorrow Mode", step: "03 / 08" },
+  { selector: "#receipts", label: "Evidence Receipts", step: "04 / 08" },
+  { selector: "#quality", label: "Quality Gate", step: "05 / 08" },
+  { selector: "#under-hood", label: "Lightweight MCP", step: "06 / 08" },
+  { selector: "#rubric-map", label: "Rubric Map", step: "07 / 08" },
+  { selector: "#review-path", label: "Reviewer Path", step: "08 / 08" }
+];
 
 let currentScene = 0;
 let playTimer = null;
@@ -87,6 +103,7 @@ renderArchitecture();
 wireDetector();
 wireReviewerDemo();
 wireScrollButtons();
+wireJourneyMeter();
 wireReveal();
 startAmbientCanvas();
 selectScene(0);
@@ -940,6 +957,44 @@ function wireScrollButtons() {
       target?.scrollIntoView({ behavior: "smooth", block: "start" });
     });
   }
+}
+
+function wireJourneyMeter() {
+  let scheduled = false;
+
+  const update = () => {
+    scheduled = false;
+    const maxScroll = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
+    const probe = window.scrollY + window.innerHeight * 0.36;
+    const active =
+      [...journeyChapters]
+        .reverse()
+        .find((chapter) => {
+          const target = document.querySelector(chapter.selector);
+          return target && target.offsetTop <= probe;
+        }) ?? journeyChapters[0];
+
+    journeyLabel.textContent = active.label;
+    journeyStep.textContent = active.step;
+    journeyProgress.style.transform = `scaleX(${Math.min(1, Math.max(0, window.scrollY / maxScroll))})`;
+
+    for (const link of navLinks) {
+      const isActive = link.getAttribute("href") === active.selector;
+      link.classList.toggle("is-active", isActive);
+      if (isActive) link.setAttribute("aria-current", "page");
+      else link.removeAttribute("aria-current");
+    }
+  };
+
+  const schedule = () => {
+    if (scheduled) return;
+    scheduled = true;
+    window.requestAnimationFrame(update);
+  };
+
+  window.addEventListener("scroll", schedule, { passive: true });
+  window.addEventListener("resize", schedule);
+  update();
 }
 
 function wireReveal() {

@@ -218,6 +218,11 @@ function interactionScript(expectedCatalogBudget, expectedPromptMessageBudget, e
         if (!document.querySelector(selector)) failures.push("missing section " + selector);
       }
 
+      const initialJourney = document.querySelector("[data-journey-meter]")?.textContent ?? "";
+      if (!initialJourney.includes("Cold open") || !initialJourney.includes("00 / 08")) {
+        failures.push("guided chapter meter did not initialize on the cold open");
+      }
+
       const heroButton = document.querySelector('[data-scroll="#packet"]');
       const receiptButton = document.querySelector('[data-scroll="#receipts"]');
       if (!heroButton || !receiptButton) failures.push("missing hero action buttons");
@@ -248,6 +253,16 @@ function interactionScript(expectedCatalogBudget, expectedPromptMessageBudget, e
       await wait(700);
       if (window.scrollY < document.querySelector("#problem").offsetTop - 80) {
         failures.push("hero packet button did not scroll");
+      }
+      const packetJourney = document.querySelector("[data-journey-meter]")?.textContent ?? "";
+      if (!packetJourney.includes("Tomorrow Mode") || !packetJourney.includes("03 / 08")) {
+        failures.push("guided chapter meter did not follow the packet jump");
+      }
+      if (window.innerWidth > 1040) {
+        const activeNav = document.querySelector(".nav-links a[aria-current='page']");
+        if (activeNav?.getAttribute("href") !== "#packet") {
+          failures.push("desktop nav did not mark the active packet chapter");
+        }
       }
 
       receiptButton?.click();
@@ -465,6 +480,10 @@ function interactionScript(expectedCatalogBudget, expectedPromptMessageBudget, e
       }
       window.scrollTo({ top: document.documentElement.scrollHeight, left: 0, behavior: "instant" });
       await wait(240);
+      const finalJourney = document.querySelector("[data-journey-meter]")?.textContent ?? "";
+      if (!finalJourney.includes("Reviewer Path") || !finalJourney.includes("08 / 08")) {
+        failures.push("guided chapter meter did not reach the reviewer path");
+      }
 
       const resources = performance.getEntriesByType("resource").map((entry) => entry.name);
       for (const asset of [
