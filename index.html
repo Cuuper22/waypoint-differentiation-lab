@@ -22,8 +22,8 @@
     <meta name="theme-color" content="#f6efe4" />
     <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
     <title>Waypoint Differentiation Lab</title>
-    <script type="module" crossorigin src="./assets/index-B80_h_hT.js"></script>
-    <link rel="stylesheet" crossorigin href="./assets/index-B9Rv9AWc.css">
+    <script type="module" crossorigin src="./assets/index-By6T7VPE.js"></script>
+    <link rel="stylesheet" crossorigin href="./assets/index-CVdkuMyH.css">
   </head>
   <body>
     <canvas id="ambient" aria-hidden="true"></canvas>
@@ -38,6 +38,7 @@
         <a href="#packet">Packet</a>
         <a href="#quality">Quality</a>
         <a href="#under-hood">MCP</a>
+        <a href="#rubric-map">Rubric</a>
         <a href="#review-path">Review</a>
       </nav>
     </header>
@@ -234,9 +235,56 @@
         <article class="mcp-console" data-mcp-console data-reveal aria-label="Compact MCP request and response console"></article>
       </section>
 
+      <section id="rubric-map" class="section-band rubric-band">
+        <div class="chapter" data-reveal>
+          <span class="chapter-number">07</span>
+          <div>
+            <h2>Judge It Without Guesswork</h2>
+            <p>
+              The repo is set up so a reviewer can map the challenge rubric to concrete proof quickly. Not vibes. Not a hallway speech. Click, inspect, verify.
+            </p>
+          </div>
+        </div>
+        <div class="rubric-layout" data-reveal>
+          <article class="rubric-lead">
+            <span>Submission map</span>
+            <h3>Four judging doors, all wired to evidence.</h3>
+            <p>
+              The showcase carries the story. The MCP carries the compact tool surface. The tests carry the paranoia.
+            </p>
+          </article>
+          <div class="rubric-grid">
+            <article class="rubric-card">
+              <span>01</span>
+              <h3>Output quality</h3>
+              <p>Tomorrow Mode handout, receipts, and quality report are generated from the same packet data.</p>
+              <strong>Open: packet + Receipts Rail</strong>
+            </article>
+            <article class="rubric-card">
+              <span>02</span>
+              <h3>Architecture decisions</h3>
+              <p>Compact-first MCP calls keep startup and default responses small, with full evidence available on demand.</p>
+              <strong>Open: MCP payload meter</strong>
+            </article>
+            <article class="rubric-card">
+              <span>03</span>
+              <h3>Code quality</h3>
+              <p>Deterministic generator, schemas, stdio smoke tests, visual QA, and artifact regeneration sit behind one check.</p>
+              <strong>Run: npm run submission:check</strong>
+            </article>
+            <article class="rubric-card">
+              <span>04</span>
+              <h3>Domain understanding</h3>
+              <p>Supports preserve RI.7.2, map to UDL, avoid disability-label leaks, and flag vague accommodations.</p>
+              <strong>Open: quality gate</strong>
+            </article>
+          </div>
+        </div>
+      </section>
+
       <section id="review-path" class="section-band review-band">
         <div class="chapter inverse" data-reveal>
-          <span class="chapter-number">07</span>
+          <span class="chapter-number">08</span>
           <div>
             <h2>Five-Minute Reviewer Path</h2>
             <p>
