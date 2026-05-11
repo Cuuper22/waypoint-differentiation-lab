@@ -83,6 +83,18 @@ try {
       `
     },
     {
+      name: "teacher-review",
+      setup: `
+        const review = document.querySelector('[data-teacher-review]');
+        if (review) {
+          const top = review.getBoundingClientRect().top + window.scrollY - 20;
+          window.scrollTo({ top, behavior: 'instant' });
+        }
+        const choices = [...document.querySelectorAll('[data-review-choice]')];
+        choices[1]?.click();
+      `
+    },
+    {
       name: "under-hood",
       setup: "document.querySelector('#under-hood')?.scrollIntoView({ block: 'center', behavior: 'instant' });"
     }
