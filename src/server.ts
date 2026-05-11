@@ -19,10 +19,7 @@ import {
   teacherHandoutMarkdown
 } from "./generator.js";
 import { evidenceById, learnerProfile, lessonChunks } from "./knowledge.js";
-import {
-  EvidenceRefSchema,
-  QualityReportSchema
-} from "./schemas.js";
+import { EvidenceRefSchema } from "./schemas.js";
 
 const server = new McpServer({
   name: "waypoint-differentiation-lab",
@@ -43,7 +40,7 @@ const LearnerProfileOutputSchema = z.object({
   caseLabel: z.literal("Learner 7A"),
   grade: z.string(),
   supportIds: z.array(z.string()).optional(),
-  evidence: z.array(EvidenceRefSchema).optional()
+  evidence: z.array(z.object({ id: z.string(), source: z.string() }).passthrough()).optional()
 }).passthrough();
 const ModificationOutputSchema = z.object({
   id: z.string(),
@@ -69,24 +66,22 @@ const TeacherPacketToolOutputSchema = z.object({
     })
     .optional(),
   nextTools: z.array(z.string()).optional(),
-  qualityReport: QualityReportSchema.optional()
+  qualityReport: z.object({ passed: z.boolean(), summary: z.string() }).passthrough().optional()
 }).passthrough();
 const ModificationExplanationOutputSchema = z.object({
   modification: ModificationOutputSchema,
   evidenceTrace: z.object({
     modificationId: z.string(),
-    iepQuote: z.string(),
-    lessonDemand: z.string(),
-    barrierAddressed: z.string(),
-    standardPreserved: z.literal("RI.7.2"),
-    progressCheck: z.string()
+    standardPreserved: z.literal("RI.7.2")
   }).passthrough(),
   receipts: z.object({
-    iepQuote: z.string(),
-    lessonDemand: z.string(),
-    preservedStandard: z.literal("RI.7.2"),
-    progressCheck: z.string()
+    preservedStandard: z.literal("RI.7.2")
   }).passthrough()
+}).passthrough();
+const QualityReportOutputSchema = z.object({
+  passed: z.boolean(),
+  summary: z.string(),
+  flags: z.array(z.object({ kind: z.string(), modificationId: z.string().optional() }).passthrough()).optional()
 }).passthrough();
 const EvidenceAuditOutputSchema = z.object({
   detail: z.enum(["summary", "full"]),
@@ -361,7 +356,7 @@ server.registerTool(
         .describe("How much prep time the generated packet should assume."),
       emphasis: z.enum(["minimum-viable", "balanced", "full-support"]).default("balanced")
     },
-    outputSchema: QualityReportSchema,
+    outputSchema: QualityReportOutputSchema,
     annotations: { readOnlyHint: true, idempotentHint: true }
   },
   async ({ minutesAvailable, emphasis }) => {

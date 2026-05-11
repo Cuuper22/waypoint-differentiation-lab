@@ -2,12 +2,16 @@ import { spawn } from "node:child_process";
 import { existsSync, mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
+import { pathToFileURL } from "node:url";
 
 const showcaseUrl = process.env.SHOWCASE_URL ?? "http://127.0.0.1:5173/";
 const outDir = join(process.cwd(), "qa");
 const userDataDir = mkdtempSync(join(tmpdir(), "waypoint-chrome-qa-"));
 const port = 9300 + Math.floor(Math.random() * 400);
 const chromePath = process.env.CHROME_PATH ?? findChrome();
+const generatedDataUrl = pathToFileURL(join(process.cwd(), "showcase", "src", "generated-data.js")).href;
+const { data: generatedData } = await import(generatedDataUrl);
+const expectedCatalogBudget = generatedData.mcpStats.catalogBudget.budget;
 
 mkdirSync(outDir, { recursive: true });
 
@@ -155,7 +159,7 @@ async function runViewport(cdp, viewport) {
   await cdp.waitForEvent("Page.loadEventFired", 10000);
   await delay(900);
 
-  const interaction = await evaluate(cdp, interactionScript());
+  const interaction = await evaluate(cdp, interactionScript(expectedCatalogBudget));
   const screenshot = await cdp.send("Page.captureScreenshot", {
     format: "png",
     captureBeyondViewport: true,
@@ -181,7 +185,7 @@ async function runViewport(cdp, viewport) {
   };
 }
 
-function interactionScript() {
+function interactionScript(expectedCatalogBudget) {
   return `(() => new Promise((resolve) => {
       const failures = [];
       const wait = (ms) => new Promise((done) => setTimeout(done, ms));
@@ -279,7 +283,7 @@ function interactionScript() {
       ) {
         failures.push("MCP call console did not render the compact request/response rhythm");
       }
-      if (!consoleText.includes("MCP budget ledger") || !consoleText.includes("tool catalog <= 15000 chars")) {
+      if (!consoleText.includes("MCP budget ledger") || !consoleText.includes("tool catalog <= ${expectedCatalogBudget} chars")) {
         failures.push("MCP call console did not render startup budget");
       }
       if (!consoleText.includes("get_learner_profile <= 520 chars")) {

@@ -29,6 +29,10 @@ const requiredFiles = [
 
 const legacyCaseName = ["Jas", "mine"].join("");
 const staleStudentUri = ["waypoint://student/", legacyCaseName.toLowerCase(), "/profile"].join("");
+const oldProfileResourceId = [legacyCaseName.toLowerCase(), "profile"].join("-");
+const genericDumpPhrase = ["comprehensive", "solution"].join(" ");
+const machineGeneratedFraming = ["AI", "generated"].join("[- ]");
+const workflowHandoffFraming = ["AI agent", "workflow"].join(" ");
 const forbiddenPatterns = [
   {
     label: "legacy person-specific case name",
@@ -40,19 +44,19 @@ const forbiddenPatterns = [
   },
   {
     label: "old profile resource id",
-    pattern: new RegExp(["jasmine", "profile"].join("-"), "i")
+    pattern: new RegExp(escapeRegex(oldProfileResourceId), "i")
   },
   {
     label: "generic dump phrase",
-    pattern: /comprehensive solution/i
+    pattern: new RegExp(escapeRegex(genericDumpPhrase), "i")
   },
   {
     label: "machine-generated framing",
-    pattern: /AI[- ]generated/i
+    pattern: new RegExp(machineGeneratedFraming, "i")
   },
   {
     label: "workflow handoff framing",
-    pattern: /AI agent workflow/i
+    pattern: new RegExp(escapeRegex(workflowHandoffFraming), "i")
   }
 ];
 
