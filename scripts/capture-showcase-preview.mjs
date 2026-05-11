@@ -61,6 +61,13 @@ try {
         "document.querySelector('#packet')?.scrollIntoView({ block: 'center', behavior: 'instant' }); document.querySelector('[data-play]')?.click();"
     },
     {
+      name: "progress",
+      setup: `
+        document.querySelector('[data-progress-loop]')?.scrollIntoView({ block: 'center', behavior: 'instant' });
+        document.querySelector('[data-progress-check]')?.click();
+      `
+    },
+    {
       name: "receipts",
       setup: `
         document.querySelector('#receipts')?.scrollIntoView({ block: 'center', behavior: 'instant' });
