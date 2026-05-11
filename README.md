@@ -35,6 +35,12 @@ npm run build
 npm run dev
 ```
 
+Stdio smoke test without opening a desktop client:
+
+```bash
+npm run smoke:mcp
+```
+
 Claude Desktop example:
 
 ```json
