@@ -6,7 +6,7 @@ Turn a lesson map and a pseudonymized learner profile into tomorrow's classroom 
 
 ## Open the visual walkthrough
 
-The repo front door is the Vite showcase in `showcase/`. It is the fast reviewer path: a three-act cinematic walkthrough, packet preview, Receipts Rail, quality gate, lightweight MCP architecture, and five-minute review scorecard in one browser pass. Click **Play reviewer demo** for the guided version.
+[Open the live reviewer walkthrough](https://cuuper22.github.io/waypoint-differentiation-lab/) or run it locally from `showcase/`. It is the fast reviewer path: a three-act cinematic walkthrough, packet preview, Receipts Rail, quality gate, lightweight MCP architecture, and five-minute review scorecard in one browser pass. Click **Play reviewer demo** for the guided version.
 
 ```bash
 npm ci

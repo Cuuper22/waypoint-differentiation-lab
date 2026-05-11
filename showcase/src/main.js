@@ -52,6 +52,13 @@ let currentScene = 0;
 let playTimer = null;
 let demoRunId = 0;
 
+frameEls.forEach((frame) => {
+  const framePath = frame.dataset.frame;
+  if (framePath) {
+    frame.style.setProperty("--frame", `url("${new URL(framePath, window.location.href).href}")`);
+  }
+});
+
 standard.textContent = data.packet.preservedStandard;
 qualityChip.textContent = data.packet.qualityReport.passed ? "Quality passed" : "Needs review";
 packetTitle.textContent = data.packet.teacherMode;
