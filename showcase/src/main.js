@@ -428,6 +428,8 @@ function renderMcpConsole() {
   budgetTitle.className = "mcp-budget-title";
   budgetTitle.append(textSpan("MCP budget ledger"), textSpan("startup + response overhead"));
 
+  const promptContract = stats.promptBudget ? mcpPromptTemplate(stats.promptBudget) : document.createDocumentFragment();
+
   const budgetRows = document.createElement("div");
   budgetRows.className = "mcp-budget-grid";
   budgetRows.replaceChildren(
@@ -436,7 +438,7 @@ function renderMcpConsole() {
       .map(mcpBudgetTemplate)
   );
 
-  budgetPanel.append(budgetTitle, budgetRows);
+  budgetPanel.append(budgetTitle, promptContract, budgetRows);
   mcpConsole.replaceChildren(header, flow, detail, budgetPanel);
 }
 
@@ -520,6 +522,32 @@ function mcpBudgetTemplate(row) {
 
   item.append(top, split);
   return item;
+}
+
+function mcpPromptTemplate(row) {
+  const contract = document.createElement("article");
+  contract.className = "mcp-prompt-contract";
+
+  const copy = document.createElement("div");
+  copy.className = "mcp-prompt-copy";
+
+  const eyebrow = document.createElement("span");
+  eyebrow.textContent = "Prompt contract";
+
+  const title = document.createElement("strong");
+  title.textContent = `${row.prompt} <= ${row.messageBudget} chars`;
+
+  const note = document.createElement("p");
+  note.textContent = "Route, not packet: summaries first, compact packet next, receipts only when a recommendation earns inspection.";
+
+  copy.append(eyebrow, title, note);
+
+  const chips = document.createElement("div");
+  chips.className = "mcp-prompt-chips";
+  chips.append(tag(`catalog <= ${row.catalogBudget} chars`), tag(row.textChannel), tag("no quote dump"));
+
+  contract.append(copy, chips);
+  return contract;
 }
 
 function payloadRow(label, chars, percent, note) {

@@ -12,6 +12,7 @@ const chromePath = process.env.CHROME_PATH ?? findChrome();
 const generatedDataUrl = pathToFileURL(join(process.cwd(), "showcase", "src", "generated-data.js")).href;
 const { data: generatedData } = await import(generatedDataUrl);
 const expectedCatalogBudget = generatedData.mcpStats.catalogBudget.budget;
+const expectedPromptMessageBudget = generatedData.mcpStats.promptBudget.messageBudget;
 
 mkdirSync(outDir, { recursive: true });
 
@@ -159,7 +160,7 @@ async function runViewport(cdp, viewport) {
   await cdp.waitForEvent("Page.loadEventFired", 10000);
   await delay(900);
 
-  const interaction = await evaluate(cdp, interactionScript(expectedCatalogBudget));
+  const interaction = await evaluate(cdp, interactionScript(expectedCatalogBudget, expectedPromptMessageBudget));
   const screenshot = await cdp.send("Page.captureScreenshot", {
     format: "png",
     captureBeyondViewport: true,
@@ -185,7 +186,7 @@ async function runViewport(cdp, viewport) {
   };
 }
 
-function interactionScript(expectedCatalogBudget) {
+function interactionScript(expectedCatalogBudget, expectedPromptMessageBudget) {
   return `(() => new Promise((resolve) => {
       const failures = [];
       const wait = (ms) => new Promise((done) => setTimeout(done, ms));
@@ -312,6 +313,13 @@ function interactionScript(expectedCatalogBudget) {
       }
       if (!consoleText.includes("MCP budget ledger") || !consoleText.includes("tool catalog <= ${expectedCatalogBudget} chars")) {
         failures.push("MCP call console did not render startup budget");
+      }
+      if (
+        !consoleText.includes("Prompt contract") ||
+        !consoleText.includes("differentiate_community_lesson <= ${expectedPromptMessageBudget} chars") ||
+        !consoleText.includes("Route, not packet")
+      ) {
+        failures.push("MCP call console did not render prompt budget contract");
       }
       const mcpSteps = Array.from(document.querySelectorAll("[data-mcp-step]"));
       if (mcpSteps.length !== 4) failures.push("MCP flow did not render four interactive calls");
