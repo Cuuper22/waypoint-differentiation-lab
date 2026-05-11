@@ -237,6 +237,22 @@ function interactionScript(expectedCatalogBudget) {
       if (!detailText.includes("IEP quote") || !detailText.includes("UDL alignment")) {
         failures.push("receipt detail is missing evidence trace labels");
       }
+      const morph = document.querySelector("[data-evidence-morph]");
+      const morphText = morph?.textContent ?? "";
+      if (
+        !morphText.includes("IEP quote") ||
+        !morphText.includes("Lesson demand") ||
+        !morphText.includes("UDL alignment") ||
+        !morphText.includes("Teacher move")
+      ) {
+        failures.push("evidence morph did not render source-to-teacher proof labels");
+      }
+      if (morph?.dataset.activeModification !== active?.dataset.modificationId) {
+        failures.push("evidence morph did not sync to the active receipt");
+      }
+      if (document.querySelectorAll(".morph-rails .rail").length < 3) {
+        failures.push("evidence morph rails did not render");
+      }
 
       document.querySelector("[data-play]")?.click();
       await wait(450);

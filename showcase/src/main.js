@@ -38,6 +38,7 @@ const packetTitle = document.querySelector("[data-packet-title]");
 const handoutSections = document.querySelector("[data-handout-sections]");
 const modList = document.querySelector("[data-mod-list]");
 const receiptDetail = document.querySelector("[data-receipt-detail]");
+const evidenceMorph = document.querySelector("[data-evidence-morph]");
 const qualityGrid = document.querySelector("[data-quality-grid]");
 const architecture = document.querySelector("[data-architecture]");
 const payloadMeter = document.querySelector("[data-payload-meter]");
@@ -178,6 +179,8 @@ function selectModification(id) {
   }
 
   const trace = modification.evidenceTrace;
+  renderEvidenceMorph(modification);
+
   const title = document.createElement("h3");
   title.textContent = modification.lessonMoment;
 
@@ -204,6 +207,28 @@ function selectModification(id) {
   );
 
   receiptDetail.replaceChildren(title, action, tags, grid);
+}
+
+function renderEvidenceMorph(modification) {
+  const trace = modification.evidenceTrace;
+  const sourceCopy = {
+    iep: trimCopy(trace.iepQuote, 82),
+    lesson: trimCopy(trace.lessonDemand, 82),
+    udl: trimCopy(trace.udlAlignment.map((item) => item.principle).join(" + "), 48)
+  };
+
+  for (const [key, copy] of Object.entries(sourceCopy)) {
+    const node = evidenceMorph.querySelector(`[data-morph-source="${key}"] strong`);
+    if (node) node.textContent = copy;
+  }
+
+  const target = evidenceMorph.querySelector("[data-morph-target] strong");
+  if (target) target.textContent = trimCopy(modification.teacherAction, 76);
+
+  evidenceMorph.dataset.activeModification = modification.id;
+  evidenceMorph.classList.remove("is-routing");
+  evidenceMorph.offsetWidth;
+  evidenceMorph.classList.add("is-routing");
 }
 
 function renderQuality() {
@@ -538,6 +563,10 @@ function tag(text) {
   element.className = "trace-tag";
   element.textContent = text;
   return element;
+}
+
+function trimCopy(text, max) {
+  return text.length <= max ? text : `${text.slice(0, max - 3)}...`;
 }
 
 function listItem(text) {

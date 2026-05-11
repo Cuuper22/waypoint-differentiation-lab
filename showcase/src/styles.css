@@ -381,6 +381,39 @@ a {
   }
 }
 
+@keyframes railFlow {
+  to {
+    stroke-dashoffset: -56;
+  }
+}
+
+@keyframes railBurst {
+  0% {
+    opacity: 0.35;
+    stroke-width: 3;
+  }
+
+  48% {
+    opacity: 1;
+    stroke-width: 7;
+  }
+
+  100% {
+    opacity: 0.78;
+    stroke-width: 5;
+  }
+}
+
+@keyframes nodePop {
+  0% {
+    transform: translateY(6px) scale(0.98);
+  }
+
+  100% {
+    transform: translateY(0) scale(1);
+  }
+}
+
 .primary-action,
 .ghost-action,
 .scan-button {
@@ -840,7 +873,7 @@ a {
 
 .receipts-layout {
   display: grid;
-  grid-template-columns: minmax(240px, 0.54fr) minmax(420px, 1fr);
+  grid-template-columns: minmax(230px, 0.45fr) minmax(220px, 0.34fr) minmax(420px, 1fr);
   gap: 24px;
 }
 
@@ -884,6 +917,139 @@ a {
 .receipt-pill.is-active span:last-child,
 .receipt-pill:hover span:last-child {
   color: rgba(17, 24, 39, 0.7);
+}
+
+.evidence-morph {
+  position: relative;
+  min-height: 520px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 0.92fr);
+  grid-template-rows: repeat(3, 1fr);
+  gap: 14px 18px;
+  padding: 18px;
+  overflow: hidden;
+  border-radius: 8px;
+  background:
+    radial-gradient(circle at 24% 22%, rgba(94, 209, 194, 0.28), transparent 34%),
+    radial-gradient(circle at 82% 72%, rgba(247, 183, 51, 0.24), transparent 36%),
+    rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.24);
+}
+
+.evidence-morph::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.08) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.08) 1px, transparent 1px);
+  background-size: 28px 28px;
+  mask-image: linear-gradient(90deg, rgba(0, 0, 0, 0.7), transparent);
+}
+
+.morph-node {
+  position: relative;
+  z-index: 2;
+  align-self: center;
+  min-height: 104px;
+  padding: 14px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(7, 18, 31, 0.72);
+  backdrop-filter: blur(14px);
+}
+
+.morph-node span {
+  display: block;
+  margin-bottom: 8px;
+  color: var(--gold);
+  font-size: 0.68rem;
+  font-weight: 950;
+  text-transform: uppercase;
+}
+
+.morph-node strong {
+  display: block;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 0.82rem;
+  line-height: 1.35;
+}
+
+.source-node:nth-of-type(1) {
+  grid-column: 1;
+  grid-row: 1;
+}
+
+.source-node:nth-of-type(2) {
+  grid-column: 1;
+  grid-row: 2;
+}
+
+.source-node:nth-of-type(3) {
+  grid-column: 1;
+  grid-row: 3;
+}
+
+.target-node {
+  grid-column: 2;
+  grid-row: 1 / 4;
+  min-height: 170px;
+  background:
+    linear-gradient(135deg, rgba(255, 250, 242, 0.96), rgba(255, 242, 201, 0.94));
+  border-color: rgba(247, 183, 51, 0.42);
+}
+
+.target-node span {
+  color: #765100;
+}
+
+.target-node strong {
+  color: var(--ink);
+  font-size: 0.92rem;
+}
+
+.morph-rails {
+  position: absolute;
+  inset: 58px 10px 42px;
+  z-index: 1;
+  width: calc(100% - 20px);
+  height: calc(100% - 100px);
+  overflow: visible;
+}
+
+.rail {
+  fill: none;
+  stroke-width: 5;
+  stroke-linecap: round;
+  stroke-dasharray: 14 14;
+  filter: drop-shadow(0 0 12px rgba(94, 209, 194, 0.46));
+  animation: railFlow 2.1s linear infinite;
+}
+
+.rail-a {
+  stroke: rgba(94, 209, 194, 0.9);
+}
+
+.rail-b {
+  stroke: rgba(247, 183, 51, 0.95);
+  animation-delay: -0.35s;
+}
+
+.rail-c {
+  stroke: rgba(140, 104, 200, 0.92);
+  animation-delay: -0.7s;
+}
+
+.evidence-morph.is-routing .morph-node {
+  animation: nodePop 0.52s ease both;
+}
+
+.evidence-morph.is-routing .rail {
+  animation:
+    railBurst 0.9s ease both,
+    railFlow 2.1s linear infinite;
 }
 
 .receipt-detail {
@@ -1546,6 +1712,24 @@ a {
     grid-template-columns: repeat(2, 1fr);
   }
 
+  .evidence-morph {
+    min-height: 0;
+    grid-template-columns: 1fr;
+    grid-template-rows: none;
+  }
+
+  .source-node:nth-of-type(1),
+  .source-node:nth-of-type(2),
+  .source-node:nth-of-type(3),
+  .target-node {
+    grid-column: 1;
+    grid-row: auto;
+  }
+
+  .morph-rails {
+    display: none;
+  }
+
   .mcp-budget-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -1647,6 +1831,7 @@ a {
 
   .film-card,
   .packet-sheet,
+  .evidence-morph,
   .receipt-detail,
   .quality-card,
   .arch-node,

@@ -191,6 +191,29 @@
         </div>
         <div class="receipts-layout">
           <div class="recommendation-list" data-mod-list aria-label="Recommendations" data-reveal></div>
+          <aside class="evidence-morph" data-evidence-morph data-reveal aria-label="Evidence flow into selected teacher move">
+            <div class="morph-node source-node" data-morph-source="iep">
+              <span>IEP quote</span>
+              <strong>loading receipt</strong>
+            </div>
+            <div class="morph-node source-node" data-morph-source="lesson">
+              <span>Lesson demand</span>
+              <strong>loading demand</strong>
+            </div>
+            <div class="morph-node source-node" data-morph-source="udl">
+              <span>UDL alignment</span>
+              <strong>loading principle</strong>
+            </div>
+            <svg class="morph-rails" viewBox="0 0 240 260" aria-hidden="true">
+              <path class="rail rail-a" d="M42 42 C110 48 118 102 194 116" />
+              <path class="rail rail-b" d="M42 130 C102 130 128 130 194 130" />
+              <path class="rail rail-c" d="M42 218 C110 212 118 158 194 144" />
+            </svg>
+            <div class="morph-node target-node" data-morph-target>
+              <span>Teacher move</span>
+              <strong>same standard, usable tomorrow</strong>
+            </div>
+          </aside>
           <article class="receipt-detail" data-receipt-detail data-reveal aria-live="polite"></article>
         </div>
       </section>
