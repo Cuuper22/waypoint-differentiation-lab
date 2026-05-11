@@ -479,6 +479,22 @@ function renderPayloadMeter() {
     payloadRow("Full packet", mode.fullChars, 100, "Handout text, all traces, all materials, all receipts")
   );
 
+  const escapeHatch = data.mcpStats.fullDetailEscapeHatch;
+  const fullDetail = document.createElement("article");
+  fullDetail.className = "payload-full-detail";
+  if (escapeHatch) {
+    fullDetail.innerHTML = `
+      <span>${escapeHatch.label}</span>
+      <strong>${Number(escapeHatch.structuredChars).toLocaleString("en-US")} structured chars when requested</strong>
+      <p>${escapeHatch.note}</p>
+      <pre>${escapeHatch.command}</pre>
+    `;
+    const returns = document.createElement("div");
+    returns.className = "payload-full-returns";
+    returns.replaceChildren(...escapeHatch.returns.map((item) => tag(item)));
+    fullDetail.append(returns);
+  }
+
   const command = document.createElement("pre");
   command.className = "payload-command";
   command.textContent = mode.defaultCall;
@@ -486,7 +502,7 @@ function renderPayloadMeter() {
   const note = document.createElement("p");
   note.textContent = `${stats.onDemandTool} stays the deep-dive path. The packet size changes, the evidence model does not.`;
 
-  payloadMeter.replaceChildren(title, switcher, summary, rows, command, note);
+  payloadMeter.replaceChildren(title, switcher, summary, rows, fullDetail, command, note);
 }
 
 function renderMcpConsole() {

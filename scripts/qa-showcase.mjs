@@ -336,6 +336,13 @@ function interactionScript(expectedCatalogBudget, expectedPromptMessageBudget, e
       if (!payloadText.includes("less default payload") || !payloadText.includes("Compact default")) {
         failures.push("payload meter did not render compact MCP stats");
       }
+      if (
+        !payloadText.includes("Full detail stays one call away") ||
+        !payloadText.includes('detail: "full"') ||
+        !payloadText.includes("all evidenceTrace objects")
+      ) {
+        failures.push("payload meter did not render the full-detail escape hatch");
+      }
       const payloadModes = Array.from(document.querySelectorAll("[data-payload-mode]"));
       if (payloadModes.length !== 3) failures.push("payload meter did not render three packet modes");
       payloadModes[2]?.click();

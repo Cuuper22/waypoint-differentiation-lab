@@ -142,6 +142,23 @@ try {
     "Compact packet did not preserve RI.7.2 on every recommendation"
   );
 
+  const fullPacket = await client.callTool({
+    name: "generate_teacher_packet",
+    arguments: { minutesAvailable: 5, emphasis: "minimum-viable", detail: "full" }
+  });
+  assert(
+    textChars(fullPacket) > textChars(packet),
+    "generate_teacher_packet detail=full did not return richer text than compact detail"
+  );
+  assert(
+    fullPacket.structuredContent?.handoutSections?.length > 0,
+    "generate_teacher_packet detail=full did not return handout sections"
+  );
+  assert(
+    fullPacket.structuredContent?.modifications?.every((modification) => modification.evidenceTrace?.standardPreserved === "RI.7.2"),
+    "generate_teacher_packet detail=full lost full evidence traces"
+  );
+
   const profile = await client.callTool({
     name: "get_learner_profile",
     arguments: { detail: "summary" }
@@ -224,6 +241,15 @@ try {
         budgetChars: mcpResourceBudgets.lessonMapSummary
       }
     ],
+    escapeHatches: [
+      {
+        tool: "generate_teacher_packet",
+        mode: "full",
+        textChars: textChars(fullPacket),
+        structuredChars: JSON.stringify(fullPacket.structuredContent).length,
+        returns: ["handoutSections", "miniMaterials", "evidenceTrace"]
+      }
+    ],
     responses: [
       responseMetric("generate_teacher_packet", "compact", packet, {
         text: mcpTextBudgets.generateTeacherPacketCompact,
@@ -265,6 +291,7 @@ try {
         handoffPromptChars: handoffPromptText.length,
         largestToolManifestChars: Math.max(...manifestMetrics.tools.map((tool) => tool.totalChars)),
         compactRecommendations: packet.structuredContent.modifications.length,
+        fullDetailStructuredChars: JSON.stringify(fullPacket.structuredContent).length,
         smokeReport: smokeReportPath
       },
       null,

@@ -86,7 +86,7 @@ Resources:
 
 Tools:
 
-- `generate_teacher_packet`: builds a deterministic Tomorrow Mode packet for 5, 15, or 45 minutes of prep. Defaults to `detail: "compact"` so clients get IDs and short actions first.
+- `generate_teacher_packet`: builds a deterministic Tomorrow Mode packet for 5, 15, or 45 minutes of prep. Defaults to `detail: "compact"` so clients get IDs and short actions first; `detail: "full"` still returns the full handout, materials, and traces when a client actually needs them.
 - `explain_modification`: returns a short receipt in `content` and the full Receipts Rail trace in `structuredContent`.
 - `review_packet_quality`: runs the No Hand-Wavy Accommodations Detector with a small text verdict plus structured flags.
 - `get_learner_profile`, `get_lesson_map`, and `explain_evidence`: expose the underlying planning context without dumping raw JSON into the text channel.
@@ -119,7 +119,7 @@ Every recommendation carries:
 
 The quality gate fails recommendations that are vague, unsupported, lowered in rigor, missing matching materials, or unsafe for student-facing language.
 
-The MCP surface is intentionally light by default. Compact packet output is tested to stay under 30% of the full packet JSON, every public tool must advertise a non-empty object output schema, the tool catalog itself is smoke-tested under a 4,650-character startup budget, the prompt catalog and prompt message are budgeted, compact summary resources are smoke-tested against resource budgets, tool text responses are smoke-tested against tight character budgets, quote-level evidence stays behind `explain_modification`, and the full audit table stays behind `render_evidence_audit({ detail: "full" })` until a client actually needs it. The payload ledger records the planned contract, and the smoke report records the measured stdio report from the real server entrypoint, so the “compact first” claim is inspectable without trusting the webpage.
+The MCP surface is intentionally light by default. Compact packet output is tested to stay under 30% of the full packet JSON, every public tool must advertise a non-empty object output schema, the tool catalog itself is smoke-tested under a 4,500-character startup budget, the prompt catalog and prompt message are budgeted, compact summary resources are smoke-tested against resource budgets, tool text responses are smoke-tested against tight character budgets, quote-level evidence stays behind `explain_modification`, and the full audit table stays behind `render_evidence_audit({ detail: "full" })` until a client actually needs it. Compact is the route, not the ceiling: `generate_teacher_packet({ detail: "full" })` remains one call away. The payload ledger records the planned contract, and the smoke report records the measured stdio report from the real server entrypoint, so the “compact first” claim is inspectable without trusting the webpage.
 
 ## Why this shape
 

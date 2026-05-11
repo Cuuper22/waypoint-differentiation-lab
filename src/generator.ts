@@ -1136,6 +1136,7 @@ export function showcaseData(packet: TeacherPacket, smokeReceipt?: McpSmokeRecei
   const flowPacket = buildTeacherPacket({ minutesAvailable: 15, emphasis: "balanced" });
   const flowCompact = compactTeacherPacket(flowPacket);
   const flowBrief = teacherPacketBriefMarkdown(flowPacket);
+  const flowFullHandout = teacherHandoutMarkdown(flowPacket);
   const flowReceipt = explainModification("mod-short-response-frame");
   const flowReceiptText = [
     `Receipt for ${flowReceipt.modification.lessonMoment}`,
@@ -1155,6 +1156,14 @@ export function showcaseData(packet: TeacherPacket, smokeReceipt?: McpSmokeRecei
   }. ${flowPacket.qualityReport.summary}`;
   const flowFullChars = JSON.stringify(flowPacket).length;
   const flowCompactChars = JSON.stringify(flowCompact).length;
+  const fullDetailEscapeHatch = {
+    label: "Full detail stays one call away",
+    command: 'generate_teacher_packet({ minutesAvailable: 15, emphasis: "balanced", detail: "full" })',
+    contentChars: flowFullHandout.length,
+    structuredChars: flowFullChars,
+    returns: ["teacher handout", "all mini-materials", "all evidenceTrace objects"],
+    note: "Compact is the default route, not a ceiling."
+  };
   const receiptChars = JSON.stringify(flowReceipt).length;
   const auditStructuredChars = JSON.stringify(auditStructured).length;
   const gateStructuredChars = JSON.stringify(flowPacket.qualityReport).length;
@@ -1251,6 +1260,7 @@ export function showcaseData(packet: TeacherPacket, smokeReceipt?: McpSmokeRecei
       catalogBudget: mcpCatalogBudgetRow,
       promptBudget: mcpPromptBudgetRow,
       measuredSmoke: smokeReceiptShowcaseData(smokeReceipt),
+      fullDetailEscapeHatch,
       resourceBudgets: mcpResourceBudgetRows,
       textBudgets: mcpTextBudgetRows
     },
@@ -1321,6 +1331,7 @@ export function buildMcpPayloadLedger(packet: TeacherPacket) {
       recommendations: mode.recommendations,
       materials: mode.materials
     })),
+    fullDetailEscapeHatch: data.mcpStats.fullDetailEscapeHatch,
     callFlow: data.mcpFlow.map((step) => ({
       id: step.id,
       command: step.command,

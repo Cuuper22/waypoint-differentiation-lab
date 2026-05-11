@@ -1575,6 +1575,57 @@ a {
   line-height: 1.45;
 }
 
+.payload-full-detail {
+  display: grid;
+  gap: 10px;
+  margin-top: 18px;
+  padding: 16px;
+  border: 1px solid rgba(11, 98, 104, 0.18);
+  border-radius: 8px;
+  background:
+    linear-gradient(135deg, rgba(237, 249, 245, 0.94), rgba(255, 247, 230, 0.94)),
+    radial-gradient(circle at 92% 10%, rgba(247, 183, 51, 0.24), transparent 34%);
+}
+
+.payload-full-detail span {
+  color: var(--teal-dark);
+  font-size: 0.76rem;
+  font-weight: 950;
+  text-transform: uppercase;
+}
+
+.payload-full-detail strong {
+  color: var(--night);
+  font-size: 1rem;
+  line-height: 1.3;
+}
+
+.payload-full-detail p {
+  margin: 0;
+  color: var(--graphite);
+  line-height: 1.45;
+}
+
+.payload-full-detail pre {
+  margin: 0;
+  padding: 10px;
+  border-radius: 7px;
+  color: var(--teal-dark);
+  background: rgba(255, 253, 248, 0.82);
+  border: 1px solid rgba(15, 139, 141, 0.14);
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+  font-size: 0.72rem;
+  line-height: 1.4;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.payload-full-returns {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
 .payload-command {
   margin: 18px 0 0;
   padding: 13px;

@@ -34,9 +34,9 @@ const measuredSmokeReceipt: McpSmokeReceipt = {
     tools: 7,
     resources: 6,
     prompts: 1,
-    toolCatalogChars: 4566,
-    toolCatalogBudgetChars: 4650,
-    largestToolManifestChars: 863,
+    toolCatalogChars: 4414,
+    toolCatalogBudgetChars: 4500,
+    largestToolManifestChars: 845,
     largestToolManifestBudgetChars: 900
   },
   prompt: {
@@ -256,7 +256,7 @@ describe("teacher packet generation", () => {
     expect(workflow).toContain("mod-short-response-frame");
     expect(workflow).toContain("Standard preserved: RI.7.2");
     expect(workflow).toContain("## 5. Check The Meter");
-    expect(workflow).toContain("Tool catalog: 4,566 / 4,650 characters.");
+    expect(workflow).toContain("Tool catalog: 4,414 / 4,500 characters.");
     expect(workflow).toContain("Prompt message: 421 / 850 characters.");
     expect(workflow).toContain("Compact packet response: 604 / 1,200 text chars; 2,695 / 3,200 structured chars.");
     expect(workflow).not.toContain("Learner 7A's");
@@ -290,7 +290,11 @@ describe("teacher packet generation", () => {
     expect(data.mcpStats.measuredSmoke?.rows.map((row) => row.label)).toEqual(
       expect.arrayContaining(["tool catalog", "prompt message", "compact response", "one receipt"])
     );
-    expect(data.mcpStats.measuredSmoke?.rows[0].value).toContain("4,566 / 4,650");
+    expect(data.mcpStats.measuredSmoke?.rows[0].value).toContain("4,414 / 4,500");
+    expect(data.mcpStats.fullDetailEscapeHatch.label).toContain("Full detail");
+    expect(data.mcpStats.fullDetailEscapeHatch.command).toContain('detail: "full"');
+    expect(data.mcpStats.fullDetailEscapeHatch.returns).toContain("all evidenceTrace objects");
+    expect(data.mcpStats.fullDetailEscapeHatch.structuredChars).toBeGreaterThan(data.mcpStats.compactChars);
   });
 
   it("exposes the progress-monitoring loop for the showcase", () => {
@@ -346,6 +350,8 @@ describe("teacher packet generation", () => {
     expect(ledger.packetModes.every((mode) => mode.compactPercentOfFull < ledger.budgets.compactPacketMaxPercentOfFull)).toBe(
       true
     );
+    expect(ledger.fullDetailEscapeHatch.command).toContain('detail: "full"');
+    expect(ledger.fullDetailEscapeHatch.note).toContain("not a ceiling");
     expect(ledger.callFlow.map((step) => step.id)).toEqual(["packet", "receipt", "audit", "gate"]);
     expect(ledger.callFlow[0].hiddenPayload).toContain("deferred");
     expect(ledger.callFlow[1].structuredFields).toContain("evidenceTrace");

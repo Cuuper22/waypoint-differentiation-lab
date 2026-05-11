@@ -93,6 +93,19 @@
       "budgetChars": 1400
     }
   ],
+  "escapeHatches": [
+    {
+      "tool": "generate_teacher_packet",
+      "mode": "full",
+      "textChars": 2036,
+      "structuredChars": 11335,
+      "returns": [
+        "handoutSections",
+        "miniMaterials",
+        "evidenceTrace"
+      ]
+    }
+  ],
   "responses": [
     {
       "tool": "generate_teacher_packet",

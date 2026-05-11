@@ -85,6 +85,18 @@ export const data = {
       ],
       "reviewerRule": "The default path spends context on decisions and IDs, then pulls quote-level receipts only when asked."
     },
+    "fullDetailEscapeHatch": {
+      "label": "Full detail stays one call away",
+      "command": "generate_teacher_packet({ minutesAvailable: 15, emphasis: \"balanced\", detail: \"full\" })",
+      "contentChars": 2995,
+      "structuredChars": 16734,
+      "returns": [
+        "teacher handout",
+        "all mini-materials",
+        "all evidenceTrace objects"
+      ],
+      "note": "Compact is the default route, not a ceiling."
+    },
     "resourceBudgets": [
       {
         "tool": "learner-profile summary resource",
