@@ -16,17 +16,14 @@ import {
   teacherHandoutMarkdown
 } from "./generator.js";
 import { evidenceById, learnerProfile, lessonChunks } from "./knowledge.js";
-import {
-  CompactTeacherPacketSchema,
-  LearnerProfileSchema,
-  QualityReportSchema,
-  TeacherPacketSchema
-} from "./schemas.js";
+import { QualityReportSchema } from "./schemas.js";
 
 const server = new McpServer({
   name: "waypoint-differentiation-lab",
   version: "1.0.0"
 });
+
+const FlexibleObjectSchema = z.object({}).passthrough();
 
 server.registerResource(
   "learner-profile",
@@ -89,7 +86,7 @@ server.registerResource(
 );
 
 server.registerTool(
-  "get_student_profile",
+  "get_learner_profile",
   {
     title: "Get learner profile",
     description:
@@ -97,7 +94,7 @@ server.registerTool(
     inputSchema: {
       detail: z.enum(["summary", "full"]).default("summary")
     },
-    outputSchema: z.union([LearnerProfileSchema, z.any()]),
+    outputSchema: FlexibleObjectSchema,
     annotations: { readOnlyHint: true, idempotentHint: true }
   },
   async ({ detail }) => {
@@ -153,7 +150,7 @@ server.registerTool(
         .default("compact")
         .describe("Compact returns IDs and short actions. Full returns the handout and quote-level traces.")
     },
-    outputSchema: z.union([CompactTeacherPacketSchema, TeacherPacketSchema]),
+    outputSchema: FlexibleObjectSchema,
     annotations: { readOnlyHint: true, idempotentHint: true }
   },
   async ({ minutesAvailable, emphasis, detail }) => {

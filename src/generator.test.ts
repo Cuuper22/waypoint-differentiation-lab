@@ -136,6 +136,7 @@ describe("teacher packet generation", () => {
     expect(compactJson).not.toContain("lessonDemand");
     expect(compact.modifications.every((mod) => mod.receiptTool === "explain_modification")).toBe(true);
     expect(brief).toContain("Use `explain_modification` for quote-level evidence");
+    expect(brief.length).toBeLessThan(compactJson.length * 0.2);
   });
 
   it("renders a reviewer workflow that demonstrates compact-first MCP usage", () => {

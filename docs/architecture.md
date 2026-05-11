@@ -25,7 +25,7 @@ Waypoint Differentiation Lab is intentionally small: structured classroom contex
 
 The builder resolves those refs into an `EvidenceTrace` before a packet can be returned. No vector search is needed for this challenge case; a small, inspectable ruleset is easier to trust.
 
-The default MCP output is compact: recommendation IDs, short teacher actions, material IDs, evidence IDs, quality status, and next tool hints. Quote-level traces remain available through `explain_modification`, so clients do not spend context on receipts they never inspect.
+The default MCP structured output is compact: recommendation IDs, short teacher actions, material IDs, evidence IDs, quality status, and next tool hints. The text channel is intentionally brief so clients do not pay twice for the same data. Quote-level traces remain available through `explain_modification`, so clients do not spend context on receipts they never inspect.
 
 ## MCP surface
 
@@ -36,7 +36,7 @@ Tools expose the operations a teacher-facing client needs:
 - `generate_teacher_packet`
 - `explain_modification`
 - `review_packet_quality`
-- `get_student_profile`
+- `get_learner_profile`
 - `get_lesson_map`
 - `explain_evidence`
 - `render_evidence_audit`
@@ -58,4 +58,6 @@ The test suite covers the same claims so the showcase does not outrun the implem
 
 ## Showcase
 
-`showcase/` is a Vite app fed by `showcase/src/generated-data.js`, which `npm run demo` writes from the same packet builder. The visual walkthrough uses generated cinematic frames for the reviewer story, but the recommendations, quality checks, and receipt details come from the same packet and evidence traces.
+`showcase/` is a Vite app fed by `showcase/src/generated-data.js`, which `npm run demo` writes from the same packet builder. The visual walkthrough uses generated cinematic frames for the reviewer story, but the recommendations, quality checks, payload meter, reviewer path, and receipt details come from the same packet and evidence traces.
+
+`npm run submission:check` runs the build, tests, artifact generation, Vite build, MCP stdio smoke test, browser QA, and terminal reviewer workflow. The browser QA script starts the showcase server when needed, so the verification path does not require a second terminal.

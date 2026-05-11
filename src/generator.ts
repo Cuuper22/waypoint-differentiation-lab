@@ -702,21 +702,16 @@ export function teacherPacketBriefMarkdown(packet: TeacherPacket): string {
     `Case: ${compact.caseLabel}`,
     `Standard preserved: ${compact.preservedStandard}`,
     `Quality: ${compact.quality.passed ? "passed" : "needs review"}`,
+    `Recommendations: ${compact.modifications.length}`,
+    `Materials: ${compact.materialIds.length}`,
     "",
     "## Use first",
     ...compact.useFirst.map((item) => `- ${item}`),
     "",
-    "## Recommendations",
-    ...compact.modifications.map(
-      (mod) =>
-        `- ${mod.id}: ${mod.lessonMoment}; support=${mod.supportType}; refs=${[
-          ...mod.refs.iep,
-          ...mod.refs.lesson,
-          ...mod.refs.udl
-        ].join(", ")}; receipt=explain_modification`
-    ),
+    "## Included IDs",
+    compact.modifications.map((mod) => mod.id).join(", "),
     "",
-    "Use `explain_modification` for quote-level evidence only when a recommendation needs inspection."
+    "Read `structuredContent.modifications` for actions and refs. Use `explain_modification` for quote-level evidence only when a recommendation needs inspection."
   ].join("\n");
 }
 

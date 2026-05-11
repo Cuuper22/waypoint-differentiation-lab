@@ -2,7 +2,7 @@
 
 Turn a lesson map and a pseudonymized learner profile into tomorrow's classroom supports, with receipts attached to every recommendation.
 
-![Waypoint Differentiation Lab cinematic showcase](assets/cinematic-rail.png)
+![Waypoint Differentiation Lab cinematic showcase](assets/showcase-preview.gif)
 
 ## Open the visual walkthrough
 
@@ -60,7 +60,7 @@ Tools:
 - `generate_teacher_packet`: builds a deterministic Tomorrow Mode packet for 5, 15, or 45 minutes of prep. Defaults to `detail: "compact"` so clients get IDs and short actions first.
 - `explain_modification`: returns the Receipts Rail trace for one recommendation.
 - `review_packet_quality`: runs the No Hand-Wavy Accommodations Detector.
-- `get_student_profile`, `get_lesson_map`, and `explain_evidence`: expose the underlying planning context.
+- `get_learner_profile`, `get_lesson_map`, and `explain_evidence`: expose the underlying planning context.
 
 ## Inspect the evidence
 
@@ -101,7 +101,7 @@ Links:
 ## Verify
 
 ```bash
-npm run check
+npm run submission:check
 ```
 
-That runs TypeScript build, Vitest, artifact generation, and the showcase production build.
+That runs TypeScript build, Vitest, artifact generation, the showcase production build, an MCP stdio smoke test, browser QA, and the compact MCP reviewer workflow.
