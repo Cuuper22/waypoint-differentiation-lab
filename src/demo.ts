@@ -34,7 +34,7 @@ writeFileSync(join(examplesDir, "mcp-payload-ledger.json"), `${JSON.stringify(bu
 writeFileSync(join(examplesDir, "submission-health.json"), `${JSON.stringify(buildSubmissionHealth(packet), null, 2)}\n`);
 writeFileSync(
   join(showcaseSrcDir, "generated-data.js"),
-  `export const data = ${JSON.stringify(showcaseData(packet), null, 2)};\n`
+  `export const data = ${JSON.stringify(showcaseData(packet, smokeReceipt), null, 2)};\n`
 );
 
 console.log(

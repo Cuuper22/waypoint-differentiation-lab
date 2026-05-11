@@ -49,6 +49,39 @@ export const data = {
       "textChannel": "compact orchestration route",
       "structuredContent": "summary resources plus compact packet first"
     },
+    "measuredSmoke": {
+      "title": "Real stdio meter",
+      "result": "passed",
+      "reportPath": "examples/mcp-smoke-report.json",
+      "startup": "7 tools, 6 resources, 1 prompt",
+      "rows": [
+        {
+          "label": "tool catalog",
+          "value": "4,733 / 5,000 chars"
+        },
+        {
+          "label": "largest tool",
+          "value": "900 / 1,000 chars"
+        },
+        {
+          "label": "prompt message",
+          "value": "421 / 850 chars"
+        },
+        {
+          "label": "compact response",
+          "value": "604 / 1,200 text; 2,695 / 3,200 structured"
+        },
+        {
+          "label": "one receipt",
+          "value": "569 / 850 text; 2,237 / 2,600 structured"
+        },
+        {
+          "label": "audit summary",
+          "value": "645 / 1,100 text; 196 / 260 structured"
+        }
+      ],
+      "reviewerRule": "The default path spends context on decisions and IDs, then pulls quote-level receipts only when asked."
+    },
     "resourceBudgets": [
       {
         "tool": "learner-profile summary resource",

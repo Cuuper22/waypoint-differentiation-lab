@@ -1641,6 +1641,90 @@ a {
   border-color: rgba(255, 255, 255, 0.18);
 }
 
+.mcp-smoke-card {
+  display: grid;
+  gap: 12px;
+  margin-bottom: 10px;
+  padding: 14px;
+  border-radius: 8px;
+  background:
+    linear-gradient(135deg, rgba(94, 209, 194, 0.18), rgba(255, 255, 255, 0.08)),
+    rgba(0, 0, 0, 0.18);
+  border: 1px solid rgba(94, 209, 194, 0.26);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.mcp-smoke-header {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.mcp-smoke-copy {
+  display: grid;
+  gap: 6px;
+}
+
+.mcp-smoke-copy span {
+  color: var(--mint);
+  font-size: 0.7rem;
+  font-weight: 950;
+  text-transform: uppercase;
+}
+
+.mcp-smoke-copy strong {
+  color: white;
+  font-size: 1.02rem;
+  line-height: 1.2;
+}
+
+.mcp-smoke-copy p,
+.mcp-smoke-rule {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.76);
+  font-size: 0.82rem;
+  line-height: 1.48;
+}
+
+.mcp-smoke-card .tag {
+  color: var(--night);
+  background: var(--gold);
+  border-color: transparent;
+}
+
+.mcp-smoke-rows {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.mcp-smoke-row {
+  min-height: 70px;
+  display: grid;
+  align-content: space-between;
+  gap: 8px;
+  padding: 10px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.mcp-smoke-row span:first-child {
+  color: rgba(255, 255, 255, 0.58);
+  font-size: 0.66rem;
+  font-weight: 950;
+  text-transform: uppercase;
+}
+
+.mcp-smoke-row span:last-child {
+  color: white;
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+  font-size: 0.76rem;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
+
 .mcp-budget-grid {
   display: grid;
   grid-template-columns: repeat(5, minmax(0, 1fr));
@@ -2060,6 +2144,10 @@ a {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
+  .mcp-smoke-rows {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
   .mcp-prompt-contract {
     grid-template-columns: 1fr;
   }
@@ -2162,6 +2250,15 @@ a {
 
   .mcp-budget-grid {
     grid-template-columns: 1fr;
+  }
+
+  .mcp-smoke-header,
+  .mcp-smoke-rows {
+    grid-template-columns: 1fr;
+  }
+
+  .mcp-smoke-header {
+    display: grid;
   }
 
   .mcp-budget-title {

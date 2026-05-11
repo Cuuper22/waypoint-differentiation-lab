@@ -276,7 +276,7 @@ describe("teacher packet generation", () => {
 
   it("exposes payload stats for the visual showcase", () => {
     const packet = buildTeacherPacket({ minutesAvailable: 45, emphasis: "full-support" });
-    const data = showcaseData(packet);
+    const data = showcaseData(packet, measuredSmokeReceipt);
 
     expect(data.mcpStats.compactChars).toBeLessThan(data.mcpStats.fullChars);
     expect(data.mcpStats.compactPercentOfFull).toBeLessThan(30);
@@ -286,6 +286,11 @@ describe("teacher packet generation", () => {
     expect(data.mcpStats.catalogBudget.budget).toBe(mcpManifestBudgets.toolCatalogMaxChars);
     expect(data.mcpStats.promptBudget.prompt).toBe("differentiate_community_lesson");
     expect(data.mcpStats.promptBudget.messageBudget).toBe(mcpPromptBudgets.promptMessageMaxChars);
+    expect(data.mcpStats.measuredSmoke?.title).toBe("Real stdio meter");
+    expect(data.mcpStats.measuredSmoke?.rows.map((row) => row.label)).toEqual(
+      expect.arrayContaining(["tool catalog", "prompt message", "compact response", "one receipt"])
+    );
+    expect(data.mcpStats.measuredSmoke?.rows[0].value).toContain("4,733 / 5,000");
   });
 
   it("exposes packet-size modes so the showcase can prove the MCP is not one-size-fits-all", () => {

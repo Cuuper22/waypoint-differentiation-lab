@@ -841,6 +841,71 @@ function smokeReceiptMarkdownLines(smokeReceipt?: McpSmokeReceipt): string[] {
   ];
 }
 
+function smokeReceiptShowcaseData(smokeReceipt?: McpSmokeReceipt) {
+  if (!smokeReceipt) {
+    return undefined;
+  }
+
+  const compactResponse = smokeReceipt.responses.find(
+    (response) => response.tool === "generate_teacher_packet" && response.mode === "compact"
+  );
+  const receiptResponse = smokeReceipt.responses.find((response) => response.tool === "explain_modification");
+  const auditResponse = smokeReceipt.responses.find((response) => response.tool === "render_evidence_audit");
+  const rows = [
+    {
+      label: "tool catalog",
+      value: `${formatBudget(smokeReceipt.startup.toolCatalogChars, smokeReceipt.startup.toolCatalogBudgetChars)} chars`
+    },
+    {
+      label: "largest tool",
+      value: `${formatBudget(
+        smokeReceipt.startup.largestToolManifestChars,
+        smokeReceipt.startup.largestToolManifestBudgetChars
+      )} chars`
+    },
+    {
+      label: "prompt message",
+      value: `${formatBudget(smokeReceipt.prompt.messageChars, smokeReceipt.prompt.messageBudgetChars)} chars`
+    },
+    compactResponse
+      ? {
+          label: "compact response",
+          value: `${formatBudget(compactResponse.textChars, compactResponse.textBudgetChars)} text; ${formatBudget(
+            compactResponse.structuredChars,
+            compactResponse.structuredBudgetChars
+          )} structured`
+        }
+      : null,
+    receiptResponse
+      ? {
+          label: "one receipt",
+          value: `${formatBudget(receiptResponse.textChars, receiptResponse.textBudgetChars)} text; ${formatBudget(
+            receiptResponse.structuredChars,
+            receiptResponse.structuredBudgetChars
+          )} structured`
+        }
+      : null,
+    auditResponse
+      ? {
+          label: "audit summary",
+          value: `${formatBudget(auditResponse.textChars, auditResponse.textBudgetChars)} text; ${formatBudget(
+            auditResponse.structuredChars,
+            auditResponse.structuredBudgetChars
+          )} structured`
+        }
+      : null
+  ].filter((row): row is { label: string; value: string } => Boolean(row));
+
+  return {
+    title: "Real stdio meter",
+    result: smokeReceipt.result,
+    reportPath: "examples/mcp-smoke-report.json",
+    startup: `${smokeReceipt.startup.tools} tools, ${smokeReceipt.startup.resources} resources, ${smokeReceipt.startup.prompts} prompt`,
+    rows,
+    reviewerRule: smokeReceipt.reviewerRule ?? ""
+  };
+}
+
 export function reviewerWorkflowMarkdown(
   packet: TeacherPacket,
   modificationId = "mod-short-response-frame",
@@ -1038,7 +1103,7 @@ export function learnerProfileSummaryMarkdown(): string {
   ].join("\n");
 }
 
-export function showcaseData(packet: TeacherPacket) {
+export function showcaseData(packet: TeacherPacket, smokeReceipt?: McpSmokeReceipt) {
   const compact = compactTeacherPacket(packet);
   const compactChars = JSON.stringify(compact).length;
   const fullChars = JSON.stringify(packet).length;
@@ -1181,6 +1246,7 @@ export function showcaseData(packet: TeacherPacket) {
       onDemandTool: "explain_modification",
       catalogBudget: mcpCatalogBudgetRow,
       promptBudget: mcpPromptBudgetRow,
+      measuredSmoke: smokeReceiptShowcaseData(smokeReceipt),
       resourceBudgets: mcpResourceBudgetRows,
       textBudgets: mcpTextBudgetRows
     },

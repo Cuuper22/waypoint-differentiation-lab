@@ -321,6 +321,14 @@ function interactionScript(expectedCatalogBudget, expectedPromptMessageBudget) {
       ) {
         failures.push("MCP call console did not render prompt budget contract");
       }
+      if (
+        !consoleText.includes("Real stdio meter") ||
+        !consoleText.includes("4,733 / 5,000 chars") ||
+        !consoleText.includes("compact response") ||
+        !consoleText.includes("examples/mcp-smoke-report.json")
+      ) {
+        failures.push("MCP call console did not render measured smoke meter");
+      }
       const mcpSteps = Array.from(document.querySelectorAll("[data-mcp-step]"));
       if (mcpSteps.length !== 4) failures.push("MCP flow did not render four interactive calls");
       mcpSteps[1]?.click();

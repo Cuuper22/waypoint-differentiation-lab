@@ -429,6 +429,7 @@ function renderMcpConsole() {
   budgetTitle.append(textSpan("MCP budget ledger"), textSpan("startup + response overhead"));
 
   const promptContract = stats.promptBudget ? mcpPromptTemplate(stats.promptBudget) : document.createDocumentFragment();
+  const smokeMeter = mcpSmokeTemplate(stats.measuredSmoke);
 
   const budgetRows = document.createElement("div");
   budgetRows.className = "mcp-budget-grid";
@@ -438,7 +439,7 @@ function renderMcpConsole() {
       .map(mcpBudgetTemplate)
   );
 
-  budgetPanel.append(budgetTitle, promptContract, budgetRows);
+  budgetPanel.append(budgetTitle, promptContract, smokeMeter, budgetRows);
   mcpConsole.replaceChildren(header, flow, detail, budgetPanel);
 }
 
@@ -548,6 +549,49 @@ function mcpPromptTemplate(row) {
 
   contract.append(copy, chips);
   return contract;
+}
+
+function mcpSmokeTemplate(meter) {
+  if (!meter) return document.createDocumentFragment();
+
+  const card = document.createElement("article");
+  card.className = "mcp-smoke-card";
+
+  const header = document.createElement("div");
+  header.className = "mcp-smoke-header";
+
+  const copy = document.createElement("div");
+  copy.className = "mcp-smoke-copy";
+
+  const label = document.createElement("span");
+  label.textContent = "Measured run";
+
+  const title = document.createElement("strong");
+  title.textContent = meter.title;
+
+  const note = document.createElement("p");
+  note.textContent = `${meter.reportPath} - ${meter.startup}.`;
+
+  copy.append(label, title, note);
+  header.append(copy, tag(meter.result));
+
+  const rows = document.createElement("div");
+  rows.className = "mcp-smoke-rows";
+  rows.replaceChildren(
+    ...meter.rows.map((row) => {
+      const item = document.createElement("div");
+      item.className = "mcp-smoke-row";
+      item.append(textSpan(row.label), textSpan(row.value));
+      return item;
+    })
+  );
+
+  const rule = document.createElement("p");
+  rule.className = "mcp-smoke-rule";
+  rule.textContent = meter.reviewerRule;
+
+  card.append(header, rows, rule);
+  return card;
 }
 
 function payloadRow(label, chars, percent, note) {
