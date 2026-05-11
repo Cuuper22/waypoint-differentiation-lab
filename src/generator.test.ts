@@ -131,9 +131,15 @@ describe("teacher packet generation", () => {
     const fullJson = JSON.stringify(packet);
 
     expect(compact.detail).toBe("compact");
-    expect(compactJson.length).toBeLessThan(fullJson.length * 0.55);
+    expect(compactJson.length).toBeLessThan(fullJson.length * 0.3);
     expect(compactJson).not.toContain("iepQuote");
     expect(compactJson).not.toContain("lessonDemand");
+    expect(compactJson).not.toContain("studentFacingText");
+    expect(compactJson).not.toContain("rationale");
+    expect(compact.nextTools).toHaveLength(3);
+    expect(compact.nextTools.join(" ")).toContain("explain_modification");
+    expect(compact.nextTools.join(" ")).toContain("review_packet_quality");
+    expect(compact.nextTools.join(" ")).toContain("detail: 'full'");
     expect(compact.modifications.every((mod) => mod.receiptTool === "explain_modification")).toBe(true);
     expect(brief).toContain("Use `explain_modification` for quote-level evidence");
     expect(brief.length).toBeLessThan(compactJson.length * 0.2);
@@ -156,7 +162,7 @@ describe("teacher packet generation", () => {
     const data = showcaseData(packet);
 
     expect(data.mcpStats.compactChars).toBeLessThan(data.mcpStats.fullChars);
-    expect(data.mcpStats.compactPercentOfFull).toBeLessThan(55);
+    expect(data.mcpStats.compactPercentOfFull).toBeLessThan(30);
     expect(data.mcpStats.defaultTool).toContain("compact");
     expect(data.mcpStats.onDemandTool).toBe("explain_modification");
   });

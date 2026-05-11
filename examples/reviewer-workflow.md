@@ -8,7 +8,8 @@ A reviewer can see the whole MCP shape without asking the client to swallow the 
 
 - Compact payload: 3,829 characters
 - Full packet payload: 16,734 characters
-- Default call is 23% of the full packet, with recommendation IDs and next-tool hints intact.
+- Default call is 23% of the full packet, under the 30% payload budget enforced by tests.
+- It keeps recommendation IDs, short actions, material IDs, and next-tool hints intact.
 - Quality status: passed
 
 Use-first recommendations:

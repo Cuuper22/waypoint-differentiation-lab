@@ -92,7 +92,7 @@ Every recommendation carries:
 
 The quality gate fails recommendations that are vague, unsupported, lowered in rigor, missing matching materials, or unsafe for student-facing language.
 
-The MCP surface is intentionally light by default. Compact packet output is about one quarter of the full packet JSON, quote-level evidence stays behind `explain_modification` until a client actually needs it, and the showcase renders the same payload meter from generated data.
+The MCP surface is intentionally light by default. Compact packet output is tested to stay under 30% of the full packet JSON, quote-level evidence stays behind `explain_modification` until a client actually needs it, and the showcase renders the same payload meter from generated data.
 
 ## Why this shape
 
