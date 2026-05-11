@@ -1,0 +1,10 @@
+{
+  "mcpServers": {
+    "waypoint-differentiation-lab": {
+      "command": "node",
+      "args": [
+        "/absolute/path/to/waypoint-differentiation-lab/dist/server.js"
+      ]
+    }
+  }
+}
