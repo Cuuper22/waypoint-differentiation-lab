@@ -7,7 +7,9 @@ const requiredTools = [
   "explain_modification",
   "review_packet_quality",
   "get_learner_profile",
-  "get_lesson_map"
+  "get_lesson_map",
+  "explain_evidence",
+  "render_evidence_audit"
 ];
 
 const requiredResources = [
@@ -30,8 +32,10 @@ try {
 
   const tools = await client.listTools();
   const toolNames = new Set(tools.tools.map((tool) => tool.name));
+  const toolsByName = new Map(tools.tools.map((tool) => [tool.name, tool]));
   for (const tool of requiredTools) {
     assert(toolNames.has(tool), `Missing MCP tool: ${tool}`);
+    assert(toolsByName.get(tool)?.outputSchema?.type === "object", `Missing output schema for MCP tool: ${tool}`);
   }
 
   const resources = await client.listResources();

@@ -16,7 +16,14 @@ import {
   teacherHandoutMarkdown
 } from "./generator.js";
 import { evidenceById, learnerProfile, lessonChunks } from "./knowledge.js";
-import { QualityReportSchema } from "./schemas.js";
+import {
+  EvidenceRefSchema,
+  EvidenceTraceSchema,
+  LessonChunkSchema,
+  ModificationSchema,
+  QualityReportSchema,
+  UdlAlignmentSchema
+} from "./schemas.js";
 
 const server = new McpServer({
   name: "waypoint-differentiation-lab",
@@ -24,6 +31,31 @@ const server = new McpServer({
 });
 
 const FlexibleObjectSchema = z.object({}).passthrough();
+const LessonMapChunkSummarySchema = z.object({
+  id: z.string(),
+  phase: z.enum(["overview", "before-reading", "during-reading", "independent-practice", "discussion"]),
+  title: z.string(),
+  minutes: z.number(),
+  studentTask: z.string(),
+  evidenceIds: z.array(z.string())
+});
+const LessonMapOutputSchema = z.object({
+  chunks: z.array(z.union([LessonChunkSchema, LessonMapChunkSummarySchema]))
+});
+const ModificationExplanationOutputSchema = z.object({
+  modification: ModificationSchema,
+  evidenceTrace: EvidenceTraceSchema,
+  receipts: z.object({
+    iepQuote: z.string(),
+    lessonDemand: z.string(),
+    udl: z.array(UdlAlignmentSchema),
+    preservedStandard: z.literal("RI.7.2"),
+    progressCheck: z.string()
+  })
+});
+const EvidenceAuditOutputSchema = z.object({
+  markdown: z.string()
+});
 
 function textContent(text: string) {
   return [{ type: "text" as const, text }];
@@ -172,6 +204,7 @@ server.registerTool(
         .describe("Optional lesson phase filter."),
       includeEvidence: z.boolean().default(false).describe("Include quote text. Defaults false to keep MCP payloads light.")
     },
+    outputSchema: LessonMapOutputSchema,
     annotations: { readOnlyHint: true, idempotentHint: true }
   },
   async ({ phase, includeEvidence }) => {
@@ -232,6 +265,7 @@ server.registerTool(
     inputSchema: {
       modificationId: z.string().describe("Modification ID, such as mod-annotation-code.")
     },
+    outputSchema: ModificationExplanationOutputSchema,
     annotations: { readOnlyHint: true, idempotentHint: true }
   },
   async ({ modificationId }) => {
@@ -284,6 +318,7 @@ server.registerTool(
     inputSchema: {
       id: z.string().describe("Evidence ID, such as iep-ela-goal or lesson-short-response.")
     },
+    outputSchema: EvidenceRefSchema,
     annotations: { readOnlyHint: true, idempotentHint: true }
   },
   async ({ id }) => {
@@ -310,6 +345,7 @@ server.registerTool(
       minutesAvailable: z.union([z.literal(5), z.literal(15), z.literal(45)]).default(45),
       emphasis: z.enum(["minimum-viable", "balanced", "full-support"]).default("full-support")
     },
+    outputSchema: EvidenceAuditOutputSchema,
     annotations: { readOnlyHint: true, idempotentHint: true }
   },
   async ({ minutesAvailable, emphasis }) => {

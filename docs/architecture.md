@@ -41,6 +41,8 @@ Tools expose the operations a teacher-facing client needs:
 - `explain_evidence`
 - `render_evidence_audit`
 
+Every public tool advertises an object output schema. The short text channel gives the client a human-readable handoff; `structuredContent` carries the predictable contract for UI rendering, audits, or a second model pass.
+
 The prompt `differentiate_community_lesson` tells the client to call the generator, inspect receipts, and keep adult-facing labels out of student-facing text.
 
 ## Quality gate
