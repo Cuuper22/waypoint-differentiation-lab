@@ -67,6 +67,7 @@ Tools:
 - `explain_modification`: returns a short receipt in `content` and the full Receipts Rail trace in `structuredContent`.
 - `review_packet_quality`: runs the No Hand-Wavy Accommodations Detector with a small text verdict plus structured flags.
 - `get_learner_profile`, `get_lesson_map`, and `explain_evidence`: expose the underlying planning context without dumping raw JSON into the text channel.
+- `render_evidence_audit`: defaults to a compact ref index; pass `detail: "full"` for the quote-level Markdown table.
 
 ## Inspect the evidence
 
@@ -92,7 +93,7 @@ Every recommendation carries:
 
 The quality gate fails recommendations that are vague, unsupported, lowered in rigor, missing matching materials, or unsafe for student-facing language.
 
-The MCP surface is intentionally light by default. Compact packet output is tested to stay under 30% of the full packet JSON, tool text responses are smoke-tested against tight character budgets, quote-level evidence stays behind `explain_modification` until a client actually needs it, and the showcase renders the same payload meter from generated data.
+The MCP surface is intentionally light by default. Compact packet output is tested to stay under 30% of the full packet JSON, every public tool must advertise a non-empty object output schema, tool text responses are smoke-tested against tight character budgets, quote-level evidence stays behind `explain_modification`, and the full audit table stays behind `render_evidence_audit({ detail: "full" })` until a client actually needs it.
 
 ## Why this shape
 

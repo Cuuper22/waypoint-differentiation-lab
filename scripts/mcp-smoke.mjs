@@ -36,6 +36,10 @@ try {
   for (const tool of requiredTools) {
     assert(toolNames.has(tool), `Missing MCP tool: ${tool}`);
     assert(toolsByName.get(tool)?.outputSchema?.type === "object", `Missing output schema for MCP tool: ${tool}`);
+    assert(
+      Object.keys(toolsByName.get(tool)?.outputSchema?.properties ?? {}).length > 0,
+      `MCP tool output schema is too loose: ${tool}`
+    );
   }
 
   const resources = await client.listResources();
@@ -86,6 +90,20 @@ try {
   });
   assertTextBudget(quality, "review_packet_quality summary", mcpTextBudgets.reviewPacketQualitySummary);
   assert(quality.structuredContent?.passed === true, "review_packet_quality did not pass the generated packet");
+
+  const evidence = await client.callTool({
+    name: "explain_evidence",
+    arguments: { id: "iep-ela-goal" }
+  });
+  assertTextBudget(evidence, "explain_evidence lookup", mcpTextBudgets.explainEvidenceLookup);
+  assert(evidence.structuredContent?.source === "IEP", "explain_evidence did not preserve source type");
+
+  const audit = await client.callTool({
+    name: "render_evidence_audit",
+    arguments: { minutesAvailable: 5, emphasis: "minimum-viable" }
+  });
+  assertTextBudget(audit, "render_evidence_audit summary", mcpTextBudgets.renderEvidenceAuditSummary);
+  assert(audit.structuredContent?.detail === "summary", "render_evidence_audit default should be summary detail");
 
   console.log(
     JSON.stringify(

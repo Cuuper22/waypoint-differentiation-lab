@@ -3,7 +3,9 @@ export const mcpTextBudgets = {
   getLearnerProfileSummary: 520,
   getLessonMapSummary: 900,
   explainModificationReceipt: 850,
-  reviewPacketQualitySummary: 480
+  reviewPacketQualitySummary: 480,
+  explainEvidenceLookup: 320,
+  renderEvidenceAuditSummary: 1100
 } as const;
 
 export const mcpTextBudgetRows = [
@@ -41,5 +43,19 @@ export const mcpTextBudgetRows = [
     budget: mcpTextBudgets.reviewPacketQualitySummary,
     textChannel: "verdict",
     structuredContent: "check flags"
+  },
+  {
+    tool: "explain_evidence",
+    mode: "lookup",
+    budget: mcpTextBudgets.explainEvidenceLookup,
+    textChannel: "single receipt ref",
+    structuredContent: "typed evidence"
+  },
+  {
+    tool: "render_evidence_audit",
+    mode: "summary",
+    budget: mcpTextBudgets.renderEvidenceAuditSummary,
+    textChannel: "ref index",
+    structuredContent: "audit selector"
   }
 ] as const;

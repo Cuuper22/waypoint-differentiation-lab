@@ -69,6 +69,20 @@ export const data = {
         "budget": 480,
         "textChannel": "verdict",
         "structuredContent": "check flags"
+      },
+      {
+        "tool": "explain_evidence",
+        "mode": "lookup",
+        "budget": 320,
+        "textChannel": "single receipt ref",
+        "structuredContent": "typed evidence"
+      },
+      {
+        "tool": "render_evidence_audit",
+        "mode": "summary",
+        "budget": 1100,
+        "textChannel": "ref index",
+        "structuredContent": "audit selector"
       }
     ]
   },

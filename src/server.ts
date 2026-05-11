@@ -17,9 +17,12 @@ import {
 } from "./generator.js";
 import { evidenceById, learnerProfile, lessonChunks } from "./knowledge.js";
 import {
+  CompactModificationSchema,
   EvidenceRefSchema,
   EvidenceTraceSchema,
+  HandoutSectionSchema,
   LessonChunkSchema,
+  MiniMaterialSchema,
   ModificationSchema,
   QualityReportSchema,
   UdlAlignmentSchema
@@ -30,7 +33,6 @@ const server = new McpServer({
   version: "1.0.0"
 });
 
-const FlexibleObjectSchema = z.object({}).passthrough();
 const LessonMapChunkSummarySchema = z.object({
   id: z.string(),
   phase: z.enum(["overview", "before-reading", "during-reading", "independent-practice", "discussion"]),
@@ -41,6 +43,50 @@ const LessonMapChunkSummarySchema = z.object({
 });
 const LessonMapOutputSchema = z.object({
   chunks: z.array(z.union([LessonChunkSchema, LessonMapChunkSummarySchema]))
+});
+const LearnerProfileOutputSchema = z.object({
+  caseLabel: z.literal("Learner 7A"),
+  grade: z.string(),
+  sourceNote: z.string(),
+  learningImpact: z.string(),
+  strengths: z.array(z.string()),
+  needs: z.array(z.string()),
+  supportIds: z.array(z.string()).optional(),
+  accommodations: z.array(z.string()).optional(),
+  goals: z.array(z.string()).optional(),
+  evidence: z.array(EvidenceRefSchema).optional()
+});
+const TeacherPacketToolOutputSchema = z.object({
+  title: z.string(),
+  caseLabel: z.literal("Learner 7A"),
+  teacherMode: z.literal("Tomorrow Mode"),
+  preservedStandard: z.literal("RI.7.2"),
+  useFirst: z.array(z.string()),
+  modifications: z.array(z.union([CompactModificationSchema, ModificationSchema])),
+  detail: z.literal("compact").optional(),
+  materialIds: z.array(z.string()).optional(),
+  quality: z
+    .object({
+      passed: z.boolean(),
+      summary: z.string()
+    })
+    .optional(),
+  nextTools: z.array(z.string()).optional(),
+  evidenceSystem: z.literal("Receipts Rail").optional(),
+  qualityCheck: z.literal("No Hand-Wavy Accommodations Detector").optional(),
+  studentSnapshot: z.string().optional(),
+  lessonSnapshot: z.string().optional(),
+  miniMaterials: z.array(MiniMaterialSchema).optional(),
+  exitTicket: z.array(z.string()).optional(),
+  handoutSections: z.array(HandoutSectionSchema).optional(),
+  qualityReport: QualityReportSchema.optional(),
+  groundingReport: z
+    .object({
+      totalModifications: z.number(),
+      groundedInIepAndLesson: z.number(),
+      missingGrounding: z.array(z.string())
+    })
+    .optional()
 });
 const ModificationExplanationOutputSchema = z.object({
   modification: ModificationSchema,
@@ -54,7 +100,10 @@ const ModificationExplanationOutputSchema = z.object({
   })
 });
 const EvidenceAuditOutputSchema = z.object({
-  markdown: z.string()
+  detail: z.enum(["summary", "full"]),
+  markdown: z.string(),
+  modificationIds: z.array(z.string()),
+  nextTool: z.string().optional()
 });
 
 function textContent(text: string) {
@@ -108,6 +157,20 @@ function qualityReportText(report: ReturnType<typeof reviewPacketQuality>) {
     `${report.name}: ${status}.`,
     report.summary,
     `Flags: ${flags}. Structured content includes all check booleans and flag messages.`
+  ].join("\n");
+}
+
+function evidenceAuditSummaryMarkdown(packet: ReturnType<typeof buildTeacherPacket>) {
+  return [
+    `# ${packet.evidenceSystem}: compact audit`,
+    "",
+    `Quality: ${packet.qualityReport.passed ? "passed" : "needs review"}`,
+    ...packet.modifications.map(
+      (mod) =>
+        `- ${mod.id}: ${[...mod.iepRefs, ...mod.lessonRefs, ...mod.udlRefs].join(", ")}; preserves ${mod.evidenceTrace.standardPreserved}.`
+    ),
+    "",
+    "Call render_evidence_audit({ detail: 'full' }) for quote-level table output."
   ].join("\n");
 }
 
@@ -180,7 +243,7 @@ server.registerTool(
     inputSchema: {
       detail: z.enum(["summary", "full"]).default("summary")
     },
-    outputSchema: FlexibleObjectSchema,
+    outputSchema: LearnerProfileOutputSchema,
     annotations: { readOnlyHint: true, idempotentHint: true }
   },
   async ({ detail }) => {
@@ -237,7 +300,7 @@ server.registerTool(
         .default("compact")
         .describe("Compact returns IDs and short actions. Full returns the handout and quote-level traces.")
     },
-    outputSchema: FlexibleObjectSchema,
+    outputSchema: TeacherPacketToolOutputSchema,
     annotations: { readOnlyHint: true, idempotentHint: true }
   },
   async ({ minutesAvailable, emphasis, detail }) => {
@@ -340,20 +403,26 @@ server.registerTool(
   "render_evidence_audit",
   {
     title: "Render evidence audit",
-    description: "Render the generated packet as a Markdown evidence audit for reviewers.",
+    description: "Render a compact evidence audit by default; request full for quote-level reviewer markdown.",
     inputSchema: {
       minutesAvailable: z.union([z.literal(5), z.literal(15), z.literal(45)]).default(45),
-      emphasis: z.enum(["minimum-viable", "balanced", "full-support"]).default("full-support")
+      emphasis: z.enum(["minimum-viable", "balanced", "full-support"]).default("full-support"),
+      detail: z.enum(["summary", "full"]).default("summary")
     },
     outputSchema: EvidenceAuditOutputSchema,
     annotations: { readOnlyHint: true, idempotentHint: true }
   },
-  async ({ minutesAvailable, emphasis }) => {
+  async ({ minutesAvailable, emphasis, detail }) => {
     const packet = buildTeacherPacket({ minutesAvailable, emphasis });
-    const markdown = evidenceAuditMarkdown(packet);
+    const markdown = detail === "full" ? evidenceAuditMarkdown(packet) : evidenceAuditSummaryMarkdown(packet);
     return {
       content: textContent(markdown),
-      structuredContent: { markdown }
+      structuredContent: {
+        detail,
+        markdown,
+        modificationIds: packet.modifications.map((mod) => mod.id),
+        nextTool: detail === "summary" ? "render_evidence_audit({ detail: 'full' })" : undefined
+      }
     };
   }
 );
