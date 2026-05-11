@@ -2,6 +2,7 @@ import { mkdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import {
   buildTeacherPacket,
+  buildMcpPayloadLedger,
   buildSubmissionHealth,
   compactTeacherPacket,
   evidenceAuditMarkdown,
@@ -24,6 +25,7 @@ writeFileSync(join(examplesDir, "teacher-handout.md"), `${teacherHandoutMarkdown
 writeFileSync(join(examplesDir, "evidence-audit.md"), `${evidenceAuditMarkdown(packet)}\n`);
 writeFileSync(join(examplesDir, "reviewer-workflow.md"), `${reviewerWorkflowMarkdown(reviewerPacket)}\n`);
 writeFileSync(join(examplesDir, "quality-report.json"), `${JSON.stringify(packet.qualityReport, null, 2)}\n`);
+writeFileSync(join(examplesDir, "mcp-payload-ledger.json"), `${JSON.stringify(buildMcpPayloadLedger(packet), null, 2)}\n`);
 writeFileSync(join(examplesDir, "submission-health.json"), `${JSON.stringify(buildSubmissionHealth(packet), null, 2)}\n`);
 writeFileSync(
   join(showcaseSrcDir, "generated-data.js"),
@@ -40,6 +42,7 @@ console.log(
         "examples/evidence-audit.md",
         "examples/reviewer-workflow.md",
         "examples/quality-report.json",
+        "examples/mcp-payload-ledger.json",
         "examples/submission-health.json",
         "showcase/src/generated-data.js"
       ],

@@ -39,6 +39,7 @@
       "examples/quality-report.json",
       "examples/compact-packet.json",
       "examples/sample-packet.json",
+      "examples/mcp-payload-ledger.json",
       "examples/submission-health.json",
       "showcase/src/generated-data.js"
     ],

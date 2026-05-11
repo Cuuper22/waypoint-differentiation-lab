@@ -1114,6 +1114,40 @@ export function showcaseData(packet: TeacherPacket) {
   };
 }
 
+export function buildMcpPayloadLedger(packet: TeacherPacket) {
+  const data = showcaseData(packet);
+  return {
+    artifact: "mcp-payload-ledger",
+    purpose: "Show the compact-first MCP contract, packet-size modes, and deferred evidence costs from generated data.",
+    defaultRhythm: "compact packet -> one receipt -> compact audit -> quality gate",
+    budgets: {
+      startup: data.mcpStats.catalogBudget,
+      compactPacketMaxPercentOfFull: 30,
+      resources: data.mcpStats.resourceBudgets,
+      textResponses: data.mcpStats.textBudgets
+    },
+    packetModes: data.packetModes.map((mode) => ({
+      mode: mode.mode,
+      minutesAvailable: mode.minutesAvailable,
+      emphasis: mode.emphasis,
+      compactChars: mode.compactChars,
+      fullChars: mode.fullChars,
+      compactPercentOfFull: mode.compactPercentOfFull,
+      recommendations: mode.recommendations,
+      materials: mode.materials
+    })),
+    callFlow: data.mcpFlow.map((step) => ({
+      id: step.id,
+      command: step.command,
+      contentChars: step.textChars,
+      structuredContentChars: step.structuredChars,
+      hiddenPayload: step.hiddenPayload,
+      structuredFields: step.structuredFields
+    })),
+    reviewerRule: "Default calls should tell the client what to do next without spending context on quote tables or full handouts."
+  };
+}
+
 export function buildSubmissionHealth(packet: TeacherPacket): SubmissionHealth {
   return {
     product: "Waypoint Differentiation Lab",
@@ -1156,6 +1190,7 @@ export function buildSubmissionHealth(packet: TeacherPacket): SubmissionHealth {
         "examples/quality-report.json",
         "examples/compact-packet.json",
         "examples/sample-packet.json",
+        "examples/mcp-payload-ledger.json",
         "examples/submission-health.json",
         "showcase/src/generated-data.js"
       ],

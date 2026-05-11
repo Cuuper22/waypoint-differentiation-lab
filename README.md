@@ -14,6 +14,7 @@ What to notice:
 - **Architecture decisions:** compact-first MCP calls keep default payloads small while full evidence stays one tool call away.
 - **Code quality:** `npm run submission:check` builds, tests, smoke-tests stdio, runs visual QA, and prints the compact reviewer workflow.
 - **Domain understanding:** every recommendation preserves `RI.7.2`, maps to UDL, avoids student-facing labels, and has a progress check.
+- **MCP overhead:** `examples/mcp-payload-ledger.json` records the compact packet modes, call-flow sizes, and deferred evidence costs from the generated packet.
 - **Submission health:** `examples/submission-health.json` gives reviewers the live demo, MCP contract, artifact map, and verification command without making them rummage.
 
 ```bash
@@ -95,6 +96,7 @@ The generated artifacts come from the same TypeScript packet builder:
 - `examples/evidence-audit.md`
 - `examples/reviewer-workflow.md`
 - `examples/quality-report.json`
+- `examples/mcp-payload-ledger.json`
 - `examples/submission-health.json`
 - `examples/compact-packet.json`
 - `examples/sample-packet.json`
@@ -112,7 +114,7 @@ Every recommendation carries:
 
 The quality gate fails recommendations that are vague, unsupported, lowered in rigor, missing matching materials, or unsafe for student-facing language.
 
-The MCP surface is intentionally light by default. Compact packet output is tested to stay under 30% of the full packet JSON, every public tool must advertise a non-empty object output schema, the tool catalog itself is smoke-tested under a 5,000-character startup budget, compact summary resources are smoke-tested against resource budgets, tool text responses are smoke-tested against tight character budgets, quote-level evidence stays behind `explain_modification`, and the full audit table stays behind `render_evidence_audit({ detail: "full" })` until a client actually needs it.
+The MCP surface is intentionally light by default. Compact packet output is tested to stay under 30% of the full packet JSON, every public tool must advertise a non-empty object output schema, the tool catalog itself is smoke-tested under a 5,000-character startup budget, compact summary resources are smoke-tested against resource budgets, tool text responses are smoke-tested against tight character budgets, quote-level evidence stays behind `explain_modification`, and the full audit table stays behind `render_evidence_audit({ detail: "full" })` until a client actually needs it. The payload ledger records those numbers as a generated artifact, so the “compact first” claim is inspectable without trusting the webpage.
 
 ## Why this shape
 

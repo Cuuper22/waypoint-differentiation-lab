@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   buildTeacherPacket,
+  buildMcpPayloadLedger,
   buildSubmissionHealth,
   chooseModifications,
   compactTeacherPacket,
@@ -263,6 +264,22 @@ describe("teacher packet generation", () => {
     expect(data.mcpFlow.every((step) => step.textChars > 0 && step.structuredChars > 0)).toBe(true);
   });
 
+  it("writes a payload ledger that reviewers can audit without opening the showcase", () => {
+    const packet = buildTeacherPacket({ minutesAvailable: 45, emphasis: "full-support" });
+    const ledger = buildMcpPayloadLedger(packet);
+
+    expect(ledger.defaultRhythm).toContain("compact packet");
+    expect(ledger.budgets.startup.budget).toBe(mcpManifestBudgets.toolCatalogMaxChars);
+    expect(ledger.packetModes.map((mode) => mode.minutesAvailable)).toEqual([5, 15, 45]);
+    expect(ledger.packetModes.every((mode) => mode.compactPercentOfFull < ledger.budgets.compactPacketMaxPercentOfFull)).toBe(
+      true
+    );
+    expect(ledger.callFlow.map((step) => step.id)).toEqual(["packet", "receipt", "audit", "gate"]);
+    expect(ledger.callFlow[0].hiddenPayload).toContain("deferred");
+    expect(ledger.callFlow[1].structuredFields).toContain("evidenceTrace");
+    expect(JSON.stringify(ledger)).not.toMatch(/\bfull handout text\b/i);
+  });
+
   it("renders a reviewer submission health artifact from the same packet", () => {
     const packet = buildTeacherPacket({ minutesAvailable: 45, emphasis: "full-support" });
     const health = buildSubmissionHealth(packet);
@@ -278,6 +295,7 @@ describe("teacher packet generation", () => {
         "examples/teacher-handout.md",
         "examples/evidence-audit.md",
         "examples/quality-report.json",
+        "examples/mcp-payload-ledger.json",
         "showcase/src/generated-data.js"
       ])
     );

@@ -1,0 +1,171 @@
+{
+  "artifact": "mcp-payload-ledger",
+  "purpose": "Show the compact-first MCP contract, packet-size modes, and deferred evidence costs from generated data.",
+  "defaultRhythm": "compact packet -> one receipt -> compact audit -> quality gate",
+  "budgets": {
+    "startup": {
+      "tool": "tool catalog",
+      "mode": "startup",
+      "budget": 5000,
+      "textChannel": "concise tool list",
+      "structuredContent": "shallow passthrough schemas"
+    },
+    "compactPacketMaxPercentOfFull": 30,
+    "resources": [
+      {
+        "tool": "learner-profile summary resource",
+        "mode": "resource",
+        "budget": 900,
+        "textChannel": "planning gist",
+        "structuredContent": "full profile resource"
+      },
+      {
+        "tool": "lesson-map summary resource",
+        "mode": "resource",
+        "budget": 1400,
+        "textChannel": "chunk index",
+        "structuredContent": "full lesson resource"
+      }
+    ],
+    "textResponses": [
+      {
+        "tool": "generate_teacher_packet",
+        "mode": "compact",
+        "budget": 1200,
+        "textChannel": "brief handoff",
+        "structuredContent": "compact packet <= 3200 chars"
+      },
+      {
+        "tool": "get_learner_profile",
+        "mode": "summary",
+        "budget": 520,
+        "textChannel": "planning gist",
+        "structuredContent": "profile object"
+      },
+      {
+        "tool": "get_lesson_map",
+        "mode": "summary",
+        "budget": 900,
+        "textChannel": "phase list",
+        "structuredContent": "lesson chunks"
+      },
+      {
+        "tool": "explain_modification",
+        "mode": "receipt",
+        "budget": 850,
+        "textChannel": "short receipt",
+        "structuredContent": "slim quote trace <= 2600 chars"
+      },
+      {
+        "tool": "review_packet_quality",
+        "mode": "summary",
+        "budget": 480,
+        "textChannel": "verdict",
+        "structuredContent": "check flags"
+      },
+      {
+        "tool": "explain_evidence",
+        "mode": "lookup",
+        "budget": 320,
+        "textChannel": "single receipt ref",
+        "structuredContent": "typed evidence"
+      },
+      {
+        "tool": "render_evidence_audit",
+        "mode": "summary",
+        "budget": 1100,
+        "textChannel": "ref index",
+        "structuredContent": "audit selector <= 260 chars"
+      }
+    ]
+  },
+  "packetModes": [
+    {
+      "mode": "five-minute triage",
+      "minutesAvailable": 5,
+      "emphasis": "minimum-viable",
+      "compactChars": 2695,
+      "fullChars": 11335,
+      "compactPercentOfFull": 24,
+      "recommendations": 3,
+      "materials": 3
+    },
+    {
+      "mode": "balanced pass",
+      "minutesAvailable": 15,
+      "emphasis": "balanced",
+      "compactChars": 3829,
+      "fullChars": 16734,
+      "compactPercentOfFull": 23,
+      "recommendations": 5,
+      "materials": 5
+    },
+    {
+      "mode": "full support",
+      "minutesAvailable": 45,
+      "emphasis": "full-support",
+      "compactChars": 6232,
+      "fullChars": 28299,
+      "compactPercentOfFull": 22,
+      "recommendations": 9,
+      "materials": 9
+    }
+  ],
+  "callFlow": [
+    {
+      "id": "packet",
+      "command": "generate_teacher_packet({ minutesAvailable: 15, emphasis: \"balanced\", detail: \"compact\" })",
+      "contentChars": 642,
+      "structuredContentChars": 3829,
+      "hiddenPayload": "12,905 chars deferred until full detail is requested",
+      "structuredFields": [
+        "title",
+        "useFirst",
+        "modifications[]",
+        "materialIds",
+        "quality",
+        "nextTools"
+      ]
+    },
+    {
+      "id": "receipt",
+      "command": "explain_modification({ modificationId: \"mod-short-response-frame\" })",
+      "contentChars": 199,
+      "structuredContentChars": 2237,
+      "hiddenPayload": "Other receipts stay out of context until clicked",
+      "structuredFields": [
+        "modification",
+        "evidenceTrace",
+        "receipts"
+      ]
+    },
+    {
+      "id": "audit",
+      "command": "render_evidence_audit({ minutesAvailable: 15, emphasis: \"balanced\" })",
+      "contentChars": 902,
+      "structuredContentChars": 238,
+      "hiddenPayload": "1,577 quote-table chars deferred",
+      "structuredFields": [
+        "detail",
+        "modificationIds",
+        "contentChars",
+        "nextTool"
+      ]
+    },
+    {
+      "id": "gate",
+      "command": "review_packet_quality({ minutesAvailable: 15, emphasis: \"balanced\" })",
+      "contentChars": 156,
+      "structuredContentChars": 334,
+      "hiddenPayload": "No repeated packet body in the quality call",
+      "structuredFields": [
+        "name",
+        "passed",
+        "checks",
+        "flags",
+        "summary"
+      ]
+    }
+  ],
+  "reviewerRule": "Default calls should tell the client what to do next without spending context on quote tables or full handouts."
+}
