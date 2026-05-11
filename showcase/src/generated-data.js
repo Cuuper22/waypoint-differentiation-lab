@@ -1,6 +1,9 @@
 export const data = {
   "title": "Waypoint Differentiation Lab",
   "thesis": "Turn one lesson map and one learner profile into tomorrow's evidence-grounded supports.",
+  "verification": {
+    "proof": "19 tests + smoke + browser QA"
+  },
   "packet": {
     "caseLabel": "Learner 7A",
     "teacherMode": "Tomorrow Mode",
@@ -37,7 +40,7 @@ export const data = {
     "catalogBudget": {
       "tool": "tool catalog",
       "mode": "startup",
-      "budget": 4650,
+      "budget": 4500,
       "textChannel": "concise tool list",
       "structuredContent": "shallow passthrough schemas"
     },
@@ -57,11 +60,11 @@ export const data = {
       "rows": [
         {
           "label": "tool catalog",
-          "value": "4,566 / 4,650 chars"
+          "value": "4,414 / 4,500 chars"
         },
         {
           "label": "largest tool",
-          "value": "863 / 900 chars"
+          "value": "845 / 900 chars"
         },
         {
           "label": "prompt message",

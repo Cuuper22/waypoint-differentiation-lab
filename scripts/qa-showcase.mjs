@@ -13,6 +13,13 @@ const generatedDataUrl = pathToFileURL(join(process.cwd(), "showcase", "src", "g
 const { data: generatedData } = await import(generatedDataUrl);
 const expectedCatalogBudget = generatedData.mcpStats.catalogBudget.budget;
 const expectedPromptMessageBudget = generatedData.mcpStats.promptBudget.messageBudget;
+const expectedSmokeMeter = generatedData.mcpStats.measuredSmoke?.rows?.[0]?.value ?? "smoke-tested";
+const expectedHeroProofs = [
+  `${generatedData.mcpStats.compactPercentOfFull}% of full packet`,
+  `${generatedData.packet.preservedStandard} preserved`,
+  expectedSmokeMeter,
+  generatedData.verification?.proof ?? "tests + smoke + browser QA"
+];
 
 mkdirSync(outDir, { recursive: true });
 
@@ -160,7 +167,10 @@ async function runViewport(cdp, viewport) {
   await cdp.waitForEvent("Page.loadEventFired", 10000);
   await delay(900);
 
-  const interaction = await evaluate(cdp, interactionScript(expectedCatalogBudget, expectedPromptMessageBudget));
+  const interaction = await evaluate(
+    cdp,
+    interactionScript(expectedCatalogBudget, expectedPromptMessageBudget, expectedHeroProofs, expectedSmokeMeter)
+  );
   const screenshot = await cdp.send("Page.captureScreenshot", {
     format: "png",
     captureBeyondViewport: true,
@@ -186,10 +196,12 @@ async function runViewport(cdp, viewport) {
   };
 }
 
-function interactionScript(expectedCatalogBudget, expectedPromptMessageBudget) {
+function interactionScript(expectedCatalogBudget, expectedPromptMessageBudget, expectedHeroProofs, expectedSmokeMeter) {
   return `(() => new Promise((resolve) => {
       const failures = [];
       const wait = (ms) => new Promise((done) => setTimeout(done, ms));
+      const expectedHeroProofs = ${JSON.stringify(expectedHeroProofs)};
+      const expectedSmokeMeter = ${JSON.stringify(expectedSmokeMeter)};
     (async () => {
       document.documentElement.style.scrollBehavior = "auto";
       const required = [
@@ -214,7 +226,7 @@ function interactionScript(expectedCatalogBudget, expectedPromptMessageBudget) {
         failures.push("first screen is missing source and tests link");
       }
       const heroProofText = document.querySelector("[data-hero-proof]")?.textContent ?? "";
-      for (const proof of ["22% of full packet", "RI.7.2 preserved", "4,566 / 4,650 chars", "18 tests"]) {
+      for (const proof of expectedHeroProofs) {
         if (!heroProofText.includes(proof)) failures.push("hero proof pulse missing " + proof);
       }
       if (document.querySelectorAll("[data-hero-proof] a").length !== 4) {
@@ -330,7 +342,7 @@ function interactionScript(expectedCatalogBudget, expectedPromptMessageBudget) {
       }
       if (
         !consoleText.includes("Real stdio meter") ||
-        !consoleText.includes("4,566 / 4,650 chars") ||
+        !consoleText.includes(expectedSmokeMeter) ||
         !consoleText.includes("compact response") ||
         !consoleText.includes("examples/mcp-smoke-report.json")
       ) {

@@ -1228,6 +1228,9 @@ export function showcaseData(packet: TeacherPacket, smokeReceipt?: McpSmokeRecei
   return {
     title: "Waypoint Differentiation Lab",
     thesis: "Turn one lesson map and one learner profile into tomorrow's evidence-grounded supports.",
+    verification: {
+      proof: "19 tests + smoke + browser QA"
+    },
     packet: {
       caseLabel: packet.caseLabel,
       teacherMode: packet.teacherMode,

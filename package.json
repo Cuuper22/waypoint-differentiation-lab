@@ -18,7 +18,7 @@
     "qa:showcase": "node scripts/qa-showcase.mjs",
     "showcase:dev": "vite --config showcase/vite.config.js",
     "showcase:build": "vite build --config showcase/vite.config.js",
-    "submission:check": "npm run check && node scripts/mcp-smoke.mjs && npm run polish:check && npm run qa:showcase && npm run demo:reviewer",
+    "submission:check": "npm run build && npm test && node scripts/mcp-smoke.mjs && npm run demo && npm run showcase:build && npm run polish:check && npm run qa:showcase && npm run demo:reviewer",
     "test": "vitest run",
     "check": "npm run build && npm test && npm run demo && npm run showcase:build"
   },

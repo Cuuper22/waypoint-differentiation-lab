@@ -141,7 +141,7 @@ function renderHeroProof() {
     ["default payload", `${data.mcpStats.compactPercentOfFull}% of full packet`],
     ["standard", `${data.packet.preservedStandard} preserved`],
     ["MCP meter", smoke?.rows?.[0]?.value ?? "smoke-tested"],
-    ["verification", "18 tests + smoke + browser QA"]
+    ["verification", data.verification?.proof ?? "tests + smoke + browser QA"]
   ];
 
   heroProof.replaceChildren(

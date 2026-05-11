@@ -6,45 +6,45 @@
     "tools": 7,
     "resources": 6,
     "prompts": 1,
-    "toolCatalogChars": 4566,
-    "toolCatalogBudgetChars": 4650,
-    "largestToolManifestChars": 863,
+    "toolCatalogChars": 4414,
+    "toolCatalogBudgetChars": 4500,
+    "largestToolManifestChars": 845,
     "largestToolManifestBudgetChars": 900,
     "toolManifests": [
       {
         "name": "get_learner_profile",
-        "totalChars": 507,
+        "totalChars": 481,
         "inputSchemaChars": 157,
         "outputSchemaChars": 165,
-        "descriptionChars": 77
+        "descriptionChars": 51
       },
       {
         "name": "get_lesson_map",
-        "totalChars": 712,
+        "totalChars": 677,
         "inputSchemaChars": 275,
         "outputSchemaChars": 266,
-        "descriptionChars": 73
+        "descriptionChars": 38
       },
       {
         "name": "generate_teacher_packet",
-        "totalChars": 863,
+        "totalChars": 845,
         "inputSchemaChars": 389,
         "outputSchemaChars": 280,
-        "descriptionChars": 72
+        "descriptionChars": 54
       },
       {
         "name": "explain_modification",
-        "totalChars": 587,
+        "totalChars": 561,
         "inputSchemaChars": 149,
         "outputSchemaChars": 253,
-        "descriptionChars": 73
+        "descriptionChars": 47
       },
       {
         "name": "review_packet_quality",
-        "totalChars": 666,
+        "totalChars": 640,
         "inputSchemaChars": 316,
         "outputSchemaChars": 160,
-        "descriptionChars": 78
+        "descriptionChars": 52
       },
       {
         "name": "explain_evidence",
@@ -55,10 +55,10 @@
       },
       {
         "name": "render_evidence_audit",
-        "totalChars": 755,
+        "totalChars": 734,
         "inputSchemaChars": 393,
         "outputSchemaChars": 185,
-        "descriptionChars": 65
+        "descriptionChars": 44
       }
     ]
   },

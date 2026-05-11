@@ -6,7 +6,7 @@
     "startup": {
       "tool": "tool catalog",
       "mode": "startup",
-      "budget": 4650,
+      "budget": 4500,
       "textChannel": "concise tool list",
       "structuredContent": "shallow passthrough schemas"
     },

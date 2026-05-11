@@ -15,10 +15,10 @@ export const mcpStructuredBudgets = {
 } as const;
 
 export const mcpManifestBudgets = {
-  toolCatalogMaxChars: 4650,
+  toolCatalogMaxChars: 4500,
   toolManifestMaxChars: 900,
   outputSchemaMaxChars: 320,
-  descriptionMaxChars: 85
+  descriptionMaxChars: 65
 } as const;
 
 export const mcpPromptBudgets = {

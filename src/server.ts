@@ -178,7 +178,7 @@ server.registerTool(
   "get_learner_profile",
   {
     title: "Get learner profile",
-    description: "Learner 7A context. Summary default; full adds goals, accommodations, quotes.",
+    description: "Learner context; summary default, full adds quotes.",
     inputSchema: {
       detail: z.enum(["summary", "full"]).default("summary")
     },
@@ -198,7 +198,7 @@ server.registerTool(
   "get_lesson_map",
   {
     title: "Get lesson map",
-    description: "Lesson chunks with teacher moves; include evidence text only when needed.",
+    description: "Lesson chunks; evidence text optional.",
     inputSchema: {
       phase: z
         .enum(["overview", "before-reading", "during-reading", "independent-practice", "discussion", "all"])
@@ -222,7 +222,7 @@ server.registerTool(
   "generate_teacher_packet",
   {
     title: "Generate Tomorrow Mode packet",
-    description: "Generate lesson supports. Compact default; full adds handout and traces.",
+    description: "Generate supports; compact default, full adds handout.",
     inputSchema: {
       minutesAvailable: z.union([z.literal(5), z.literal(15), z.literal(45)]).default(45),
       emphasis: z.enum(["minimum-viable", "balanced", "full-support"]).default("balanced"),
@@ -251,7 +251,7 @@ server.registerTool(
   "explain_modification",
   {
     title: "Explain a modification",
-    description: "One recommendation receipt: quote, demand, UDL, standard, progress check.",
+    description: "One support receipt: quote, demand, UDL, check.",
     inputSchema: {
       modificationId: z.string()
     },
@@ -278,7 +278,7 @@ server.registerTool(
   "review_packet_quality",
   {
     title: "Review packet quality",
-    description: "Run detector for vague, unsupported, unsafe, or lowered-rigor recommendations.",
+    description: "Detector for vague, unsafe, or lowered-rigor advice.",
     inputSchema: {
       minutesAvailable: z.union([z.literal(5), z.literal(15), z.literal(45)]).default(45),
       emphasis: z.enum(["minimum-viable", "balanced", "full-support"]).default("balanced")
@@ -326,7 +326,7 @@ server.registerTool(
   "render_evidence_audit",
   {
     title: "Render evidence audit",
-    description: "Compact refs by default; full adds quote-level reviewer markdown.",
+    description: "Ref index by default; full adds quote table.",
     inputSchema: {
       minutesAvailable: z.union([z.literal(5), z.literal(15), z.literal(45)]).default(45),
       emphasis: z.enum(["minimum-viable", "balanced", "full-support"]).default("full-support"),
