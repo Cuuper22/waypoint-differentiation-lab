@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Waypoint Differentiation Lab turns a lesson map and learner profile into evidence-grounded teacher supports."
+    />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <title>Waypoint Differentiation Lab</title>
+  </head>
+  <body>
+    <canvas id="ambient" aria-hidden="true"></canvas>
+    <header class="topbar" data-reveal>
+      <a class="brand" href="#top" aria-label="Waypoint Differentiation Lab home">
+        <span class="brand-mark"></span>
+        <span>Waypoint Differentiation Lab</span>
+      </a>
+      <nav class="nav-links" aria-label="Showcase sections">
+        <a href="#problem">Problem</a>
+        <a href="#packet">Packet</a>
+        <a href="#receipts">Receipts</a>
+        <a href="#quality">Quality</a>
+        <a href="#under-hood">Under hood</a>
+      </nav>
+    </header>
+
+    <main id="top">
+      <section class="hero section-band">
+        <div class="hero-image" aria-hidden="true"></div>
+        <div class="hero-copy" data-reveal>
+          <p class="eyebrow">From IEP chaos to tomorrow's lesson plan</p>
+          <h1>One lesson. One learner profile. Actual receipts.</h1>
+          <p class="hero-subcopy">
+            A deterministic MCP packet generator that keeps RI.7.2 intact, names the barrier, and shows why each support belongs in the room.
+          </p>
+          <div class="hero-actions" aria-label="Primary actions">
+            <button class="primary-action" data-scroll="#packet">Explore the packet</button>
+            <button class="icon-action" data-scroll="#receipts" aria-label="Jump to Receipts Rail">
+              <span class="icon-receipt" aria-hidden="true"></span>
+            </button>
+          </div>
+        </div>
+        <div class="hero-console" data-reveal>
+          <div class="console-row">
+            <span class="console-label">Case</span>
+            <strong data-case-label>Learner 7A</strong>
+          </div>
+          <div class="console-row">
+            <span class="console-label">Mode</span>
+            <strong data-teacher-mode>Tomorrow Mode</strong>
+          </div>
+          <div class="console-meter" aria-label="Evidence flow">
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+          </div>
+        </div>
+      </section>
+
+      <section id="problem" class="section-band problem-band">
+        <div class="section-header" data-reveal>
+          <p class="eyebrow">The 8:03am Problem</p>
+          <h2>Teacher has one lesson, one IEP, and the copier is already judging everyone.</h2>
+        </div>
+        <div class="problem-grid">
+          <article class="problem-card" data-reveal>
+            <span class="card-kicker">Lesson demand</span>
+            <h3>RI.7.2 stays the target</h3>
+            <p>Students still determine central idea, summarize it, and explain how details develop it.</p>
+          </article>
+          <article class="problem-card" data-reveal>
+            <span class="card-kicker">Learner barrier</span>
+            <h3>Access fails before effort does</h3>
+            <p>Vocabulary, stamina, annotation choices, and task initiation can block the work.</p>
+          </article>
+          <article class="problem-card" data-reveal>
+            <span class="card-kicker">Teacher reality</span>
+            <h3>No time for folklore</h3>
+            <p>Every recommendation needs a reason, a material, and a check that can happen during class.</p>
+          </article>
+        </div>
+      </section>
+
+      <section id="mcp" class="section-band mcp-band">
+        <div class="section-header" data-reveal>
+          <p class="eyebrow">What The MCP Does</p>
+          <h2>It maps the lesson demand to learner needs, then refuses to be vague about it.</h2>
+        </div>
+        <div class="flow-stage" data-reveal>
+          <img src="/generated/evidence-flow.svg" alt="Evidence flow diagram from lesson and learner profile to recommendations and quality checks" />
+          <div class="flow-copy">
+            <p>The generator uses structured resources, typed evidence references, and a deterministic packet builder. The presentation layer can be warm; the underlying trace stays audit-friendly.</p>
+          </div>
+        </div>
+      </section>
+
+      <section id="packet" class="section-band packet-band">
+        <div class="section-header" data-reveal>
+          <p class="eyebrow">Teacher Output</p>
+          <h2>A classroom-ready packet, not a motivational poster with bullet points.</h2>
+        </div>
+        <div class="packet-layout">
+          <article class="artifact-preview" data-reveal>
+            <img src="/generated/classroom-artifact.svg" alt="Stylized teacher handout preview" />
+          </article>
+          <div class="handout-panel" data-reveal>
+            <div class="panel-topline">
+              <span data-standard>RI.7.2</span>
+              <span data-quality-chip>Quality passed</span>
+            </div>
+            <h3 data-packet-title>Tomorrow Mode</h3>
+            <div class="handout-sections" data-handout-sections></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="receipts" class="section-band receipts-band">
+        <div class="section-header" data-reveal>
+          <p class="eyebrow">Receipts Rail</p>
+          <h2>Click a recommendation. See the source, lesson demand, UDL alignment, and preserved standard.</h2>
+        </div>
+        <div class="receipts-layout">
+          <div class="recommendation-list" data-mod-list aria-label="Recommendations" data-reveal></div>
+          <article class="receipt-detail" data-receipt-detail data-reveal aria-live="polite"></article>
+        </div>
+      </section>
+
+      <section id="quality" class="section-band quality-band">
+        <div class="section-header" data-reveal>
+          <p class="eyebrow">Quality Gate</p>
+          <h2>No Hand-Wavy Accommodations Detector</h2>
+        </div>
+        <div class="quality-grid" data-quality-grid></div>
+      </section>
+
+      <section id="under-hood" class="section-band hood-band">
+        <div class="section-header" data-reveal>
+          <p class="eyebrow">Under The Hood</p>
+          <h2>Small pieces, boringly inspectable. That is the flex.</h2>
+        </div>
+        <div class="architecture" data-architecture data-reveal></div>
+      </section>
+    </main>
+
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
